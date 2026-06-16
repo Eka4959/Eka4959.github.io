@@ -824,6 +824,15 @@ function renderAddQuestion(c) {
       <button class="form-submit" onclick="${eq ? 'saveQuestion()' : 'addQuestion()'}">${eq ? 'Sauvegarder' : 'Ajouter la question'}</button>
       ${eq ? '<button class="btn-cancel" onclick="state.editingQuestion=null;nav(\'add-question\')" style="margin-left:8px">Annuler</button>' : ''}
     </div>
+
+   <div class="form-divider" style="margin:32px 0"></div>
+    <h2 style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;margin-bottom:8px">⚡ Import rapide (Excel / Sheets)</h2>
+    <p class="form-hint" style="margin-bottom:16px">Colle directement les lignes de ton tableur ici. Les colonnes attendues (séparées par des tabulations) :<br>
+    <strong>Matière (ses, lettres, philo, histoire, geo) | Chapitre | Mode (qcm, vf, quote) | Question | Bonne Rép | Mauvaise 1 | Mauvaise 2 | Mauvaise 3 | Explication</strong></p>
+    <div class="add-q-form">
+      <textarea class="form-textarea" id="import-tsv" style="min-height:120px;font-family:'JetBrains Mono',monospace;white-space:pre;font-size:0.8rem;" placeholder="ses&#9;Inégalités&#9;qcm&#9;Qui a écrit Le Capital ?&#9;Marx&#9;Bourdieu&#9;Keynes&#9;Smith&#9;Livre majeur..."></textarea>
+      <button class="form-submit" onclick="importTSV()" style="background:var(--blue)">📥 Importer les questions</button>
+    </div>
   `;
   if (eq) addMode = eq.mode; 
   updateChaptersSelect(); 
@@ -910,6 +919,84 @@ function saveQuestion() {
   nav('database');
 }
 
+   /**
+ * Fonction d'importation depuis un TSV (Copier-coller Excel)
+ */
+ function importTSV() {
+  const raw = document.getElementById('import-tsv').value.trim();
+  if (!raw) return showToast('Rien à importer', 'err');
+  
+  const lines = raw.split('\n');
+  let count = 0;
+  let newChaptersCount = 0;
+  
+  for (let line of lines) {
+    const cols = line.split('\t').map(c => c.trim());
+    if (cols.length < 5) continue; // Ignore les lignes mal formatées ou incomplètes
+    
+    const [subjRaw, chapName, modeRaw, qText, correctAns, bad1, bad2, bad3, expl] = cols;
+    const subject = subjRaw.toLowerCase();
+    const mode = modeRaw.toLowerCase();
+    
+    // Validation de la matière
+    if (!SUBJECTS.find(s => s.id === subject)) continue;
+    if (!['qcm', 'vf', 'quote'].includes(mode)) continue;
+    
+    // Gestion du Chapitre (Création automatique si absent)
+    if (!state.chapters[subject]) state.chapters[subject] = [];
+    let chapId = subject + '_' + chapName.toLowerCase().replace(/[^a-z0-9]/g, '_');
+    let existingChap = state.chapters[subject].find(c => c.id === chapId || c.name.toLowerCase() === chapName.toLowerCase());
+    
+    if (!existingChap) {
+      existingChap = { id: chapId, name: chapName };
+      state.chapters[subject].push(existingChap);
+      newChaptersCount++;
+    }
+    chapId = existingChap.id;
+    
+    // Construction de la question
+    const entry = {
+      id: 'imp_' + Date.now() + '_' + Math.random().toString(36).slice(2, 6),
+      subject,
+      chapter: chapId,
+      mode,
+      q: qText,
+      expl: expl || ''
+    };
+    
+    if (mode === 'vf') {
+      // Pour Vrai/Faux, on cherche si le mot "vrai" est dans la réponse
+      entry.correct = correctAns.toLowerCase().includes('vrai') || correctAns.toLowerCase() === 'v';
+    } else {
+      // Pour QCM ou Quote, on rassemble les réponses et on les mélange
+      let options = [correctAns];
+      if (bad1) options.push(bad1);
+      if (bad2) options.push(bad2);
+      if (bad3) options.push(bad3);
+      
+      const shuffled = shuffle(options);
+      entry.opts = shuffled;
+      entry.correct = shuffled.indexOf(correctAns); // On sauvegarde l'index de la bonne réponse
+    }
+    
+    state.questions.push(entry);
+    count++;
+  }
+  
+  if (count > 0) {
+    lsSet('bl_questions', state.questions);
+    if (newChaptersCount > 0) {
+        lsSet('bl_chapters', state.chapters);
+        buildSidebarSubjects(); // Mettre à jour le menu latéral
+    }
+    showToast(`${count} questions importées ✓`, 'ok');
+    document.getElementById('import-tsv').value = '';
+    renderAddQuestion(document.getElementById('content')); // Rafraîchir la vue
+  } else {
+    showToast('Erreur de format ou matière inconnue', 'err');
+  }
+}
+   
 // INIT
 if (typeof marked !== 'undefined') { 
 } else { 
