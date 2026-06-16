@@ -1,1 +1,35 @@
-
+[
+  {
+    "id": "ses_inegalites_qcm_0",
+    "subject": "ses",
+    "chapter": "inegalites",
+    "mode": "qcm",
+    "q": "Quel concept correspond a : indicateur synthetique qui mesure l'intensite des inegalites de revenus ou de patrimoine ?",
+    "expl": "Le concept vise est coefficient de Gini : indicateur synthetique qui mesure l'intensite des inegalites de revenus ou de patrimoine.",
+    "opts": [
+      "reproduction sociale",
+      "redistribution",
+      "impot progressif",
+      "coefficient de Gini"
+    ],
+    "correct": 3
+  },
+  {
+    "id": "q_1781639609584_7niz",
+    "subject": "ses",
+    "chapter": "inegalites",
+    "mode": "vf",
+    "q": "Ablakj",
+    "expl": "Kashiwa",
+    "correct": true
+  },
+  {
+    "id": "q_1781639747580_emp5",
+    "subject": "ses",
+    "chapter": "mondialisation",
+    "mode": "vf",
+    "q": "Shush",
+    "expl": "Qtyyy",
+    "correct": false
+  }
+]
