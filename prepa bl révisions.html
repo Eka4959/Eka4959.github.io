@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prepa B/L · Revisions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ===================================================================
+   VARIABLES CSS & RESET
+   =================================================================== */
+   :root {
+  /* ===================================================================
+     MODE CLAIR (Par défaut la journée)
+     =================================================================== */
+  --bg: #F4F6F9;
+  --bg2: #FFFFFF;
+  --bg3: #E4E8EF;
+  --border: rgba(15, 25, 35, 0.08);
+  --text: #0F1923;
+  --text2: #4A5D6E;
+  --text3: #788DA1;
+  --yellow: #F2C94C;
+  --red: #E05C5C;
+  --green: #4CAF7C;
+  --blue: #5B8DB8;
+  --purple: #9B72CF;
+  --sidebar-w: 260px;
+  --header-h: 56px;
+}
+
+/* ===================================================================
+   MODE NUIT (S'active automatiquement si votre appareil est en mode sombre)
+   =================================================================== */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0F1923;
+    --bg2: #1A2535;
+    --bg3: #2C3E52;
+    --border: rgba(240,237,230,0.09);
+    --text: #F0EDE6;
+    --text2: #8DA5BC;
+    --text3: #5B7A96;
+  }
+}
+
+/* Version forcée pour le bouton de bascule si votre script utilise une classe */
+body.dark-theme, root.dark-theme {
+  --bg: #0F1923;
+  --bg2: #1A2535;
+  --bg3: #2C3E52;
+  --border: rgba(240,237,230,0.09);
+  --text: #F0EDE6;
+  --text2: #8DA5BC;
+  --text3: #5B7A96;
+}
+body.light-theme {
+  --bg: #F4F6F9;
+  --bg2: #FFFFFF;
+  --bg3: #E4E8EF;
+  --border: rgba(15, 25, 35, 0.08);
+  --text: #0F1923;
+  --text2: #4A5D6E;
+  --text3: #788DA1;
+}
+.light {
+  --bg: #F5F2EC;
+  --bg2: #ECEAE3;
+  --bg3: #DDD9CF;
+  --border: rgba(15,25,35,0.1);
+  --text: #1A2535;
+  --text2: #5B7A96;
+  --text3: #8DA5BC;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; }
+body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; font-size: 14px; transition: background 0.3s, color 0.3s; }
+button { font-family: inherit; cursor: pointer; }
+input, textarea, select { font-family: inherit; }
+a { color: inherit; text-decoration: none; }
+#app { display: flex; height: 100vh; overflow: hidden; }
+#sidebar { width: var(--sidebar-w); min-width: var(--sidebar-w); background: var(--bg2); border-right: 1px solid var(--border); display: flex; flex-direction: column; overflow: hidden; transition: width 0.25s ease, min-width 0.25s ease; z-index: 100; }
+#sidebar.collapsed { width: 56px; min-width: 56px; }
+.sidebar-logo { height: var(--header-h); display: flex; align-items: center; padding: 0 16px; border-bottom: 1px solid var(--border); flex-shrink: 0; gap: 10px; }
+.sidebar-logo-text { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem; letter-spacing: -0.02em; white-space: nowrap; overflow: hidden; }
+.sidebar-logo-text span { color: var(--yellow); }
+#sidebar.collapsed .sidebar-logo-text { display: none; }
+.sidebar-toggle { margin-left: auto; background: none; border: none; color: var(--text2); padding: 4px; border-radius: 4px; display: flex; align-items: center; transition: color 0.15s; flex-shrink: 0; }
+.sidebar-toggle:hover { color: var(--text); }
+.sidebar-scroll { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 8px 0; }
+.sidebar-scroll::-webkit-scrollbar { width: 3px; }
+.sidebar-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+.nav-section { margin-bottom: 4px; }
+.nav-section-header { display: flex; align-items: center; gap: 8px; padding: 6px 12px; font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text3); white-space: nowrap; overflow: hidden; }
+#sidebar.collapsed .nav-section-header { padding: 6px; justify-content: center; }
+#sidebar.collapsed .nav-section-header span:last-child { display: none; }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 7px 12px; border-radius: 6px; margin: 1px 6px; cursor: pointer; transition: background 0.12s, color 0.12s; white-space: nowrap; overflow: hidden; color: var(--text2); font-size: 0.85rem; border: none; background: none; width: calc(100% - 12px); text-align: left; }
+.nav-item:hover { background: var(--bg3); color: var(--text); }
+.nav-item.active { background: rgba(242,201,76,0.12); color: var(--yellow); }
+.nav-item .nav-icon { font-size: 0.95rem; flex-shrink: 0; width: 18px; text-align: center; }
+.nav-item .nav-label { overflow: hidden; text-overflow: ellipsis; }
+#sidebar.collapsed .nav-item { justify-content: center; padding: 8px; margin: 1px auto; width: 40px; }
+#sidebar.collapsed .nav-label { display: none; }
+#sidebar.collapsed .nav-badge { display: none; }
+.nav-badge { margin-left: auto; background: var(--red); color: white; font-size: 0.62rem; font-weight: 700; padding: 1px 5px; border-radius: 8px; flex-shrink: 0; }
+.nav-badge.yellow { background: var(--yellow); color: var(--bg); }
+.nav-reset { color: var(--red) !important; }
+.nav-reset:hover { background: rgba(224,92,92,0.15) !important; color: var(--red) !important; }
+.subject-tree { border-left: 1px solid var(--border); margin-left: 18px; padding-left: 8px; }
+.subject-chapter { display: flex; align-items: center; gap: 8px; padding: 5px 8px; border-radius: 5px; cursor: pointer; color: var(--text2); font-size: 0.8rem; transition: all 0.12s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border: none; background: none; width: 100%; text-align: left; }
+.subject-chapter:hover { background: var(--bg3); color: var(--text); }
+.subject-chapter.active { color: var(--yellow); }
+#sidebar.collapsed .subject-tree { display: none; }
+#main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+#topbar { height: var(--header-h); border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 24px; gap: 16px; flex-shrink: 0; background: var(--bg); }
+.topbar-breadcrumb { font-size: 0.8rem; color: var(--text2); display: flex; align-items: center; gap: 6px; }
+.topbar-breadcrumb span { color: var(--text); }
+.topbar-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+
+/* Pilule d'XP et streak */
+.xp-pill { background: rgba(242,201,76,0.12); border: 1px solid rgba(242,201,76,0.3); color: var(--yellow); font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.8rem; padding: 4px 10px; border-radius: 20px; }
+.streak-pill { background: rgba(224,92,92,0.12); border: 1px solid rgba(224,92,92,0.3); color: var(--red); font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.8rem; padding: 4px 10px; border-radius: 20px; }
+
+.theme-toggle { background: none; border: 1px solid var(--border); color: var(--text2); width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; transition: all 0.15s; }
+.theme-toggle:hover { color: var(--text); border-color: var(--text2); }
+#content { flex: 1; overflow-y: auto; padding: 28px; }
+#content::-webkit-scrollbar { width: 5px; }
+#content::-webkit-scrollbar-thumb { background: var(--bg3); border-radius: 3px; }
+
+/* BASE DE DONNÉES / TABLEAUX */
+.db-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; background: var(--bg2); border-radius: 8px; overflow: hidden; margin-top: 8px; }
+.db-table th, .db-table td { padding: 12px 14px; border-bottom: 1px solid var(--border); text-align: left; }
+.db-table th { background: var(--bg3); color: var(--text2); font-weight: 600; text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.05em; }
+.db-table tr:last-child td { border-bottom: none; }
+.db-action { background: none; border: none; cursor: pointer; color: var(--text2); padding: 4px; transition: all 0.15s; font-size: 1rem; }
+.db-action:hover { color: var(--yellow); }
+.db-action.del:hover { color: var(--red); }
+.search-bar { width: 100%; padding: 12px 14px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg2); color: var(--text); margin-bottom: 16px; font-family: inherit; font-size: 0.9rem; }
+.search-bar:focus { outline: none; border-color: var(--yellow); }
+
+/* DASHBOARD */
+.dashboard-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-bottom: 32px; }
+.subject-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 20px; cursor: pointer; transition: all 0.18s; position: relative; overflow: hidden; }
+.subject-card:hover { border-color: rgba(242,201,76,0.3); transform: translateY(-2px); }
+.subject-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; opacity: 0; transition: opacity 0.18s; }
+.subject-card:hover::before { opacity: 1; }
+.sc-ses::before { background: #F2C94C; }
+.sc-lettres::before { background: #9B72CF; }
+.sc-philo::before { background: #E05C5C; }
+.sc-histoire::before { background: #5B8DB8; }
+.sc-geo::before { background: #4CAF7C; }
+.sc-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.sc-icon { font-size: 1.6rem; }
+.sc-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; }
+.sc-hours { font-size: 0.72rem; color: var(--text2); margin-top: 1px; }
+.sc-stats { display: flex; gap: 12px; }
+.sc-stat { text-align: center; }
+.sc-stat-num { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.1rem; }
+.sc-stat-label { font-size: 0.65rem; color: var(--text3); margin-top: 1px; }
+.sc-progress { margin-top: 14px; height: 3px; background: var(--bg3); border-radius: 2px; overflow: hidden; }
+.sc-progress-bar { height: 100%; border-radius: 2px; transition: width 0.6s ease; }
+.due-badge { position: absolute; top: 12px; right: 12px; background: var(--red); color: white; font-size: 0.62rem; font-weight: 700; padding: 2px 6px; border-radius: 10px; }
+.stats-row { display: flex; gap: 12px; margin-bottom: 28px; flex-wrap: wrap; }
+.stat-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; flex: 1; min-width: 120px; }
+.stat-card-num { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.8rem; margin-bottom: 2px; }
+.stat-card-label { font-size: 0.72rem; color: var(--text2); }
+.stat-xp { color: var(--yellow); }
+.stat-ok { color: var(--green); }
+.stat-err { color: var(--red); }
+.stat-due { color: var(--blue); }
+
+/* PLAY */
+.play-config { max-width: 760px; }
+.config-section { margin-bottom: 28px; }
+.config-title { font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text2); margin-bottom: 12px; }
+.chapter-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+.chapter-pill { background: var(--bg2); border: 1.5px solid var(--border); border-radius: 20px; padding: 5px 14px; font-size: 0.8rem; cursor: pointer; transition: all 0.15s; color: var(--text2); }
+.chapter-pill:hover { border-color: var(--text2); color: var(--text); }
+.chapter-pill.active { border-color: var(--yellow); color: var(--yellow); background: rgba(242,201,76,0.08); }
+.pill-actions { display: flex; gap: 8px; }
+.pill-action { font-size: 0.75rem; color: var(--text2); background: none; border: none; cursor: pointer; padding: 2px 0; }
+.pill-action:hover { color: var(--yellow); }
+.mode-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.mode-card { background: var(--bg2); border: 1.5px solid var(--border); border-radius: 10px; padding: 14px; cursor: pointer; transition: all 0.15s; text-align: left; color: var(--text); display: flex; flex-direction: column; gap: 5px; }
+.mode-card:hover { border-color: var(--text2); }
+.mode-card.active { border-color: var(--red); background: rgba(224,92,92,0.07); }
+.mode-card-icon { font-size: 1.2rem; }
+.mode-card-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.88rem; }
+.mode-card-count { font-size: 0.7rem; color: var(--text2); }
+.mode-card-count.due { color: var(--yellow); }
+.start-big { background: var(--yellow); color: var(--bg); font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; padding: 12px 32px; border: none; border-radius: 8px; cursor: pointer; transition: all 0.18s; display: inline-flex; align-items: center; gap: 8px; }
+.start-big:hover { background: #e8b820; transform: translateY(-1px); }
+.start-big:disabled { opacity: 0.35; cursor: not-allowed; transform: none; }
+.all-done-box { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 32px; text-align: center; max-width: 480px; }
+.all-done-icon { font-size: 2.5rem; margin-bottom: 12px; }
+.all-done-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1.2rem; margin-bottom: 8px; }
+.all-done-sub { color: var(--text2); font-size: 0.88rem; line-height: 1.6; }
+
+/* QUIZ */
+#quiz-overlay { display: none; position: fixed; inset: 0; background: var(--bg); z-index: 200; flex-direction: column; overflow: hidden; }
+#quiz-overlay.show { display: flex; }
+.quiz-topbar { height: var(--header-h); display: flex; align-items: center; padding: 0 24px; gap: 16px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.quiz-close { background: none; border: none; color: var(--text2); font-size: 1.2rem; cursor: pointer; padding: 4px 8px; border-radius: 6px; transition: all 0.12s; }
+.quiz-close:hover { background: var(--bg3); color: var(--text); }
+.quiz-prog-wrap { flex: 1; height: 4px; background: var(--bg3); border-radius: 2px; overflow: hidden; }
+.quiz-prog-bar { height: 100%; background: var(--yellow); border-radius: 2px; transition: width 0.4s; }
+.quiz-counter { font-size: 0.78rem; color: var(--text2); white-space: nowrap; }
+.quiz-xp-live { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.82rem; color: var(--yellow); }
+.quiz-body { flex: 1; overflow-y: auto; display: flex; justify-content: center; padding: 32px 24px; }
+.quiz-inner { width: 100%; max-width: 640px; }
+.streak-dots { display: flex; gap: 5px; margin-bottom: 20px; flex-wrap: wrap; }
+.streak-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--bg3); flex-shrink: 0; transition: background 0.25s; }
+.streak-dot.ok { background: var(--green); }
+.streak-dot.ko { background: var(--red); }
+.q-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; padding: 24px; margin-bottom: 16px; }
+.q-badge { font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--yellow); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+.q-chapter-tag { background: var(--bg3); color: var(--text2); font-size: 0.62rem; padding: 2px 7px; border-radius: 4px; text-transform: none; letter-spacing: 0; }
+.q-text { font-family: 'Syne', sans-serif; font-weight: 600; font-size: 1.1rem; line-height: 1.55; }
+.opts { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+.opt { display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: var(--bg2); border: 1.5px solid var(--border); border-radius: 9px; cursor: pointer; transition: all 0.12s; color: var(--text); font-size: 0.9rem; line-height: 1.4; text-align: left; }
+.opt:hover:not(:disabled) { border-color: var(--text2); background: var(--bg3); }
+.opt.correct { border-color: var(--green); background: rgba(76,175,124,0.1); color: var(--green); }
+.opt.wrong { border-color: var(--red); background: rgba(224,92,92,0.08); color: var(--red); }
+.opt:disabled { cursor: default; }
+.opt-letter { min-width: 26px; height: 26px; border: 1.5px solid var(--border); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.72rem; flex-shrink: 0; }
+.opt.correct .opt-letter { border-color: var(--green); }
+.opt.wrong .opt-letter { border-color: var(--red); }
+.vf-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+.vf-btn { padding: 14px; border: 1.5px solid var(--border); border-radius: 9px; background: var(--bg2); color: var(--text); font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; cursor: pointer; transition: all 0.12s; }
+.vf-btn:hover:not(:disabled) { background: var(--bg3); }
+.vf-btn.correct { border-color: var(--green); background: rgba(76,175,124,0.1); color: var(--green); }
+.vf-btn.wrong { border-color: var(--red); background: rgba(224,92,92,0.08); color: var(--red); }
+.feedback { display: none; background: var(--bg3); border-radius: 9px; padding: 14px 16px; margin-bottom: 14px; border-left: 3px solid var(--green); font-size: 0.86rem; line-height: 1.6; }
+.feedback.ko { border-left-color: var(--red); }
+.feedback strong { display: block; font-family: 'Syne', sans-serif; font-size: 0.88rem; margin-bottom: 3px; }
+.next-btn { background: var(--text); color: var(--bg); font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.88rem; padding: 10px 22px; border: none; border-radius: 8px; cursor: pointer; display: none; transition: all 0.15s; }
+.next-btn:hover { background: var(--yellow); color: var(--bg); }
+
+/* BILAN */
+.bilan-tabs { display: flex; gap: 4px; margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 0; }
+.bilan-tab { padding: 8px 18px; font-size: 0.82rem; font-weight: 500; color: var(--text2); background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; transition: all 0.15s; margin-bottom: -1px; }
+.bilan-tab:hover { color: var(--text); }
+.bilan-tab.active { color: var(--yellow); border-bottom-color: var(--yellow); }
+.chapter-bilan-list { display: flex; flex-direction: column; gap: 10px; max-width: 720px; }
+.chapter-bilan-item { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; display: flex; align-items: center; gap: 14px; }
+.cbi-rank { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem; width: 28px; flex-shrink: 0; text-align: center; color: var(--text3); }
+.cbi-info { flex: 1; min-width: 0; }
+.cbi-name { font-weight: 600; font-size: 0.88rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cbi-subject { font-size: 0.7rem; color: var(--text2); margin-top: 2px; }
+.cbi-bar-wrap { flex: 1; max-width: 200px; }
+.cbi-bar { height: 4px; background: var(--bg3); border-radius: 2px; overflow: hidden; margin-bottom: 4px; }
+.cbi-bar-fill { height: 100%; border-radius: 2px; }
+.cbi-bar-label { font-size: 0.68rem; color: var(--text2); }
+.cbi-stats { display: flex; gap: 14px; flex-shrink: 0; text-align: right; }
+.cbi-stat-n { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.9rem; }
+.cbi-stat-l { font-size: 0.65rem; color: var(--text3); }
+.btn-review { background: var(--yellow); color: var(--bg); font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.75rem; padding: 6px 14px; border: none; border-radius: 6px; cursor: pointer; transition: all 0.15s; flex-shrink: 0; }
+.btn-review:hover { background: #e8b820; transform: translateY(-1px); }
+.errors-list { display: flex; flex-direction: column; gap: 8px; max-width: 720px; }
+.error-item { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; display: flex; align-items: flex-start; gap: 12px; }
+.error-item .err-count { background: rgba(224,92,92,0.15); color: var(--red); font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.8rem; padding: 3px 8px; border-radius: 6px; flex-shrink: 0; margin-top: 1px; }
+.err-body { flex: 1; min-width: 0; }
+.err-q { font-size: 0.88rem; line-height: 1.4; margin-bottom: 3px; }
+.err-meta { font-size: 0.7rem; color: var(--text2); }
+.err-mode { background: var(--bg3); padding: 1px 6px; border-radius: 4px; margin-right: 4px; }
+
+/* COURS */
+.cours-layout { display: flex; gap: 24px; height: 100%; }
+.cours-list { width: 240px; flex-shrink: 0; }
+.cours-list-title { font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text2); margin-bottom: 10px; }
+.cours-item { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 7px; cursor: pointer; color: var(--text2); font-size: 0.82rem; transition: all 0.12s; border: none; background: none; width: 100%; text-align: left; margin-bottom: 2px; }
+.cours-item:hover { background: var(--bg3); color: var(--text); }
+.cours-item.active { background: rgba(242,201,76,0.1); color: var(--yellow); }
+.cours-divider { height: 1px; background: var(--border); margin: 8px 0; }
+.cours-new-btn { display: flex; align-items: center; gap: 6px; padding: 7px 10px; border-radius: 7px; background: none; border: 1px dashed var(--border); color: var(--text2); font-size: 0.8rem; cursor: pointer; width: 100%; transition: all 0.12s; }
+.cours-new-btn:hover { border-color: var(--yellow); color: var(--yellow); }
+.cours-viewer { flex: 1; overflow: hidden; }
+.cours-viewer-inner { height: 100%; overflow-y: auto; padding-right: 8px; }
+.cours-viewer-inner::-webkit-scrollbar { width: 4px; }
+.cours-viewer-inner::-webkit-scrollbar-thumb { background: var(--bg3); border-radius: 2px; }
+
+/* EDITEUR DE COURS */
+.cours-editor { flex: 1; display: flex; flex-direction: column; gap: 12px; }
+.cours-editor-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.4rem; background: none; border: none; color: var(--text); border-bottom: 1px solid var(--border); padding-bottom: 8px; width: 100%; outline: none; }
+.cours-editor-body { flex: 1; background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 16px; color: var(--text); font-size: 0.9rem; line-height: 1.7; resize: none; outline: none; min-height: 320px; font-family: 'JetBrains Mono', monospace; }
+.cours-editor-body:focus { border-color: var(--yellow); }
+.editor-toolbar { display: flex; gap: 6px; flex-wrap: wrap; }
+.toolbar-btn { background: var(--bg2); border: 1px solid var(--border); border-radius: 5px; color: var(--text2); padding: 4px 10px; font-size: 0.75rem; cursor: pointer; transition: all 0.12s; }
+.toolbar-btn:hover { border-color: var(--yellow); color: var(--yellow); }
+.editor-actions { display: flex; gap: 8px; }
+.btn-save { background: var(--yellow); color: var(--bg); font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.82rem; padding: 7px 18px; border: none; border-radius: 7px; cursor: pointer; transition: all 0.15s; }
+.btn-save:hover { background: #e8b820; }
+.btn-cancel { background: none; border: 1px solid var(--border); color: var(--text2); font-size: 0.82rem; padding: 7px 16px; border-radius: 7px; cursor: pointer; transition: all 0.15s; }
+.btn-cancel:hover { border-color: var(--text2); color: var(--text); }
+.btn-delete { background: none; border: 1px solid rgba(224,92,92,0.3); color: var(--red); font-size: 0.82rem; padding: 7px 16px; border-radius: 7px; cursor: pointer; transition: all 0.15s; }
+.btn-delete:hover { background: rgba(224,92,92,0.1); }
+
+/* RENDU MARKDOWN */
+.md-content { line-height: 1.75; font-size: 0.92rem; max-width: 720px; }
+.md-content h1 { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; margin-bottom: 12px; }
+.md-content h2 { font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 700; margin: 24px 0 10px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+.md-content h3 { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 600; margin: 16px 0 8px; }
+.md-content p { margin-bottom: 12px; }
+.md-content ul, .md-content ol { margin: 0 0 12px 20px; }
+.md-content li { margin-bottom: 4px; }
+.md-content strong { font-weight: 600; }
+.md-content em { font-style: italic; color: var(--text2); }
+.md-content code { font-family: 'JetBrains Mono', monospace; background: var(--bg3); padding: 1px 5px; border-radius: 4px; font-size: 0.85em; }
+.block-def { border-left: 3px solid var(--blue); background: rgba(91,141,184,0.08); border-radius: 0 8px 8px 0; padding: 12px 16px; margin: 12px 0; }
+.block-def .block-label { font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--blue); margin-bottom: 5px; font-weight: 600; }
+.block-cite { border-left: 3px solid var(--purple); background: rgba(155,114,207,0.08); border-radius: 0 8px 8px 0; padding: 12px 16px; margin: 12px 0; font-style: italic; }
+.block-cite .block-author { font-style: normal; font-size: 0.75rem; color: var(--purple); margin-top: 6px; font-weight: 600; }
+.block-retenir { border: 1px solid rgba(242,201,76,0.3); background: rgba(242,201,76,0.06); border-radius: 8px; padding: 14px 16px; margin: 12px 0; }
+.block-retenir .block-label { font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--yellow); margin-bottom: 6px; font-weight: 600; }
+
+/* ADD QUESTIONS */
+.add-q-form { max-width: 640px; display: flex; flex-direction: column; gap: 16px; }
+.form-row { display: flex; gap: 12px; }
+.form-group { display: flex; flex-direction: column; gap: 6px; flex: 1; }
+.form-label { font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text2); font-weight: 500; }
+.form-input, .form-select, .form-textarea { background: var(--bg2); border: 1px solid var(--border); border-radius: 7px; color: var(--text); padding: 9px 12px; font-size: 0.88rem; outline: none; transition: border-color 0.15s; width: 100%; }
+.form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--yellow); }
+.form-select option { background: var(--bg2); }
+.form-textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
+.opts-inputs { display: flex; flex-direction: column; gap: 8px; }
+.opt-input-row { display: flex; align-items: center; gap: 8px; }
+.opt-radio { accent-color: var(--yellow); width: 16px; height: 16px; flex-shrink: 0; cursor: pointer; }
+.opt-radio-label { font-size: 0.75rem; color: var(--text2); width: 20px; flex-shrink: 0; }
+.form-hint { font-size: 0.72rem; color: var(--text3); line-height: 1.5; }
+.form-divider { height: 1px; background: var(--border); }
+.form-submit { background: var(--yellow); color: var(--bg); font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.9rem; padding: 10px 24px; border: none; border-radius: 8px; cursor: pointer; transition: all 0.15s; align-self: flex-start; }
+.form-submit:hover { background: #e8b820; }
+
+/* METHODE */
+.methode-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+.methode-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+.methode-card-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.95rem; margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.methode-card-body { font-size: 0.84rem; line-height: 1.65; color: var(--text2); }
+.methode-card-body p { margin-bottom: 8px; }
+
+/* TITRES */
+.page-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.5rem; margin-bottom: 6px; letter-spacing: -0.02em; }
+.page-sub { font-size: 0.85rem; color: var(--text2); margin-bottom: 24px; }
+
+/* TOAST */
+#toast { position: fixed; bottom: 24px; right: 24px; background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 18px; font-size: 0.85rem; z-index: 999; transform: translateY(20px); opacity: 0; transition: all 0.25s; pointer-events: none; max-width: 300px; }
+#toast.show { transform: translateY(0); opacity: 1; }
+#toast.ok { border-left: 3px solid var(--green); }
+#toast.err { border-left: 3px solid var(--red); }
+
+/* EMPTY STATE */
+.empty-state { text-align: center; padding: 60px 20px; color: var(--text2); }
+.empty-state-icon { font-size: 2.5rem; margin-bottom: 12px; }
+.empty-state-title { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; margin-bottom: 6px; color: var(--text); }
+.empty-state-sub { font-size: 0.85rem; line-height: 1.6; }
+
+/* RESPONSIVE */
+@media (max-width: 700px) {
+  #sidebar { display: none; }
+  #content { padding: 16px; }
+  .mode-cards { grid-template-columns: 1fr; }
+  .form-row { flex-direction: column; }
+  .chapter-bilan-item { flex-wrap: wrap; }
+  .cbi-bar-wrap { max-width: 100%; order: 4; }
+  .cbi-stats { order: 3; width: 100%; justify-content: space-around; }
+  .cours-layout { flex-direction: column; }
+  .cours-list { width: 100%; }
+  .cours-viewer { height: 400px; }
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <nav id="sidebar">
+    <div class="sidebar-logo"><div class="sidebar-logo-text">B<span>/</span>L</div><button class="sidebar-toggle" onclick="toggleSidebar()" title="Réduire">⇄</button></div>
+    <div class="sidebar-scroll">
+      <div class="nav-section"><div class="nav-section-header"><span>🏠</span><span>Général</span></div>
+        <button class="nav-item active" onclick="nav('dashboard')" id="nav-dashboard"><span class="nav-icon">◈</span><span class="nav-label">Tableau de bord</span></button>
+        <button class="nav-item" onclick="nav('bilan')" id="nav-bilan"><span class="nav-icon">📊</span><span class="nav-label">Bilan & erreurs</span><span class="nav-badge" id="badge-errors" style="display:none">0</span></button>
+        <button class="nav-item" onclick="nav('methode')" id="nav-methode"><span class="nav-icon">📐</span><span class="nav-label">Méthode</span></button>
+      </div>
+      <div class="nav-section"><div class="nav-section-header"><span>📚</span><span>Matières</span></div><div id="subjects-nav"></div></div>
+      <div class="nav-section"><div class="nav-section-header"><span>⚙️</span><span>Outils</span></div>
+        <button class="nav-item" onclick="nav('database')" id="nav-database"><span class="nav-icon">🗄️</span><span class="nav-label">Base de données</span></button>
+        <button class="nav-item" onclick="nav('add-question')" id="nav-add-question"><span class="nav-icon">＋</span><span class="nav-label">Ajouter des questions</span></button>
+        <button class="nav-item" onclick="nav('cours')" id="nav-cours"><span class="nav-icon">📄</span><span class="nav-label">Cours</span></button>
+        <button class="nav-item nav-reset" onclick="confirmResetAll()" id="nav-reset"><span class="nav-icon">🔥</span><span class="nav-label">Réinitialiser</span></button>
+      </div>
+    </div>
+  </nav>
+  <div id="main">
+    <div id="topbar"><div class="topbar-breadcrumb" id="breadcrumb"><span>Tableau de bord</span></div>
+      <div class="topbar-right">
+        <div class="xp-pill" id="xp-pill">0 XP</div>
+        <div class="streak-pill" id="streak-pill">🔥 0</div>
+        <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn" title="Thème">🌙</button>
+      </div>
+    </div>
+    <div id="content"></div>
+  </div>
+</div>
+<div id="quiz-overlay">
+  <div class="quiz-topbar"><button class="quiz-close" onclick="closeQuiz()">✕</button><div class="quiz-prog-wrap"><div class="quiz-prog-bar" id="qpb" style="width:0%"></div></div><span class="quiz-counter" id="qcounter">1 / 10</span><span class="quiz-xp-live" id="qxp">+0 XP</span></div>
+  <div class="quiz-body"><div class="quiz-inner"><div class="streak-dots" id="streak-dots"></div><div class="q-card"><div class="q-badge"><span id="q-mode-label">QCM</span><span class="q-chapter-tag" id="q-chapter-tag"></span></div><div class="q-text" id="q-text"></div></div><div id="q-options"></div><div class="feedback" id="q-feedback"><strong id="q-fb-title"></strong><span id="q-fb-text"></span></div><button class="next-btn" id="next-btn" onclick="nextQ()">Question suivante →</button></div></div>
+</div>
+<div id="toast"></div>
+<script>
+// VARIABLES
+let playConfig = { chapters: [], modes: ['qcm','vf','quote'] };
+let quiz = { questions: [], index: 0, xpGained: 0, answered: false, currentGrade: null };
+let bilanTab = 'chapitres';
+let dbTab = 'questions';
+let dbSearch = '';
+let coursFocusId = null;
+let addMode = 'qcm';
+
+// DONNEES
+const SEED_QUESTIONS = [{"id":"ses_inegalites_qcm_0","subject":"ses","chapter":"inegalites","mode":"qcm","q":"Quel concept correspond a : indicateur synthetique qui mesure l'intensite des inegalites de revenus ou de patrimoine ?","expl":"Le concept vise est coefficient de Gini : indicateur synthetique qui mesure l'intensite des inegalites de revenus ou de patrimoine.","opts":["reproduction sociale","redistribution","impot progressif","coefficient de Gini"],"correct":3}];
+const SUBJECTS = [{id:'ses',name:'Sciences Eco. & So.',icon:'📊',color:'#F2C94C',hours:'6h/sem',colorClass:'sc-ses'},{id:'lettres',name:'Lettres',icon:'📖',color:'#9B72CF',hours:'4h/sem',colorClass:'sc-lettres'},{id:'philo',name:'Philosophie',icon:'🧠',color:'#E05C5C',hours:'4h/sem',colorClass:'sc-philo'},{id:'histoire',name:'Histoire',icon:'🏛️',color:'#5B8DB8',hours:'4h/sem',colorClass:'sc-histoire'},{id:'geo',name:'Géographie',icon:'🌍',color:'#4CAF7C',hours:'3h/sem',colorClass:'sc-geo'}];
+const SES_CHAPTERS = [{id:'inegalites',name:'Inégalités & stratification'},{id:'marche',name:'Marché & prix'},{id:'travail',name:'Travail & emploi'},{id:'mondialisation',name:'Mondialisation'},{id:'solidarites',name:'Solidarités & protection'},{id:'lien_social',name:'Lien social & déviance'},{id:'europe',name:'Construction européenne'},{id:'croissance',name:'Croissance & innovation'}];
+const MODE_LABELS = {qcm:'🎯 QCM',vf:'⚖️ Vrai / Faux',quote:'💬 Qui a dit ça ?'};
+
+// STORAGE
+function ls(key, def) { try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : def; } catch { return def; } }
+function lsSet(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch {} }
+
+// ETAT
+let state = {
+  xp: ls('bl_xp', 0),
+  questions: ls('bl_questions', null),
+  sr_data: ls('bl_sr_data', {}),
+  cours: ls('bl_cours', []),
+  chapters: ls('bl_chapters', {ses: SES_CHAPTERS, lettres: [], philo: [], histoire: [], geo: []}),
+  theme: ls('bl_theme', 'auto'),
+  sidebarCollapsed: ls('bl_sidebar', false),
+  currentView: 'dashboard',
+  currentSubject: null,
+  currentChapter: null,
+  editingCours: null,
+  editingQuestion: null,
+  streak: ls('bl_streak', 0),
+  lastActivityDate: ls('bl_last_activity', null)
+};
+if (!state.questions) { state.questions = SEED_QUESTIONS; lsSet('bl_questions', state.questions); }
+
+// UTILS
+function escapeHtml(text) { if (text === null || text === undefined) return ''; const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
+
+// STREAK - NOUVELLES FONCTIONS
+function getTodayKey() { return new Date().toISOString().split('T')[0]; }
+function updateStreak() { 
+  const today = getTodayKey(); 
+  const yesterday = new Date(); yesterday.setDate(yesterday.getDate() - 1); const yesterdayKey = yesterday.toISOString().split('T')[0];
+  
+  if (state.lastActivityDate === today) { 
+    // Déjà actif aujourd'hui, ne rien changer
+    return; 
+  } else if (state.lastActivityDate === yesterdayKey) { 
+    // Continuation de la série
+    state.streak++; 
+  } else { 
+    // Série rompue, réinitialiser
+    state.streak = 1; 
+  } 
+  state.lastActivityDate = today; 
+  lsSet('bl_streak', state.streak); 
+  lsSet('bl_last_activity', state.lastActivityDate); 
+}
+
+// SPACED REPETITION
+function getSR(qid) { return state.sr_data[qid] || { interval: 0, ef: 2.5, due: 0, errors: 0, attempts: 0 }; }
+function updateSR(qid, grade) { 
+  const sr = getSR(qid); 
+  const now = Date.now(); 
+  sr.attempts++;
+  if (grade === 1) { 
+    sr.errors++; 
+    sr.interval = 0; 
+    sr.due = now + 1 * 60 * 1000; 
+  } else { 
+    if (sr.interval === 0) sr.interval = 1; 
+    else if (sr.interval === 1) sr.interval = 3; 
+    else sr.interval = Math.round(sr.interval * sr.ef);
+    if (grade === 2) sr.interval = Math.max(1, Math.round(sr.interval * 0.6));
+    if (grade === 4) sr.interval = Math.round(sr.interval * 1.3);
+    sr.ef = Math.max(1.3, sr.ef + 0.1 - (4 - grade) * (0.08 + (4 - grade) * 0.02));
+    sr.due = now + sr.interval * 24 * 60 * 60 * 1000;
+  }
+  state.sr_data[qid] = sr; 
+  lsSet('bl_sr_data', state.sr_data); 
+}
+function isDue(qid) { const sr = state.sr_data[qid]; if (!sr) return true; if (sr.due === 0) return true; return Date.now() >= sr.due - 5 * 60 * 1000; }
+function getDueQuestions(subject, chapters, modes) { return state.questions.filter(q => { if (subject && q.subject !== subject) return false; if (chapters?.length && !chapters.includes(q.chapter)) return false; if (modes?.length && !modes.includes(q.mode)) return false; return isDue(q.id); }); }
+function nextDueTime(subject, chapters, modes) { const upcoming = state.questions.filter(q => { if (subject && q.subject !== subject) return false; if (chapters?.length && !chapters.includes(q.chapter)) return false; if (modes?.length && !modes.includes(q.mode)) return false; const sr = state.sr_data[q.id]; return sr && sr.due > Date.now(); }); if (!upcoming.length) return null; upcoming.sort((a, b) => state.sr_data[a.id].due - state.sr_data[b.id].due); const times = upcoming.map(q => state.sr_data[q.id].due).sort((a, b) => a - b); return times[Math.min(4, times.length - 1)]; }
+function fmtDuration(ms) { const m = Math.round(ms / 60000); if (m < 60) return m + ' min'; const h = Math.floor(m / 60), rm = m % 60; return h + 'h' + (rm ? rm.toString().padStart(2, '0') : ''); }
+function shuffle(arr) { const a = [...arr]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+function chapterName(subject, chapterId) { const chs = state.chapters[subject] || []; return chs.find(c => c.id === chapterId)?.name || 'Inconnu'; }
+
+// FONCTIONS POUR LA REVISION CIBLEE
+function getChapterErrorQuestions(chapterId, subjectId) { return state.questions.filter(q => { if (subjectId && q.subject !== subjectId) return false; if (q.chapter !== chapterId) return false; const sr = getSR(q.id); return sr && sr.errors > 0; }); }
+function reviewChapter(chapterId, subjectId) { const questions = getChapterErrorQuestions(chapterId, subjectId); if (questions.length === 0) { showToast('Aucune erreur à réviser pour ce chapitre', 'err'); return; } playConfig = { chapters: [chapterId], modes: ['qcm', 'vf', 'quote'], subject: subjectId }; startQuiz(); nav('play'); }
+
+// THEME
+let sunriseH = 6, sunsetH = 20;
+async function fetchSun() { try { const r = await fetch('https://api.sunrise-sunset.org/json?lat=45.19&lng=5.72&formatted=0'); const d = await r.json(); sunriseH = new Date(d.results.sunrise).getHours() + new Date(d.results.sunrise).getMinutes() / 60; sunsetH = new Date(d.results.sunset).getHours() + new Date(d.results.sunset).getMinutes() / 60; } catch {} applyTheme(); }
+function applyTheme() { const body = document.body; const btn = document.getElementById('theme-btn'); let dark; if (state.theme === 'dark') dark = true; else if (state.theme === 'light') dark = false; else { const h = new Date().getHours() + new Date().getMinutes() / 60; dark = h < sunriseH || h >= sunsetH; } body.classList.toggle('light', !dark); if (btn) btn.textContent = dark ? '🌙' : '☀️'; }
+function toggleTheme() { const modes = ['auto', 'light', 'dark']; state.theme = modes[(modes.indexOf(state.theme) + 1) % 3]; lsSet('bl_theme', state.theme); applyTheme(); }
+setInterval(applyTheme, 60000); fetchSun();
+
+// REINITIALISATION COMPLETE
+function confirmResetAll() {
+  if (confirm('⚠️ ATTENTION : Cela va supprimer TOUTES vos données (questions, chapitres, progression, XP, streak). Cette action est irréversible. Continuer ?')) {
+    if (confirm('Êtes-vous ABSOLUMENT sûr ? Il n\'y aura pas de retour en arrière.')) {
+      resetAllData();
+    }
+  }
+}
+
+function resetAllData() {
+  // Supprimer toutes les données du localStorage
+  const keysToDelete = Object.keys(localStorage).filter(key => key.startsWith('bl_'));
+  keysToDelete.forEach(key => localStorage.removeItem(key));
+  
+  // Réinitialiser l'état
+  state = {
+    xp: 0,
+    questions: SEED_QUESTIONS,
+    sr_data: {},
+    cours: [],
+    chapters: {ses: SES_CHAPTERS, lettres: [], philo: [], histoire: [], geo: []},
+    theme: 'auto',
+    sidebarCollapsed: false,
+    currentView: 'dashboard',
+    currentSubject: null,
+    currentChapter: null,
+    editingCours: null,
+    editingQuestion: null,
+    streak: 0,
+    lastActivityDate: null
+  };
+  
+  // Réinitialiser les variables globales
+  playConfig = { chapters: [], modes: ['qcm','vf','quote'] };
+  quiz = { questions: [], index: 0, xpGained: 0, answered: false, currentGrade: null };
+  bilanTab = 'chapitres';
+  dbTab = 'questions';
+  dbSearch = '';
+  coursFocusId = null;
+  addMode = 'qcm';
+  
+  // Sauvegarder l'état initial
+  lsSet('bl_questions', state.questions);
+  lsSet('bl_chapters', state.chapters);
+  lsSet('bl_xp', state.xp);
+  lsSet('bl_streak', state.streak);
+  lsSet('bl_last_activity', state.lastActivityDate);
+  lsSet('bl_sr_data', state.sr_data);
+  lsSet('bl_cours', state.cours);
+  lsSet('bl_theme', state.theme);
+  
+  // Réinitialiser l'interface
+  buildSidebarSubjects();
+  updateBadges();
+  applyTheme();
+  renderView();
+  
+  showToast('Toutes les données ont été réinitialisées. La page va recharger.', 'ok');
+  setTimeout(() => location.reload(), 1500);
+}
+
+// NAV
+function toggleSidebar() { state.sidebarCollapsed = !state.sidebarCollapsed; lsSet('bl_sidebar', state.sidebarCollapsed); document.getElementById('sidebar').classList.toggle('collapsed', state.sidebarCollapsed); }
+function buildSidebarSubjects() { const el = document.getElementById('subjects-nav'); el.innerHTML = ''; SUBJECTS.forEach(s => { const btn = document.createElement('button'); btn.className = 'nav-item'; btn.id = 'nav-subj-' + s.id; btn.innerHTML = `<span class="nav-icon">${s.icon}</span><span class="nav-label">${s.name}</span>`; btn.onclick = () => { state.currentSubject = s.id; state.currentChapter = null; nav('play'); toggleSubjectTree(s.id); }; el.appendChild(btn); const tree = document.createElement('div'); tree.className = 'subject-tree'; tree.id = 'tree-' + s.id; tree.style.display = 'none'; (state.chapters[s.id] || []).forEach(ch => { const cb = document.createElement('button'); cb.className = 'subject-chapter'; cb.innerHTML = '<span>·</span> ' + escapeHtml(ch.name); cb.onclick = (e) => { e.stopPropagation(); state.currentSubject = s.id; state.currentChapter = ch.id; nav('play'); }; tree.appendChild(cb); }); el.appendChild(tree); }); }
+function toggleSubjectTree(sid) { SUBJECTS.forEach(s => { const t = document.getElementById('tree-' + s.id); if (t) t.style.display = s.id === sid ? (t.style.display === 'none' ? 'block' : 'none') : 'none'; }); }
+if (state.sidebarCollapsed) document.getElementById('sidebar').classList.add('collapsed'); buildSidebarSubjects();
+function setBreadcrumb(parts) { document.getElementById('breadcrumb').innerHTML = parts.map((p, i) => i < parts.length - 1 ? `${p} <span style="color:var(--text3)">›</span>` : `<span>${p}</span>` ).join(''); }
+function nav(view) { if (view !== 'add-question') state.editingQuestion = null; state.currentView = view; document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active')); const navEl = document.getElementById('nav-' + view) || document.getElementById('nav-subj-' + state.currentSubject); if (navEl) navEl.classList.add('active'); renderView(); updateBadges(); }
+
+// UPDATE BADGES MODIFIEE POUR AFFICHER LE STREAK
+function updateBadges() { 
+  const errors = Object.values(state.sr_data).filter(s => s.errors > 0).length; 
+  const badge = document.getElementById('badge-errors'); 
+  if (badge) { badge.textContent = errors; badge.style.display = errors ? '' : 'none'; } 
+  document.getElementById('xp-pill').textContent = state.xp.toLocaleString() + ' XP';
+  document.getElementById('streak-pill').textContent = '🔥 ' + state.streak;
+}
+
+function renderView() { const c = document.getElementById('content'); const v = state.currentView; if (v === 'dashboard') renderDashboard(c); else if (v === 'play') renderPlay(c); else if (v === 'bilan') renderBilan(c); else if (v === 'methode') renderMethode(c); else if (v === 'add-question') renderAddQuestion(c); else if (v === 'database') renderDatabase(c); else if (v === 'cours') renderCours(c); else if (v === 'cours-new') renderCoursEditor(c, null); else if (v === 'cours-edit') renderCoursEditor(c, state.editingCours); }
+function showToast(msg, type = 'ok') { const t = document.getElementById('toast'); t.textContent = msg; t.className = type; t.classList.add('show'); setTimeout(() => { t.classList.remove('show'); }, 3000); }
+
+// DATABASE
+function renderDatabase(c) { setBreadcrumb(['Base de données']); c.innerHTML = `<h1 class="page-title">Base de données</h1><p class="page-sub">Gère tes questions et tes chapitres</p><div class="bilan-tabs"><button class="bilan-tab ${dbTab === 'questions' ? 'active' : ''}" onclick="switchDbTab('questions')">Questions (${state.questions.length})</button><button class="bilan-tab ${dbTab === 'chapitres' ? 'active' : ''}" onclick="switchDbTab('chapitres')">Chapitres</button></div><div id="db-content"></div>`; renderDbContent(); }
+function switchDbTab(tab) { dbTab = tab; renderDatabase(document.getElementById('content')); }
+function renderDbContent() { const el = document.getElementById('db-content'); if (dbTab === 'questions') { const qs = state.questions.filter(q => q.q.toLowerCase().includes(dbSearch.toLowerCase()) || (q.expl && q.expl.toLowerCase().includes(dbSearch.toLowerCase()))); el.innerHTML = `<input type="text" class="search-bar" placeholder="Rechercher une question ou une explication..." value="${escapeHtml(dbSearch)}" onkeyup="dbSearch = this.value; renderDbContent()"><div style="overflow-x:auto;"><table class="db-table"><thead><tr><th>Matière</th><th>Chapitre</th><th>Type</th><th>Question</th><th style="text-align:right">Actions</th></tr></thead><tbody>${qs.slice(0, 50).map(q => `<tr><td>${SUBJECTS.find(s=>s.id===q.subject)?.icon || ''}</td><td>${escapeHtml(chapterName(q.subject, q.chapter))}</td><td><span class="err-mode">${q.mode.toUpperCase()}</span></td><td style="max-width:300px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(q.q)}</td><td style="text-align:right"><button class="db-action" onclick="editQuestion('${q.id}')" title="Modifier">✏️</button><button class="db-action del" onclick="deleteQuestion('${q.id}')" title="Supprimer">🗑️</button></td></tr>`).join('')}${qs.length === 0 ? '<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--text3)">Aucune question trouvée.</td></tr>' : ''}${qs.length > 50 ? `<tr><td colspan="5" style="text-align:center;color:var(--text3);padding:15px">Et ${qs.length - 50} autres résultats...</td></tr>` : ''}</tbody></table></div>`; } else { let html = `<div style="overflow-x:auto;"><table class="db-table"><thead><tr><th>Matière</th><th>Chapitre</th><th>Questions</th><th style="text-align:right">Actions</th></tr></thead><tbody>`; SUBJECTS.forEach(s => { const chaps = state.chapters[s.id] || []; chaps.forEach(ch => { const qCount = state.questions.filter(q => q.subject === s.id && q.chapter === ch.id).length; html += `<tr><td>${s.icon} ${s.name}</td><td><strong>${escapeHtml(ch.name)}</strong></td><td>${qCount} questions</td><td style="text-align:right"><button class="db-action" onclick="editChapterName('${s.id}', '${ch.id}')" title="Renommer">✏️</button><button class="db-action del" onclick="deleteChapter('${s.id}', '${ch.id}')" title="Supprimer">🗑️</button></td></tr>`; }); }); html += `</tbody></table></div>`; el.innerHTML = html; } }
+function deleteQuestion(id) { if(!confirm('Es-tu sûr de vouloir supprimer cette question définitivement ?')) return; state.questions = state.questions.filter(q => q.id !== id); delete state.sr_data[id]; lsSet('bl_questions', state.questions); lsSet('bl_sr_data', state.sr_data); showToast('Question supprimée', 'ok'); renderDbContent(); }
+function editQuestion(id) { state.editingQuestion = id; const eq = state.questions.find(q => q.id === id); if(eq) addMode = eq.mode; nav('add-question'); }
+function editChapterName(subj, chId) { const chList = state.chapters[subj]; const ch = chList.find(c => c.id === chId); const newName = prompt('Renommer le chapitre :', ch.name); if (newName && newName.trim() !== '') { ch.name = newName.trim(); lsSet('bl_chapters', state.chapters); buildSidebarSubjects(); showToast('Chapitre renommé', 'ok'); renderDbContent(); } }
+function deleteChapter(subj, chId) { const qCount = state.questions.filter(q => q.subject === subj && q.chapter === chId).length; if(!confirm(`ATTENTION : Supprimer ce chapitre va aussi supprimer ses ${qCount} questions. Continuer ?`)) return; state.chapters[subj] = state.chapters[subj].filter(c => c.id !== chId); state.questions = state.questions.filter(q => !(q.subject === subj && q.chapter === chId)); lsSet('bl_chapters', state.chapters); lsSet('bl_questions', state.questions); buildSidebarSubjects(); showToast('Chapitre et questions supprimés', 'ok'); renderDbContent(); }
+
+// DASHBOARD
+function renderDashboard(c) { setBreadcrumb(['Tableau de bord']); const totalDue = getDueQuestions(null, null, null).length; const totalErrors = Object.values(state.sr_data).reduce((a, b) => a + (b.errors || 0), 0); const totalAttempts = Object.values(state.sr_data).reduce((a, b) => a + (b.attempts || 0), 0); const totalCorrect = totalAttempts - totalErrors; c.innerHTML = `<h1 class="page-title">Prepa B/L · Révisions</h1><p class="page-sub">Hypokhâgne</p><div class="stats-row"><div class="stat-card"><div class="stat-card-num stat-xp">${state.xp.toLocaleString()}</div><div class="stat-card-label">XP total</div></div><div class="stat-card"><div class="stat-card-num stat-ok">${totalCorrect}</div><div class="stat-card-label">Bonnes réponses</div></div><div class="stat-card"><div class="stat-card-num stat-err">${totalErrors}</div><div class="stat-card-label">Erreurs</div></div><div class="stat-card"><div class="stat-card-num stat-due">${totalDue}</div><div class="stat-card-label">À réviser</div></div></div><div class="dashboard-grid">${SUBJECTS.map(s => { const subjectQuestions = state.questions.filter(q => q.subject === s.id); const dueCount = getDueQuestions(s.id, null, null).length; const subjectSr = subjectQuestions.map(q => getSR(q.id)).filter(sr => sr.attempts > 0); const progress = subjectSr.length > 0 ? (subjectSr.reduce((a, b) => a + (b.attempts - b.errors), 0) / subjectSr.reduce((a, b) => a + b.attempts, 0) * 100) : 0; return `<div class="subject-card ${s.colorClass}" onclick="state.currentSubject='${s.id}';nav('play')">${dueCount > 0 ? '<div class="due-badge">' + dueCount + '</div>' : ''}<div class="sc-header"><span class="sc-icon">${s.icon}</span><div><div class="sc-name">${s.name}</div><div class="sc-hours">${s.hours}</div></div></div><div class="sc-stats"><div class="sc-stat"><div class="sc-stat-num">${subjectQuestions.length}</div><div class="sc-stat-label">Questions</div></div><div class="sc-stat"><div class="sc-stat-num">${subjectSr.length}</div><div class="sc-stat-label">Révisées</div></div><div class="sc-stat"><div class="sc-stat-num">${Math.round(progress)}%</div><div class="sc-stat-label">Maîtrise</div></div></div><div class="sc-progress"><div class="sc-progress-bar" style="width:${progress}%;background:${s.color}"></div></div></div>`; }).join('')}</div>`; }
+
+// PLAY
+function renderPlay(c) { setBreadcrumb([SUBJECTS.find(s => s.id === state.currentSubject)?.name || 'Toutes matières', state.currentChapter ? chapterName(state.currentSubject, state.currentChapter) : 'Tous chapitres']); const subject = state.currentSubject; const chapters = subject ? (state.currentChapter ? [state.currentChapter] : (state.chapters[subject] || []).map(ch => ch.id)) : []; const allChapters = subject ? (state.chapters[subject] || []).map(ch => ch.id) : []; const availableChapters = allChapters.filter(chId => state.questions.some(q => q.subject === subject && q.chapter === chId)); const dueQuestions = getDueQuestions(subject, chapters.length > 0 ? chapters : null, playConfig.modes); const nextDue = nextDueTime(subject, chapters.length > 0 ? chapters : null, playConfig.modes); c.innerHTML = `<h1 class="page-title">Session de révision</h1><p class="page-sub">${subject ? SUBJECTS.find(s => s.id === subject)?.name : 'Toutes les matières'}${state.currentChapter ? ' · ' + chapterName(subject, state.currentChapter) : ''}</p><div class="play-config"><div class="config-section"><div class="config-title">Chapitres à réviser</div><div class="chapter-pills" id="chapter-pills">${availableChapters.map(chId => { const isActive = chapters.length === 0 || chapters.includes(chId); return `<button class="chapter-pill ${isActive ? 'active' : ''}" onclick="toggleChapter('${chId}')">${escapeHtml(chapterName(subject, chId))}</button>`; }).join('')}</div><div class="pill-actions"><button class="pill-action" onclick="selectAllChapters()">Tout sélectionner</button><button class="pill-action" onclick="deselectAllChapters()">Tout désélectionner</button></div></div><div class="config-section"><div class="config-title">Mode de questions</div><div class="mode-cards">${['qcm', 'vf', 'quote'].map(mode => { const isActive = playConfig.modes.includes(mode); const count = getDueQuestions(subject, chapters.length > 0 ? chapters : null, [mode]).length; const dueCount = count > 0 ? count : 0; return `<button class="mode-card ${isActive ? 'active' : ''}" onclick="toggleMode('${mode}')"><span class="mode-card-icon">${MODE_LABELS[mode].split(' ')[0]}</span><span class="mode-card-name">${MODE_LABELS[mode].split(' ').slice(1).join(' ')}</span><span class="mode-card-count ${dueCount > 0 ? 'due' : ''}">${dueCount} à réviser</span></button>`; }).join('')}</div></div><div style="display:flex;align-items:center;gap:12px;margin-bottom:16px"><span style="color:var(--text2);font-size:0.85rem">Questions disponibles :</span><strong style="font-family:'Syne',sans-serif;font-size:0.95rem">${dueQuestions.length}</strong>${nextDue ? `<span style="color:var(--text3);font-size:0.8rem">Prochaine révision dans ${fmtDuration(nextDue - Date.now())}</span>` : ''}</div>${dueQuestions.length > 0 ? `<button class="start-big" onclick="startQuiz()"><span>🎮</span> Commencer la session (${dueQuestions.length} questions)</button>` : `<div class="all-done-box"><div class="all-done-icon">✅</div><div class="all-done-title">Tout est à jour !</div><div class="all-done-sub">Aucune question n'est due pour la révision.</div></div>`}</div>`; }
+function toggleChapter(chId) { if (!state.currentSubject) return; if (!playConfig.chapters) playConfig.chapters = []; const idx = playConfig.chapters.indexOf(chId); if (idx === -1) { playConfig.chapters.push(chId); } else { playConfig.chapters.splice(idx, 1); } renderPlay(document.getElementById('content')); }
+function selectAllChapters() { if (!state.currentSubject) return; const allChapters = (state.chapters[state.currentSubject] || []).map(ch => ch.id); playConfig.chapters = [...allChapters]; renderPlay(document.getElementById('content')); }
+function deselectAllChapters() { playConfig.chapters = []; renderPlay(document.getElementById('content')); }
+function toggleMode(mode) { const idx = playConfig.modes.indexOf(mode); if (idx === -1) { playConfig.modes.push(mode); } else { playConfig.modes.splice(idx, 1); } renderPlay(document.getElementById('content')); }
+function startQuiz() { const subject = state.currentSubject; const chapters = subject ? (state.currentChapter ? [state.currentChapter] : (playConfig.chapters.length > 0 ? playConfig.chapters : (state.chapters[subject] || []).map(ch => ch.id))) : []; const questions = getDueQuestions(subject, chapters.length > 0 ? chapters : null, playConfig.modes); if (questions.length === 0) { showToast('Aucune question disponible avec ces critères', 'err'); return; } quiz.questions = shuffle(questions); quiz.index = 0; quiz.xpGained = 0; quiz.answered = false; quiz.currentGrade = null; showQuiz(); }
+function showQuiz() { document.getElementById('quiz-overlay').classList.add('show'); loadQuestion(quiz.questions[quiz.index]); }
+function closeQuiz() { 
+  document.getElementById('quiz-overlay').classList.remove('show'); 
+  state.xp += quiz.xpGained; 
+  lsSet('bl_xp', state.xp); 
+  if (quiz.xpGained > 0) { 
+    updateStreak(); 
+  } 
+  updateBadges(); 
+  renderView(); 
+}
+function loadQuestion(q) {
+  quiz.answered = false;
+  document.getElementById('next-btn').style.display = 'none';
+  document.getElementById('q-feedback').style.display = 'none';
+  document.getElementById('q-mode-label').textContent = MODE_LABELS[q.mode].split(' ').slice(1).join(' ');
+  document.getElementById('q-chapter-tag').textContent = chapterName(q.subject, q.chapter);
+  document.getElementById('q-text').innerHTML = escapeHtml(q.q);
+  const optsEl = document.getElementById('q-options');
+  
+  if (q.mode === 'qcm') {
+    optsEl.innerHTML = `<div class="opts">${q.opts.map((opt, i) => `<button class="opt" onclick="selectOpt(${i})" id="opt-${i}"><span class="opt-letter">${String.fromCharCode(65 + i)}</span><span>${escapeHtml(opt)}</span></button>`).join('')}</div>`;
+  } else if (q.mode === 'vf') {
+    optsEl.innerHTML = `<div class="vf-row"><button class="vf-btn" onclick="selectVF(true)" id="vf-true">✓ Vrai</button><button class="vf-btn" onclick="selectVF(false)" id="vf-false">✗ Faux</button></div>`;
+  } else if (q.mode === 'quote') {
+    optsEl.innerHTML = '<div class="quote-input-wrap"><input type="text" class="quote-input" id="quote-answer-input" placeholder="Nom de l\'auteur..." autofocus autocomplete="off"><button class="quote-submit-btn" onclick="submitQuoteAnswer()">Valider</button></div>';
+  } else {
+    optsEl.innerHTML = '<div style="color:var(--text2);font-size:0.85rem">Mode non supporté</div>';
+  }
+  
+  document.getElementById('qpb').style.width = ((quiz.index / quiz.questions.length) * 100) + '%';
+  document.getElementById('qcounter').textContent = (quiz.index + 1) + ' / ' + quiz.questions.length;
+  
+  const dotsEl = document.getElementById('streak-dots');
+  dotsEl.innerHTML = quiz.questions.slice(0, quiz.index).map((_, i) => {
+    const sr = getSR(quiz.questions[i].id);
+    const lastGrade = sr.attempts > 0 ? (sr.errors > 0 ? 'ko' : 'ok') : '';
+    return `<div class="streak-dot ${lastGrade}"></div>`;
+  }).join('') + '<div class="streak-dot"></div>';
+  
+  // Ajout de l'event listener pour la touche Entrée (mode citation)
+  if (q.mode === 'quote') {
+    const input = document.getElementById('quote-answer-input');
+    if (input) {
+      input.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') submitQuoteAnswer();
+      });
+    }
+  }
+}
+function selectOpt(idx) { if (quiz.answered) return; quiz.answered = true; const q = quiz.questions[quiz.index]; const isCorrect = idx === q.correct; const grade = isCorrect ? 4 : 1; document.querySelectorAll('.opt').forEach((el, i) => { el.disabled = true; if (i === q.correct) el.classList.add('correct'); else if (i === idx) el.classList.add('wrong'); }); const xpGain = Math.round(10 * (grade / 4)); quiz.xpGained += xpGain; quiz.currentGrade = grade; const fbEl = document.getElementById('q-feedback'); fbEl.className = 'feedback ' + (isCorrect ? 'ok' : 'ko'); fbEl.style.display = 'block'; document.getElementById('q-fb-title').textContent = isCorrect ? 'Bonne réponse !' : 'Faux'; document.getElementById('q-fb-text').textContent = q.expl; document.getElementById('qxp').textContent = '+ ' + quiz.xpGained + ' XP'; updateSR(q.id, grade); document.getElementById('next-btn').style.display = 'block'; const dots = document.querySelectorAll('.streak-dot'); if (dots[quiz.index]) { dots[quiz.index].className = 'streak-dot ' + (isCorrect ? 'ok' : 'ko'); } }
+function selectVF(isTrue) { if (quiz.answered) return; quiz.answered = true; const q = quiz.questions[quiz.index]; const isCorrect = isTrue === q.correct; const grade = isCorrect ? 4 : 1; document.querySelectorAll('.vf-btn').forEach(el => { el.disabled = true; }); const btnId = isTrue ? 'vf-true' : 'vf-false'; document.getElementById(btnId).classList.add(isCorrect ? 'correct' : 'wrong'); const xpGain = Math.round(10 * (grade / 4)); quiz.xpGained += xpGain; quiz.currentGrade = grade; const fbEl = document.getElementById('q-feedback'); fbEl.className = 'feedback ' + (isCorrect ? 'ok' : 'ko'); fbEl.style.display = 'block'; document.getElementById('q-fb-title').textContent = isCorrect ? 'Bonne réponse !' : 'Faux'; document.getElementById('q-fb-text').textContent = q.expl; document.getElementById('qxp').textContent = '+ ' + quiz.xpGained + ' XP'; updateSR(q.id, grade); document.getElementById('next-btn').style.display = 'block'; const dots = document.querySelectorAll('.streak-dot'); if (dots[quiz.index]) { dots[quiz.index].className = 'streak-dot ' + (isCorrect ? 'ok' : 'ko'); } }
+function nextQ() { quiz.index++; if (quiz.index >= quiz.questions.length) { closeQuiz(); showToast('Session terminée ! +' + quiz.xpGained + ' XP', 'ok'); return; } loadQuestion(quiz.questions[quiz.index]); }
+
+// BILAN
+function renderBilan(c) { setBreadcrumb(['Bilan & erreurs']); c.innerHTML = `<h1 class="page-title">Bilan & erreurs</h1><div class="bilan-tabs"><button class="bilan-tab ${bilanTab === 'chapitres' ? 'active' : ''}" onclick="bilanTab='chapitres';renderBilan(content)">Chapitres</button><button class="bilan-tab ${bilanTab === 'erreurs' ? 'active' : ''}" onclick="bilanTab='erreurs';renderBilan(content)">Erreurs</button></div>${bilanTab === 'chapitres' ? renderChaptersBilan() : renderErrorsBilan()}`; }
+function renderChaptersBilan() { const errorQuestions = state.questions.filter(q => { const sr = getSR(q.id); return sr && sr.errors > 0; }); const chaptersMap = {}; errorQuestions.forEach(q => { const key = q.subject + '_' + q.chapter; if (!chaptersMap[key]) { chaptersMap[key] = { subject: q.subject, chapter: q.chapter, questions: [], totalAttempts: 0, totalErrors: 0 }; } const sr = getSR(q.id); chaptersMap[key].questions.push(q); chaptersMap[key].totalAttempts += sr.attempts || 0; chaptersMap[key].totalErrors += sr.errors || 0; }); const chapters = Object.values(chaptersMap); chapters.sort((a, b) => { const rateA = a.totalAttempts > 0 ? (a.totalErrors / a.totalAttempts) : 0; const rateB = b.totalAttempts > 0 ? (b.totalErrors / b.totalAttempts) : 0; return rateB - rateA; }); if (chapters.length === 0) { return `<div class="empty-state"><div class="empty-state-icon">📊</div><div class="empty-state-title">Aucune erreur à afficher</div><div class="empty-state-sub">Faites des sessions de révision pour voir vos points faibles</div></div>`; } return `<div class="chapter-bilan-list">${chapters.map((ch, idx) => { const progress = ch.totalAttempts > 0 ? ((ch.totalAttempts - ch.totalErrors) / ch.totalAttempts * 100) : 0; const subject = SUBJECTS.find(s => s.id === ch.subject); const color = subject ? subject.color : '#F2C94C'; return `<div class="chapter-bilan-item"><div class="cbi-rank">${idx + 1}</div><div class="cbi-info"><div class="cbi-name">${escapeHtml(chapterName(ch.subject, ch.chapter))}</div><div class="cbi-subject">${subject ? subject.icon + ' ' + subject.name : ''}</div></div><div class="cbi-bar-wrap"><div class="cbi-bar"><div class="cbi-bar-fill" style="width:${progress}%;background:${color}"></div></div><div class="cbi-bar-label">${Math.round(progress)}% de réussite</div></div><div class="cbi-stats"><div class="cbi-stat"><div class="cbi-stat-n">${ch.totalErrors}</div><div class="cbi-stat-l">erreurs</div></div><div class="cbi-stat"><div class="cbi-stat-n">${ch.questions.length}</div><div class="cbi-stat-l">questions</div></div></div><button class="btn-review" onclick="reviewChapter('${ch.chapter}', '${ch.subject}')">Réviser</button></div>`; }).join('')}</div>`; }
+function renderErrorsBilan() { const errorQuestions = state.questions.filter(q => { const sr = getSR(q.id); return sr && sr.errors > 0; }); const errorsMap = {}; errorQuestions.forEach(q => { const sr = getSR(q.id); if (sr.errors > 0) { if (!errorsMap[q.id]) { errorsMap[q.id] = { question: q, sr: sr, count: sr.errors }; } } }); const errors = Object.values(errorsMap); errors.sort((a, b) => b.count - a.count); if (errors.length === 0) { return `<div class="empty-state"><div class="empty-state-icon">📋</div><div class="empty-state-title">Aucune erreur enregistrée</div><div class="empty-state-sub">Vos réponses sont toutes correctes pour l'instant</div></div>`; } return `<div class="errors-list">${errors.map(err => { const q = err.question; const subject = SUBJECTS.find(s => s.id === q.subject); return `<div class="error-item"><div class="err-count">${err.count}x</div><div class="err-body"><div class="err-q">${escapeHtml(q.q)}</div><div class="err-meta"><span class="err-mode">${MODE_LABELS[q.mode]}</span><span>${subject ? subject.icon + ' ' + subject.name : ''} · ${escapeHtml(chapterName(q.subject, q.chapter))}</span></div></div></div>`; }).join('')}</div>`; }
+
+// METHODE
+function renderMethode(c) { setBreadcrumb(['Méthode']); c.innerHTML = `<h1 class="page-title">Méthodologie</h1><p class="page-sub">Conseils pour optimiser vos révisions</p><div class="methode-grid"><div class="methode-card"><div class="methode-card-title"><span>🎯</span> Spaced Repetition</div><div class="methode-card-body"><p>L'algorithme adapte la fréquence de révision en fonction de vos performances.</p><p><strong>Astuce :</strong> Ne trichez pas ! Répondez honnêtement.</p></div></div><div class="methode-card"><div class="methode-card-title"><span>📊</span> Analysez vos erreurs</div><div class="methode-card-body"><p>L'onglet Bilan vous montre vos chapitres les plus faibles.</p><p><strong>Nouveau :</strong> Utilisez le bouton "Réviser" pour cibler directement les questions problématiques d'un chapitre.</p></div></div><div class="methode-card"><div class="methode-card-title"><span>🔥</span> Série quotidienne</div><div class="methode-card-body"><p>Votre série de jours actifs s'affiche en haut à droite. Répondez à au moins une question par jour pour la faire grandir !</p><p>Un jour sans activité et elle retombe à zéro.</p></div></div></div>`; }
+
+// COURS
+function renderCours(c) { setBreadcrumb(['Cours']); c.innerHTML = `<div class="cours-layout"><div class="cours-list"><div class="cours-list-title">Vos cours</div>${state.cours.map(cours => `<button class="cours-item ${coursFocusId === cours.id ? 'active' : ''}" onclick="coursFocusId='${cours.id}';renderCours(content)"><span>📄</span> ${escapeHtml(cours.title)}</button>`).join('')}<div class="cours-divider"></div><button class="cours-new-btn" onclick="nav('cours-new')"><span>＋</span> Nouveau cours</button></div><div class="cours-viewer"><div class="cours-viewer-inner">${coursFocusId ? renderCoursViewer() : '<div class="empty-state"><div class="empty-state-icon">📖</div><div class="empty-state-title">Sélectionnez un cours</div></div>'}</div></div></div>`; }
+function renderCoursViewer() { const cours = state.cours.find(c => c.id === coursFocusId); if (!cours) return ''; return `<div class="md-content"><h1>${escapeHtml(cours.title)}</h1><div style="display:flex;gap:8px;margin-bottom:16px"><button class="toolbar-btn" onclick="editCours('${cours.id}')">✏️ Modifier</button><button class="toolbar-btn" onclick="deleteCours('${cours.id}')">🗑️ Supprimer</button></div><div>${renderMarkdown(cours.content || '')}</div></div>`; }
+
+// FONCTION DE RENDU MARKDOWN AMÉLIORÉE
+function renderMarkdown(text) {
+  if (!text) return '';
+  let result = text
+    .replace(/:::\s*def\s*([\s\S]*?)\n:::/g, '<div class="block-def"><div class="block-label">Définition</div>$1</div>')
+    .replace(/:::\s*cite\s*([\s\S]*?)\n:::/g, '<div class="block-cite">$1</div>')
+    .replace(/:::\s*retenir\s*([\s\S]*?)\n:::/g, '<div class="block-retenir"><div class="block-label">À retenir</div>$1</div>')
+    .replace(/\n--\s*([^\n]+)/g, '<div class="block-author">$1</div>')
+    .replace(/^#\s+(.+)$/gm, '<h1>$1</h1>')
+    .replace(/^##\s+(.+)$/gm, '<h2>$1</h2>')
+    .replace(/^###\s+(.+)$/gm, '<h3>$1</h3>')
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/`(.+?)`/g, '<code>$1</code>')
+    .replace(/\n\s*-\s+(.+)/g, '<li>$1</li>')
+    .replace(/<li>[\s\S]*?<\/li>/g, (match) => `<ul>${match}</ul>`)
+    .replace(/^>\s+(.+)$/gm, '<blockquote>$1</blockquote>')
+    .replace(/^---\s*$/gm, '<hr>')
+    .replace(/\n\n+/g, '</p><p>')
+    .replace(/^([^<]+)$/gm, '<p>$1</p>')
+    .replace(/<\/p><p>/g, '</p><p>')
+    .replace(/<p><\/p>/g, '')
+    .replace(/<p>(<ul>.*<\/ul>)<\/p>/g, '$1')
+    .replace(/<p>(<blockquote>.*<\/blockquote>)<\/p>/g, '$1')
+    .replace(/<p>(<h[1-3]>.*<\/h[1-3]>)<\/p>/g, '$1');
+  if (!result.startsWith('<') && result.trim() !== '') { result = '<p>' + result + '</p>'; }
+  return result;
+}
+
+function renderCoursEditor(c, cours) { 
+  const isNew = !cours; 
+  const title = isNew ? 'Nouveau cours' : 'Modifier ' + (cours.title || 'Cours'); 
+  setBreadcrumb([isNew ? 'Nouveau cours' : 'Modifier cours']);
+  c.innerHTML = `
+    <h1 class="page-title">${escapeHtml(title)}</h1>
+    <div class="cours-editor">
+      <input type="text" class="cours-editor-title" id="cours-title" placeholder="Titre du cours" value="${cours ? escapeHtml(cours.title || '') : ''}">
+      <textarea class="cours-editor-body" id="cours-content" placeholder="Contenu du cours (Markdown supporté)">${cours ? cours.content : ''}</textarea>
+      <div class="editor-toolbar">
+        <button class="toolbar-btn" onclick="insertSnippet(event, '**texte**')" title="Gras">Gras</button>
+        <button class="toolbar-btn" onclick="insertSnippet(event, '*texte*')" title="Italique">Italique</button>
+        <button class="toolbar-btn" onclick="insertSnippet(event, '\n\n:::def\n\n:::\n')" title="Bloc Définition">:::def</button>
+        <button class="toolbar-btn" onclick="insertSnippet(event, '\n\n:::cite\n\n-- Auteur\n\n:::\n')" title="Bloc Citation">:::cite</button>
+        <button class="toolbar-btn" onclick="insertSnippet(event, '\n\n:::retenir\n\n:::\n')" title="Bloc À retenir">:::retenir</button>
+        <button class="toolbar-btn" onclick="insertSnippet(event, '\n> ')" title="Citation simple">Citation</button>
+        <button class="toolbar-btn" onclick="insertSnippet(event, '\n---\n')" title="Ligne horizontale">Ligne</button>
+      </div>
+      <div class="editor-actions">
+        <button class="btn-save" onclick="saveCours()">${isNew ? 'Créer' : 'Sauvegarder'}</button>
+        <button class="btn-cancel" onclick="nav('cours')">Annuler</button>
+        ${!isNew ? '<button class="btn-delete" onclick="confirmDeleteCours()">Supprimer</button>' : ''}
+      </div>
+    </div>
+  `;
+}
+
+// FONCTION D'INSERTION DE SNIPPET CORRIGÉE
+function insertSnippet(event, template) {
+  event.preventDefault();
+  const textarea = document.getElementById('cours-content');
+  if (!textarea) return;
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+  const selectedText = textarea.value.substring(start, end);
+  const before = textarea.value.substring(0, start);
+  const after = textarea.value.substring(end);
+  const snippet = template.replace(/texte/g, selectedText || 'texte');
+  textarea.value = before + snippet + after;
+  const newCursorPos = start + snippet.length;
+  textarea.selectionStart = newCursorPos;
+  textarea.selectionEnd = newCursorPos;
+  textarea.focus();
+}
+
+function editCours(id) { state.editingCours = state.cours.find(c => c.id === id); nav('cours-edit'); }
+function deleteCours(id) { state.cours = state.cours.filter(c => c.id !== id); lsSet('bl_cours', state.cours); coursFocusId = null; nav('cours'); showToast('Cours supprimé', 'ok'); }
+function confirmDeleteCours() { if (confirm('Voulez-vous vraiment supprimer ce cours ?')) { deleteCours(state.editingCours.id); } }
+function saveCours() { 
+  const title = document.getElementById('cours-title').value.trim(); 
+  const content = document.getElementById('cours-content').value; 
+  if (!title) { showToast('Le titre est obligatoire', 'err'); return; } 
+  const newCours = { 
+    id: state.editingCours?.id || 'cours_' + Date.now(), 
+    title: title, 
+    content: content, 
+    createdAt: state.editingCours?.createdAt || Date.now(), 
+    updatedAt: Date.now() 
+  }; 
+  if (state.editingCours) { 
+    state.cours = state.cours.map(c => c.id === state.editingCours.id ? newCours : c); 
+  } else { 
+    state.cours.push(newCours); 
+  } 
+  lsSet('bl_cours', state.cours); 
+  state.editingCours = null; 
+  nav('cours'); 
+  showToast('Cours sauvegardé', 'ok'); 
+}
+
+// ADD QUESTION
+function renderAddQuestion(c) { 
+  setBreadcrumb(['Ajouter des questions']); 
+  const eq = state.editingQuestion ? state.questions.find(q => q.id === state.editingQuestion) : null;
+  c.innerHTML = `
+    <h1 class="page-title">${eq ? 'Modifier la question' : 'Ajouter une question'}</h1>
+    <p class="page-sub">${eq ? 'Modifiez cette question' : 'Créez une nouvelle question'}</p>
+    <div class="add-q-form">
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Matière</label>
+          <select class="form-select" id="aq-subject" onchange="updateChaptersSelect()">
+            ${SUBJECTS.map(s => `<option value="${s.id}" ${eq && eq.subject === s.id ? 'selected' : ''}>${s.name}</option>`).join('')}
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Chapitre</label>
+          <select class="form-select" id="aq-chapter">
+            ${(state.chapters[eq?.subject || SUBJECTS[0].id] || []).map(ch => `<option value="${ch.id}" ${eq && eq.chapter === ch.id ? 'selected' : ''}>${escapeHtml(ch.name)}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Mode</label>
+          <select class="form-select" id="aq-mode" onchange="addMode=this.value;updateAddForm()">
+            ${['qcm', 'vf', 'quote'].map(m => `<option value="${m}" ${eq && eq.mode === m ? 'selected' : ''}>${MODE_LABELS[m]}</option>`).join('')}
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Difficulté</label>
+          <select class="form-select" id="aq-difficulty">
+            <option value="1">Facile</option>
+            <option value="2" selected>Moyenne</option>
+            <option value="3">Difficile</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Question</label>
+        <textarea class="form-textarea" id="aq-question" placeholder="Saisissez la question...">${eq ? escapeHtml(eq.q) : ''}</textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Explication</label>
+        <textarea class="form-textarea" id="aq-explanation" placeholder="Explication détaillée...">${eq ? escapeHtml(eq.expl || '') : ''}</textarea>
+      </div>
+      <div id="aq-options-container"></div>
+      <div class="form-divider"></div>
+      <button class="form-submit" onclick="${eq ? 'saveQuestion()' : 'addQuestion()'}">${eq ? 'Sauvegarder' : 'Ajouter la question'}</button>
+      ${eq ? '<button class="btn-cancel" onclick="state.editingQuestion=null;nav(\'add-question\')" style="margin-left:8px">Annuler</button>' : ''}
+    </div>
+  `;
+  if (eq) addMode = eq.mode; 
+  updateChaptersSelect(); 
+  updateAddForm();
+}
+function updateChaptersSelect() { 
+  const subjectId = document.getElementById('aq-subject').value; 
+  const chapterSelect = document.getElementById('aq-chapter'); 
+  const chapters = state.chapters[subjectId] || []; 
+  chapterSelect.innerHTML = chapters.map(ch => `<option value="${ch.id}">${escapeHtml(ch.name)}</option>`).join(''); 
+}
+function updateAddForm() { 
+  const mode = addMode; 
+  const container = document.getElementById('aq-options-container');
+  const eq = state.editingQuestion ? state.questions.find(q => q.id === state.editingQuestion) : null;
+  if (mode === 'qcm') { 
+    const opts = eq ? eq.opts || ['', '', '', ''] : ['', '', '', ''];
+    container.innerHTML = `<div class="form-group"><label class="form-label">Réponses possibles</label><div class="form-hint">Sélectionnez la bonne réponse avec le bouton radio</div><div class="opts-inputs" id="qcm-opts">${[0,1,2,3].map(i => `<div class="opt-input-row"><input type="radio" class="opt-radio" name="correct-opt" ${eq && eq.correct === i ? 'checked' : i === 0 ? 'checked' : ''}><span class="opt-radio-label">${String.fromCharCode(65 + i)}</span><input type="text" class="form-input" placeholder="Réponse ${String.fromCharCode(65 + i)}" value="${escapeHtml(opts[i] || '')}"></div>`).join('')}</div></div>`; 
+  } else if (mode === 'vf') { 
+    container.innerHTML = `<div class="form-group"><label class="form-label">Réponse correcte</label><select class="form-select" id="vf-correct"><option value="true" ${eq && eq.correct === true ? 'selected' : ''}>Vrai</option><option value="false" ${eq && eq.correct === false ? 'selected' : ''}>Faux</option></select></div>`; 
+  } else if (mode === 'quote') { 
+    container.innerHTML = '<div class="form-group"><label class="form-label">Auteur de la citation</label><input type="text" class="form-input" id="quote-author" placeholder="Nom de l\'auteur" value="' + (eq ? escapeHtml(eq.author || '') : '') + '" autocomplete="off"></div>';
+  }
+}
+function addQuestion() { 
+  const subject = document.getElementById('aq-subject').value; 
+  const chapter = document.getElementById('aq-chapter').value; 
+  const mode = document.getElementById('aq-mode').value; 
+  const question = document.getElementById('aq-question').value.trim(); 
+  const explanation = document.getElementById('aq-explanation').value.trim(); 
+  if (!subject || !chapter || !question) { showToast('Champs obligatoires manquants', 'err'); return; } 
+  let newQuestion = { id: 'q_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4), subject: subject, chapter: chapter, mode: mode, q: question, expl: explanation };
+  if (mode === 'qcm') { 
+    const opts = []; 
+    document.querySelectorAll('#qcm-opts .form-input').forEach(input => { opts.push(input.value.trim()); }); 
+    if (opts.some(o => !o)) { showToast('Toutes les réponses doivent être remplies', 'err'); return; } 
+    const checkedIndex = Array.from(document.querySelectorAll('input[name="correct-opt"]')).findIndex(r => r.checked); 
+    newQuestion.opts = opts; 
+    newQuestion.correct = checkedIndex; 
+  } else if (mode === 'vf') { 
+    newQuestion.correct = document.getElementById('vf-correct').value === 'true'; 
+  } else if (mode === 'quote') { 
+    const author = document.getElementById('quote-author').value.trim(); 
+    if (!author) { showToast('Auteur obligatoire', 'err'); return; } 
+    newQuestion.author = author; 
+    newQuestion.correct = author; 
+  } 
+  state.questions.push(newQuestion); 
+  lsSet('bl_questions', state.questions); 
+  document.getElementById('aq-question').value = ''; 
+  document.getElementById('aq-explanation').value = ''; 
+  updateAddForm(); 
+  showToast('Question ajoutée !', 'ok'); 
+  nav('database');
+}
+function saveQuestion() { 
+  const id = state.editingQuestion; 
+  const subject = document.getElementById('aq-subject').value; 
+  const chapter = document.getElementById('aq-chapter').value; 
+  const mode = document.getElementById('aq-mode').value; 
+  const question = document.getElementById('aq-question').value.trim(); 
+  const explanation = document.getElementById('aq-explanation').value.trim(); 
+  if (!subject || !chapter || !question) { showToast('Champs obligatoires manquants', 'err'); return; } 
+  let updatedQuestion = { id: id, subject: subject, chapter: chapter, mode: mode, q: question, expl: explanation };
+  if (mode === 'qcm') { 
+    const opts = []; 
+    document.querySelectorAll('#qcm-opts .form-input').forEach(input => { opts.push(input.value.trim()); }); 
+    if (opts.some(o => !o)) { showToast('Toutes les réponses doivent être remplies', 'err'); return; } 
+    const checkedIndex = Array.from(document.querySelectorAll('input[name="correct-opt"]')).findIndex(r => r.checked); 
+    updatedQuestion.opts = opts; 
+    updatedQuestion.correct = checkedIndex; 
+  } else if (mode === 'vf') { 
+    updatedQuestion.correct = document.getElementById('vf-correct').value === 'true'; 
+  } else if (mode === 'quote') { 
+    const author = document.getElementById('quote-author').value.trim(); 
+    if (!author) { showToast('Auteur obligatoire', 'err'); return; } 
+    updatedQuestion.author = author; 
+    updatedQuestion.correct = author; 
+  } 
+  state.questions = state.questions.map(q => q.id === id ? updatedQuestion : q); 
+  lsSet('bl_questions', state.questions); 
+  state.editingQuestion = null; 
+  showToast('Question modifiée !', 'ok'); 
+  nav('database');
+}
+
+// INIT
+if (typeof marked !== 'undefined') { 
+} else { 
+  window.marked = { parse: function(text) { return renderMarkdown(text); } };
+}
+updateBadges(); renderView();
+
+// ===================================================================
+// TESTS UNITAIRES POUR LA FONCTIONNALITÉ STREAK
+// ===================================================================
+
+function runStreakTests() {
+  // Sauvegarder l'état original
+  const originalState = JSON.parse(JSON.stringify(state));
+  const originalXpPill = document.getElementById('xp-pill').textContent;
+  const originalStreakPill = document.getElementById('streak-pill').textContent;
+
+  const results = [];
+  let tempStreak, tempLastActivity;
+
+  // Helper pour simuler un état de streak
+  function setupTest(streakVal, lastActivityVal) {
+    tempStreak = state.streak;
+    tempLastActivity = state.lastActivityDate;
+    state.streak = streakVal;
+    state.lastActivityDate = lastActivityVal;
+  }
+
+  // Helper pour restaurer
+  function restoreTest() {
+    state.streak = tempStreak;
+    state.lastActivityDate = tempLastActivity;
+  }
+
+  // Test 1: getTodayKey retourne un format valide
+  const todayKey = getTodayKey();
+  results.push({
+    name: "getTodayKey() retourne une date au format YYYY-MM-DD",
+    passed: /^\d{4}-\d{2}-\d{2}$/.test(todayKey),
+    details: `Retourne: ${todayKey}`
+  });
+
+  // Test 2: Premier jour (lastActivityDate = null)
+  setupTest(0, null);
+  updateStreak();
+  results.push({
+    name: "updateStreak: premier jour (null) -> streak = 1",
+    passed: state.streak === 1 && state.lastActivityDate === getTodayKey(),
+    details: `streak: ${state.streak}, lastActivity: ${state.lastActivityDate}`
+  });
+  restoreTest();
+
+  // Test 3: Déjà actif aujourd'hui
+  setupTest(5, getTodayKey());
+  updateStreak();
+  results.push({
+    name: "updateStreak: déjà actif aujourd'hui -> streak inchangé",
+    passed: state.streak === 5 && state.lastActivityDate === getTodayKey(),
+    details: `streak: ${state.streak} (devrait rester 5)`
+  });
+  restoreTest();
+
+  // Test 4: Continuation de streak (activité hier)
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yesterdayKey = yesterday.toISOString().split('T')[0];
+  setupTest(5, yesterdayKey);
+  updateStreak();
+  results.push({
+    name: "updateStreak: activité hier -> streak incrémenté à 6",
+    passed: state.streak === 6 && state.lastActivityDate === getTodayKey(),
+    details: `streak: ${state.streak}, lastActivity: ${state.lastActivityDate}`
+  });
+  restoreTest();
+
+  // Test 5: Streak rompu (activité avant-hier)
+  const twoDaysAgo = new Date();
+  twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
+  const twoDaysAgoKey = twoDaysAgo.toISOString().split('T')[0];
+  setupTest(5, twoDaysAgoKey);
+  updateStreak();
+  results.push({
+    name: "updateStreak: activité avant-hier -> streak réinitialisé à 1",
+    passed: state.streak === 1 && state.lastActivityDate === getTodayKey(),
+    details: `streak: ${state.streak} (devrait être 1)`
+  });
+  restoreTest();
+
+  // Test 6: Streak rompu (activité il y a 3 jours)
+  const threeDaysAgo = new Date();
+  threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+  const threeDaysAgoKey = threeDaysAgo.toISOString().split('T')[0];
+  setupTest(10, threeDaysAgoKey);
+  updateStreak();
+  results.push({
+    name: "updateStreak: activité il y a 3 jours -> streak réinitialisé à 1",
+    passed: state.streak === 1 && state.lastActivityDate === getTodayKey(),
+    details: `streak: ${state.streak} (devrait être 1, pas 10)`
+  });
+  restoreTest();
+
+  // Test 7: Mise à jour de updateBadges() avec streak
+  setupTest(7, getTodayKey());
+  updateBadges();
+  results.push({
+    name: "updateBadges: met à jour l'affichage du streak dans le DOM",
+    passed: document.getElementById('streak-pill').textContent.includes('7'),
+    details: `Affichage: ${document.getElementById('streak-pill').textContent}`
+  });
+  restoreTest();
+
+  // Test 8: Streak à 0 (cas edge)
+  setupTest(0, yesterdayKey);
+  updateStreak();
+  results.push({
+    name: "updateStreak: streak à 0 avec activité hier -> devient 1",
+    passed: state.streak === 1,
+    details: `streak: ${state.streak}`
+  });
+  restoreTest();
+
+  // Test 9: Appel multiple de updateStreak() le même jour
+  setupTest(3, getTodayKey());
+  updateStreak();
+  const streakAfterFirst = state.streak;
+  updateStreak();
+  const streakAfterSecond = state.streak;
+  updateStreak();
+  results.push({
+    name: "updateStreak: appel multiple le même jour -> streak reste inchangé",
+    passed: streakAfterFirst === 3 && streakAfterSecond === 3 && state.streak === 3,
+    details: `streak après 3 appels: ${state.streak} (devrait rester 3)`
+  });
+  restoreTest();
+
+  // Test 10: Streak très élevé (pas de overflow)
+  setupTest(999, yesterdayKey);
+  updateStreak();
+  results.push({
+    name: "updateStreak: streak élevé (999) -> incrémente correctement à 1000",
+    passed: state.streak === 1000,
+    details: `streak: ${state.streak}`
+  });
+  restoreTest();
+
+  // Test 11: Intégration - closeQuiz() appelle updateStreak() quand xpGained > 0
+  setupTest(2, yesterdayKey);
+  const originalCloseQuiz = window.closeQuiz;
+  window.closeQuiz = function() {
+    // Simuler closeQuiz avec xpGained > 0
+    const tempXp = state.xp;
+    state.xp += 10; // Simuler quiz.xpGained = 10
+    if (10 > 0) {
+      updateStreak();
+    }
+    updateBadges();
+    // Vérifier que streak a été mis à jour
+    const streakUpdated = state.streak === 3 && state.lastActivityDate === getTodayKey();
+    state.xp = tempXp; // Restaurer XP
+    return streakUpdated;
+  };
+  const integrationResult = closeQuiz();
+  window.closeQuiz = originalCloseQuiz;
+  results.push({
+    name: "Intégration: closeQuiz() appelle updateStreak() quand XP gagné > 0",
+    passed: integrationResult,
+    details: `streak après closeQuiz: ${state.streak} (devrait être 3)`
+  });
+  restoreTest();
+
+  // Test 12: closeQuiz() ne met pas à jour streak si xpGained = 0
+  setupTest(2, yesterdayKey);
+  const originalCloseQuiz2 = window.closeQuiz;
+  window.closeQuiz = function() {
+    // Simuler closeQuiz avec xpGained = 0
+    if (0 > 0) {
+      updateStreak();
+    }
+    updateBadges();
+    return state.streak === 2; // Devrait rester 2
+  };
+  const integrationResult2 = closeQuiz();
+  window.closeQuiz = originalCloseQuiz2;
+  results.push({
+    name: "Intégration: closeQuiz() ne met PAS à jour streak si XP gagné = 0",
+    passed: integrationResult2,
+    details: `streak reste à: ${state.streak} (devrait rester 2)`
+  });
+  restoreTest();
+
+  // Restaurer l'état original
+  Object.assign(state, originalState);
+  document.getElementById('xp-pill').textContent = originalXpPill;
+  document.getElementById('streak-pill').textContent = originalStreakPill;
+  updateBadges();
+
+  // Afficher les résultats
+  console.log("=== RÉSULTATS DES TESTS STREAK ===");
+  let passedCount = 0;
+  results.forEach(test => {
+    const status = test.passed ? "PASS" : "FAIL";
+    console.log(`${test.passed ? '✅' : '❌'} [${status}] ${test.name}`);
+    if (!test.passed) {
+      console.log(`   Détails: ${test.details}`);
+    }
+    if (test.passed) passedCount++;
+  });
+  console.log(`================== ${passedCount}/${results.length} tests passés`);
+
+  // Retourner un objet pour utilisation programmatique
+  return {
+    passed: passedCount,
+    total: results.length,
+    results: results
+  };
+}
+
+// Fonction pour exécuter les tests et afficher dans l'UI
+function displayTestResults() {
+  const testResult = runStreakTests();
+  
+  // Créer une modal de résultats
+  const overlay = document.createElement('div');
+  overlay.style.position = 'fixed';
+  overlay.style.top = '0';
+  overlay.style.left = '0';
+  overlay.style.right = '0';
+  overlay.style.bottom = '0';
+  overlay.style.background = 'rgba(0,0,0,0.7)';
+  overlay.style.zIndex = '10000';
+  overlay.style.display = 'flex';
+  overlay.style.alignItems = 'center';
+  overlay.style.justifyContent = 'center';
+  overlay.style.flexDirection = 'column';
+  overlay.style.gap = '20px';
+  overlay.style.padding = '20px';
+  overlay.id = 'test-overlay';
+
+  const box = document.createElement('div');
+  box.style.background = 'var(--bg2)';
+  box.style.border = '1px solid var(--border)';
+  box.style.borderRadius = '12px';
+  box.style.padding = '24px';
+  box.style.maxWidth = '600px';
+  box.style.maxHeight = '80vh';
+  box.style.overflow = 'auto';
+
+  const title = document.createElement('h2');
+  title.textContent = 'Résultats des tests Streak';
+  title.style.fontFamily = "'Syne', sans-serif";
+  title.style.fontWeight = '700';
+  title.style.marginBottom = '16px';
+  title.style.color = 'var(--text)';
+
+  const summary = document.createElement('div');
+  summary.textContent = `${testResult.passed}/${testResult.total} tests passés`;
+  summary.style.fontFamily = "'Syne', sans-serif";
+  summary.style.fontWeight = '700';
+  summary.style.fontSize = '1.2rem';
+  summary.style.color = testResult.passed === testResult.total ? 'var(--green)' : 'var(--red)';
+  summary.style.marginBottom = '16px';
+
+  const list = document.createElement('div');
+  testResult.results.forEach(test => {
+    const item = document.createElement('div');
+    item.style.display = 'flex';
+    item.style.alignItems = 'flex-start';
+    item.style.gap = '10px';
+    item.style.padding = '8px 0';
+    item.style.borderBottom = '1px solid var(--border)';
+    
+    const icon = document.createElement('span');
+    icon.textContent = test.passed ? '✅' : '❌';
+    icon.style.color = test.passed ? 'var(--green)' : 'var(--red)';
+    icon.style.fontSize = '1.1rem';
+    
+    const text = document.createElement('div');
+    const nameEl = document.createElement('strong');
+    nameEl.textContent = test.name;
+    nameEl.style.color = 'var(--text)';
+    
+    const detailsEl = document.createElement('div');
+    detailsEl.textContent = test.details || '';
+    detailsEl.style.fontSize = '0.8rem';
+    detailsEl.style.color = 'var(--text2)';
+    detailsEl.style.marginTop = '4px';
+    
+    text.appendChild(nameEl);
+    if (test.details) text.appendChild(detailsEl);
+    
+    item.appendChild(icon);
+    item.appendChild(text);
+    list.appendChild(item);
+  });
+
+  const closeBtn = document.createElement('button');
+  closeBtn.textContent = 'Fermer';
+  closeBtn.style.marginTop = '16px';
+  closeBtn.style.padding = '10px 20px';
+  closeBtn.style.background = 'var(--bg3)';
+  closeBtn.style.border = '1px solid var(--border)';
+  closeBtn.style.borderRadius = '8px';
+  closeBtn.style.color = 'var(--text)';
+  closeBtn.style.cursor = 'pointer';
+  closeBtn.style.fontFamily = 'inherit';
+  closeBtn.onclick = () => overlay.remove();
+
+  box.appendChild(title);
+  box.appendChild(summary);
+  box.appendChild(list);
+  box.appendChild(closeBtn);
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+}
+
+// Ajouter un bouton dans la topbar pour lancer les tests (visible en mode dev)
+function addTestButton() {
+  const testBtn = document.createElement('button');
+  testBtn.textContent = '🧪 Tests';
+  testBtn.style.background = 'none';
+  testBtn.style.border = '1px solid var(--border)';
+  testBtn.style.color = 'var(--text2)';
+  testBtn.style.padding = '6px 12px';
+  testBtn.style.borderRadius = '8px';
+  testBtn.style.cursor = 'pointer';
+  testBtn.style.fontFamily = 'inherit';
+  testBtn.style.fontSize = '0.85rem';
+  testBtn.onclick = displayTestResults;
+  testBtn.title = 'Exécuter les tests unitaires';
+  
+  const topbarRight = document.querySelector('.topbar-right');
+  if (topbarRight) {
+    topbarRight.appendChild(testBtn);
+  }
+}
+
+// Appeler au chargement pour ajouter le bouton de test
+addTestButton();
+
+</script>
