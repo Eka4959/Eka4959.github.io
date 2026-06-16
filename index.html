@@ -427,11 +427,11 @@ function lsSet(key, val) { try { localStorage.setItem(key, JSON.stringify(val));
 
 // ETAT
 let state = {
+  // --- DONNÉES PERSONNELLES (Restent en local) ---
   xp: ls('bl_xp', 0),
-  questions: ls('bl_questions', null),
   sr_data: ls('bl_sr_data', {}),
-  cours: ls('bl_cours', []),
-  chapters: ls('bl_chapters', {ses: SES_CHAPTERS, lettres: [], philo: [], histoire: [], geo: []}),
+  streak: ls('bl_streak', 0),
+  lastActivityDate: ls('bl_last_activity', null),
   theme: ls('bl_theme', 'auto'),
   sidebarCollapsed: ls('bl_sidebar', false),
   currentView: 'dashboard',
@@ -439,8 +439,11 @@ let state = {
   currentChapter: null,
   editingCours: null,
   editingQuestion: null,
-  streak: ls('bl_streak', 0),
-  lastActivityDate: ls('bl_last_activity', null)
+  
+  // --- DONNÉES GLOBALES (Vides au départ, seront remplies par GitHub) ---
+  questions: [],
+  cours: [],
+  chapters: {}
 };
 if (!state.questions) { state.questions = SEED_QUESTIONS; lsSet('bl_questions', state.questions); }
 
