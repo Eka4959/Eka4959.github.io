@@ -447,6 +447,81 @@ let state = {
 };
 if (!state.questions) { state.questions = SEED_QUESTIONS; lsSet('bl_questions', state.questions); }
 
+// --- CONFIGURATION GITHUB AUTOMATIQUE ---
+const GITHUB_CONFIG = {
+  owner: "Eka4959",       
+  repo: "Eka4959.github.io",       
+  branch: "main" 
+};
+
+   function getGitHubToken() {
+  // 1. On regarde si le token a déjà été saisi durant cette session de navigation
+  let token = sessionStorage.getItem('gh_admin_token');
+  
+  // 2. Si non, on le demande à l'utilisateur
+  if (!token) {
+    token = prompt("🔒 Action d'administration : Veuillez entrer votre GitHub Personal Access Token pour synchroniser les données :");
+    if (token) {
+      sessionStorage.setItem('gh_admin_token', token);
+    }
+  }
+  return token;
+}
+   
+async function pushToGitHub(path, data, commitMessage) {
+  // On récupère le token de façon sécurisée
+  const token = getGitHubToken();
+  if (!token) {
+    showToast("⚠️ Synchronisation annulée : aucun token fourni.", "err");
+    return;
+  }
+
+  const url = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${path}`;
+  const contentBase64 = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
+
+  try {
+    showToast("Connexion à GitHub...", "info");
+    
+    // 1. Récupération du SHA
+    const fileRes = await fetch(url, {
+      headers: { "Authorization": `token ${token}` }
+    });
+    
+    let sha = null;
+    if (fileRes.ok) {
+      const fileData = await fileRes.json();
+      sha = fileData.sha;
+    }
+
+    // 2. Envoi à GitHub
+    const body = {
+      message: commitMessage,
+      content: contentBase64,
+      branch: GITHUB_CONFIG.branch
+    };
+    if (sha) body.sha = sha;
+
+    const pushRes = await fetch(url, {
+      method: "PUT",
+      headers: {
+        "Authorization": `token ${token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(body)
+    });
+
+    if (pushRes.ok) {
+      showToast("✅ Synchronisé sur GitHub ! (Màj d'ici 1-2 min)", "ok");
+    } else {
+      const errData = await pushRes.json();
+      throw new Error(errData.message);
+    }
+  } catch (error) {
+    console.error("Erreur GitHub Sync:", error);
+    showToast("❌ Erreur de synchronisation GitHub", "err");
+  }
+}
+
 // UTILS
 function escapeHtml(text) { if (text === null || text === undefined) return ''; const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
 
@@ -771,6 +846,8 @@ function saveCours() {
     state.cours.push(newCours); 
   } 
   lsSet('bl_cours', state.cours); 
+// Envoi automatique à GitHub
+  pushToGitHub("data/cours.json", state.cours, `Mise à jour du cours : ${newCours.title}`);
   state.editingCours = null; 
   nav('cours'); 
   showToast('Cours sauvegardé', 'ok'); 
@@ -885,6 +962,8 @@ function addQuestion() {
   } 
   state.questions.push(newQuestion); 
   lsSet('bl_questions', state.questions); 
+  // Envoi automatique à GitHub
+  pushToGitHub("data/questions.json", state.questions, "Ajout automatique d'une question via l'interface web");
   document.getElementById('aq-question').value = ''; 
   document.getElementById('aq-explanation').value = ''; 
   updateAddForm(); 
@@ -917,6 +996,8 @@ function saveQuestion() {
   } 
   state.questions = state.questions.map(q => q.id === id ? updatedQuestion : q); 
   lsSet('bl_questions', state.questions); 
+  // Envoi automatique à GitHub
+  pushToGitHub("data/questions.json", state.questions, "Ajout automatique d'une question via l'interface web");
   state.editingQuestion = null; 
   showToast('Question modifiée !', 'ok'); 
   nav('database');
