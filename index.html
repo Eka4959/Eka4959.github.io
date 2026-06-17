@@ -1088,29 +1088,30 @@ if (typeof marked !== 'undefined') {
 }
 async function initApp() {
   try {
-    // On va chercher les fichiers JSON hébergés sur GitHub Pages
-    const resQ = await fetch('./data/questions.json');
-    const resC = await fetch('./data/cours.json');
-    const resCh = await fetch('./data/chapters.json');
+    // On crée un identifiant unique basé sur l'heure actuelle
+    const noCache = new Date().getTime();
     
-    // Si les fichiers sont bien trouvés, on met à jour le state
+    // On ajoute "?t=" + noCache à la fin des URL pour forcer le téléchargement
+    const resQ = await fetch(`./data/questions.json?t=${noCache}`);
+    const resC = await fetch(`./data/cours.json?t=${noCache}`);
+    const resCh = await fetch(`./data/chapters.json?t=${noCache}`);
+    
     if (resQ.ok) state.questions = await resQ.json();
     if (resC.ok) state.cours = await resC.json();
     if (resCh.ok) state.chapters = await resCh.json();
     
   } catch (error) {
-    console.warn("Fichiers JSON introuvables. Utilisation des données par défaut.");
+    console.warn("Fichiers JSON introuvables ou erreur de lecture.", error);
     state.questions = SEED_QUESTIONS;
     state.chapters = {ses: SES_CHAPTERS, lettres: [], philo: [], histoire: [], geo: []};
   }
   
-  // Initialisation de l'interface de base
   buildSidebarSubjects();
   updateBadges();
   applyTheme();
   renderView();
 }
-
+   
 // Lancement de l'application
 initApp();
 
