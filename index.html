@@ -428,11 +428,11 @@ function lsSet(key, val) { try { localStorage.setItem(key, JSON.stringify(val));
 // ETAT
 // --- ÉTAT GLOBAL DE L'APPLICATION ---
 let state = {
+  // --- DONNÉES PERSONNELLES (Restent en local) ---
   xp: ls('bl_xp', 0),
-  questions: [], // On démarre à vide, le chargement se fera via le fichier JSON
   sr_data: ls('bl_sr_data', {}),
-  cours: [],     // Idem pour les cours
-  chapters: {ses: SES_CHAPTERS, lettres: [], philo: [], histoire: [], geo: []}, // Sera mis à jour par le JSON
+  streak: ls('bl_streak', 0),
+  lastActivityDate: ls('bl_last_activity', null),
   theme: ls('bl_theme', 'auto'),
   sidebarCollapsed: ls('bl_sidebar', false),
   currentView: 'dashboard',
@@ -440,39 +440,13 @@ let state = {
   currentChapter: null,
   editingCours: null,
   editingQuestion: null,
-  streak: ls('bl_streak', 0),
-  lastActivityDate: ls('bl_last_activity', null)
-};
-
-async function initApp() {
-  try {
-    // Le cache-busting (?t=...) évite que le navigateur ne serve une vieille version
-    const noCache = new Date().getTime();
-    
-    // On télécharge les fichiers depuis ton dépôt
-    const resQ = await fetch(`./data/questions.json?t=${noCache}`);
-    const resC = await fetch(`./data/cours.json?t=${noCache}`);
-    const resCh = await fetch(`./data/chapters.json?t=${noCache}`);
-    
-    // Si le fichier existe, on l'injecte dans l'application
-    if (resQ.ok) state.questions = await resQ.json();
-    else state.questions = SEED_QUESTIONS; // Secours si le fichier JSON est vide ou absent
-    
-    if (resC.ok) state.cours = await resC.json();
-    if (resCh.ok) state.chapters = await resCh.json();
-    
-  } catch (error) {
-    console.warn("Erreur lors du chargement des fichiers JSON, utilisation des données par défaut.", error);
-    state.questions = SEED_QUESTIONS;
-  }
   
-  // On relance l'affichage de l'interface avec les vraies données
-  buildSidebarSubjects();
-  updateBadges();
-  applyTheme();
-  renderView();
-}
-
+  // --- DONNÉES GLOBALES (Vides au départ, seront remplies par GitHub) ---
+  questions: [],
+  cours: [],
+  chapters: {}
+};
+if (!state.questions) { state.questions = SEED_QUESTIONS; lsSet('bl_questions', state.questions); }
 
 
 // --- CONFIGURATION GITHUB AUTOMATIQUE ---
@@ -1114,31 +1088,44 @@ if (typeof marked !== 'undefined') {
 } else { 
   window.marked = { parse: function(text) { return renderMarkdown(text); } };
 }
-/*async function initApp() {
+async function initApp() {
   try {
-    // On crée un identifiant unique basé sur l'heure actuelle
+    // 1. Anti-cache : on génère un identifiant unique basé sur l'heure
     const noCache = new Date().getTime();
     
-    // On ajoute "?t=" + noCache à la fin des URL pour forcer le téléchargement
+    // 2. On télécharge les données fraîches depuis GitHub
     const resQ = await fetch(`./data/questions.json?t=${noCache}`);
     const resC = await fetch(`./data/cours.json?t=${noCache}`);
     const resCh = await fetch(`./data/chapters.json?t=${noCache}`);
     
-    if (resQ.ok) state.questions = await resQ.json();
-    if (resC.ok) state.cours = await resC.json();
-    if (resCh.ok) state.chapters = await resCh.json();
+    // 3. Si le téléchargement réussit, on met à jour l'état ET la mémoire locale
+    if (resQ.ok) {
+      state.questions = await resQ.json();
+      lsSet('bl_questions', state.questions);
+    }
+    if (resC.ok) {
+      state.cours = await resC.json();
+      lsSet('bl_cours', state.cours);
+    }
+    if (resCh.ok) {
+      state.chapters = await resCh.json();
+      lsSet('bl_chapters', state.chapters);
+    }
     
   } catch (error) {
-    console.warn("Fichiers JSON introuvables ou erreur de lecture.", error);
-    state.questions = SEED_QUESTIONS;
-    state.chapters = {ses: SES_CHAPTERS, lettres: [], philo: [], histoire: [], geo: []};
+    console.warn("Fichiers JSON introuvables ou erreur de lecture, chargement local.", error);
+    // Si GitHub est en panne ou le fichier absent, on utilise la mémoire locale existante
+    if (!state.questions) {
+      state.questions = SEED_QUESTIONS;
+      state.chapters = {ses: SES_CHAPTERS, lettres: [], philo: [], histoire: [], geo: []};
+    }
   }
   
   buildSidebarSubjects();
   updateBadges();
   applyTheme();
   renderView();
-}*/
+}
    
 // Lancement de l'application
 initApp();
