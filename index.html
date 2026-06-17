@@ -356,463 +356,82 @@ a { color: inherit; text-decoration: none; }
 .empty-state-sub { font-size: 0.85rem; line-height: 1.6; }
 
 /* RESPONSIVE */
-@media (max-width: 700px) {
-  #sidebar { display: none; }
-  #content { padding: 16px; }
-  .mode-cards { grid-template-columns: 1fr; }
-  .form-row { flex-direction: column; }
-  .chapter-bilan-item { flex-wrap: wrap; }
-  .cbi-bar-wrap { max-width: 100%; order: 4; }
-  .cbi-stats { order: 3; width: 100%; justify-content: space-around; }
-  .cours-layout { flex-direction: column; }
-  .cours-list { width: 100%; }
-  .cours-viewer { height: 400px; }
-}
-
-/* ===================================================================
-   RESPONSIVE MOBILE - NOUVELLES REGLES
-   =================================================================== */
-
-/* Mobile First - Base adjustments */
-@media (max-width: 1024px) {
-  :root {
-    --sidebar-w: 240px;
-  }
-  
-  .mode-cards {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
-  .cours-layout {
-    gap: 16px;
-  }
-  
-  .cours-list {
-    width: 200px;
-  }
-}
-
 @media (max-width: 768px) {
-  :root {
-    --header-h: 50px;
-  }
-  
   #sidebar {
-    transform: translateX(-100%);
-    transition: transform 0.3s ease;
     position: fixed;
     top: 0;
-    left: 0;
+    left: -260px;
+    width: var(--sidebar-w);
     height: 100%;
     z-index: 200;
-    box-shadow: rgba(0,0,0,0.1) 0 0 20px;
+    transition: left 0.3s ease;
+    box-shadow: rgba(0,0,0,0.15) 0 0 30px;
   }
-  
   #sidebar.open {
-    transform: translateX(0);
+    left: 0;
   }
-  
   #main {
-    width: 100%;
+    margin-left: 0;
   }
-  
-  .sidebar-logo-text span {
-    font-size: 0.9rem;
-  }
-  
-  .nav-section-header {
-    font-size: 0.6rem;
-  }
-  
-  .nav-item {
-    padding: 6px 10px;
-    font-size: 0.8rem;
-  }
-  
-  .subject-tree {
-    border-left: none;
-    margin-left: 10px;
-    padding-left: 6px;
-  }
-  
-  .subject-chapter {
-    padding: 4px 6px;
-    font-size: 0.75rem;
-  }
-  
-  .dashboard-grid {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-  
-  .subject-card {
+  #content {
     padding: 16px;
   }
-  
-  .sc-header {
-    gap: 8px;
-  }
-  
-  .sc-icon {
-    font-size: 1.4rem;
-  }
-  
-  .stats-row {
-    gap: 8px;
-    margin-bottom: 20px;
-  }
-  
-  .stat-card {
-    padding: 12px 16px;
-    min-width: 100px;
-  }
-  
-  .stat-card-num {
-    font-size: 1.4rem;
-  }
-  
-  .play-config {
-    width: 100%;
-  }
-  
-  .chapter-pills {
-    gap: 6px;
-  }
-  
-  .chapter-pill {
-    padding: 4px 10px;
-    font-size: 0.75rem;
-  }
-  
   .mode-cards {
     grid-template-columns: 1fr;
   }
-  
-  .start-big {
-    width: 100%;
-    justify-content: center;
-    padding: 10px 24px;
-    font-size: 0.9rem;
-  }
-  
-  .db-table {
-    font-size: 0.75rem;
-  }
-  
-  .db-table th, .db-table td {
-    padding: 8px 10px;
-  }
-  
-  .search-bar {
-    padding: 10px 12px;
-    font-size: 0.85rem;
-  }
-  
   .form-row {
     flex-direction: column;
   }
-  
-  .form-group {
+  .chapter-bilan-item {
+    flex-wrap: wrap;
+  }
+  .cbi-bar-wrap {
+    max-width: 100%;
+    order: 4;
+  }
+  .cbi-stats {
+    order: 3;
     width: 100%;
+    justify-content: space-around;
   }
-  
-  .form-input, .form-select, .form-textarea {
-    padding: 8px 10px;
-    font-size: 0.85rem;
-  }
-  
-  .opts-inputs {
-    gap: 6px;
-  }
-  
-  .opt-input-row {
+  .cours-layout {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 4px;
   }
-  
   .cours-list {
     width: 100%;
-    max-width: 200px;
   }
-  
   .cours-viewer {
-    flex: 1;
-  }
-  
-  .cours-editor-body {
-    min-height: 250px;
-    font-size: 0.85rem;
-  }
-  
-  .md-content {
-    font-size: 0.85rem;
-  }
-  
-  .md-content h1 {
-    font-size: 1.4rem;
-  }
-  
-  .md-content h2 {
-    font-size: 1.1rem;
-  }
-  
-  .methode-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .chapter-bilan-item {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-  }
-  
-  .cbi-info {
-    width: 100%;
-  }
-  
-  .cbi-bar-wrap {
-    width: 100%;
-    max-width: none;
-    order: 0;
-  }
-  
-  .cbi-stats {
-    width: 100%;
-    justify-content: space-between;
-    order: 1;
-  }
-  
-  .error-item {
-    flex-direction: column;
-    gap: 6px;
-  }
-  
-  .err-body {
-    width: 100%;
+    height: 400px;
   }
 }
+  
 
-/* Mobile spécifique */
-@media (max-width: 480px) {
-  :root {
-    --sidebar-w: 200px;
-  }
-  
-  #topbar {
-    padding: 0 12px;
-    gap: 8px;
-  }
-  
-  .topbar-breadcrumb {
-    font-size: 0.7rem;
-    max-width: 50%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  
-  .topbar-right {
-    gap: 6px;
-  }
-  
-  .xp-pill, .streak-pill {
-    font-size: 0.7rem;
-    padding: 3px 8px;
-  }
-  
-  .theme-toggle {
-    width: 28px;
-    height: 28px;
-    font-size: 0.8rem;
-  }
-  
-  #content {
-    padding: 12px;
-  }
-  
-  .page-title {
-    font-size: 1.3rem;
-  }
-  
-  .page-sub {
-    font-size: 0.8rem;
-  }
-  
-  .subject-card {
-    padding: 14px;
-  }
-  
-  .sc-stats {
-    gap: 8px;
-  }
-  
-  .sc-stat-num {
-    font-size: 0.9rem;
-  }
-  
-  .sc-progress {
-    margin-top: 10px;
-  }
-  
-  .due-badge {
-    top: 8px;
-    right: 8px;
-    font-size: 0.55rem;
-    padding: 1px 4px;
-  }
-  
-  .chapter-pill {
-    padding: 3px 8px;
-    font-size: 0.7rem;
-  }
-  
-  .mode-card {
-    padding: 10px;
-  }
-  
-  .mode-card-name {
-    font-size: 0.8rem;
-  }
-  
-  .start-big {
-    padding: 8px 16px;
-    font-size: 0.8rem;
-  }
-  
-  .q-card {
-    padding: 16px;
-  }
-  
-  .q-text {
-    font-size: 1rem;
-    line-height: 1.45;
-  }
-  
-  .opts {
-    gap: 6px;
-  }
-  
-  .opt {
-    padding: 10px 12px;
-    font-size: 0.85rem;
-  }
-  
-  .opt-letter {
-    min-width: 22px;
-    height: 22px;
-    font-size: 0.65rem;
-  }
-  
-  .vf-row {
-    grid-template-columns: 1fr;
-  }
-  
-  .vf-btn {
-    padding: 12px;
-    font-size: 0.85rem;
-  }
-  
-  .feedback {
-    padding: 10px 12px;
-    font-size: 0.8rem;
-  }
-  
-  .next-btn {
-    padding: 8px 16px;
-    font-size: 0.8rem;
-    width: 100%;
-  }
-  
-  .bilan-tabs {
-    overflow-x: auto;
-    flex-wrap: nowrap;
-    -webkit-overflow-scrolling: touch;
-  }
-  
-  .bilan-tab {
-    padding: 6px 12px;
-    font-size: 0.75rem;
-    white-space: nowrap;
-  }
-  
-  .form-input, .form-select, .form-textarea {
-    font-size: 0.8rem;
-  }
-  
-  .toolbar-btn {
-    padding: 3px 8px;
-    font-size: 0.7rem;
-  }
-  
-  .btn-save, .btn-cancel, .btn-delete {
-    padding: 6px 12px;
-    font-size: 0.75rem;
-  }
-  
-  .empty-state-icon {
-    font-size: 2rem;
-  }
-  
-  .empty-state-title {
-    font-size: 0.9rem;
-  }
+.mobile-menu-btn {
+  display: none;
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 201;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 1.2rem;
+  color: var(--text);
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 }
 
-/* Quiz Overlay Mobile */
 @media (max-width: 768px) {
-  #quiz-overlay {
-    padding-top: var(--header-h);
-  }
-  
-  .quiz-topbar {
-    padding: 0 12px;
-    gap: 8px;
-  }
-  
-  .quiz-close {
-    padding: 4px;
-    font-size: 1.1rem;
-  }
-  
-  .quiz-counter, .quiz-xp-live {
-    font-size: 0.7rem;
-  }
-  
-  .quiz-body {
-    padding: 16px 12px;
-  }
-  
-  .streak-dots {
-    gap: 3px;
-    margin-bottom: 12px;
-  }
-  
-  .streak-dot {
-    width: 7px;
-    height: 7px;
-  }
-  
-  .q-badge {
-    margin-bottom: 6px;
-  }
-  
-  .q-chapter-tag {
-    display: none;
-  }
-  
-  .q-text {
-    font-size: 1rem;
-  }
-  
-  .vf-row {
-    gap: 8px;
+  .mobile-menu-btn {
+    display: block;
   }
 }
    
 </style>
 </head>
 <body>
+<button id="mobile-menu-btn" class="mobile-menu-btn" onclick="toggleMobileSidebar()">☰</button>
 <div id="app">
   <nav id="sidebar">
     <div class="sidebar-logo"><div class="sidebar-logo-text">B<span>/</span>L</div><button class="sidebar-toggle" onclick="toggleSidebar()" title="Réduire">⇄</button></div>
@@ -849,61 +468,6 @@ a { color: inherit; text-decoration: none; }
 <div id="toast"></div>
 <script>
 
-   // Ajouter dans ta balise <body>, juste après <div id="app">
-<button id="mobile-menu-btn" class="mobile-menu-btn" onclick="toggleMobileSidebar()">☰</button>
-
-// Ajouter dans ton CSS
-.mobile-menu-btn {
-  display: none;
-  position: fixed;
-  top: 8px;
-  left: 8px;
-  z-index: 201;
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 6px 10px;
-  font-size: 1.2rem;
-  color: var(--text);
-  cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-@media (max-width: 768px) {
-  .mobile-menu-btn {
-    display: block;
-  }
-  #sidebar:not(.open) {
-    display: block;
-  }
-}
-
-// Ajouter dans ton JavaScript
-function toggleMobileSidebar() {
-  document.getElementById('sidebar').classList.toggle('open');
-}
-
-// Modifier ta fonction toggleSidebar pour aussi fermer sur mobile
-function toggleSidebar() {
-  state.sidebarCollapsed = !state.sidebarCollapsed;
-  lsSet('bl_sidebar', state.sidebarCollapsed);
-  document.getElementById('sidebar').classList.toggle('collapsed', state.sidebarCollapsed);
-  // Sur mobile, on ferme aussi le menu si ouvert
-  if (window.innerWidth <= 768) {
-    document.getElementById('sidebar').classList.remove('open');
-  }
-}
-
-// Ajouter un overlay pour fermer la sidebar en cliquant à l'extérieur
-document.addEventListener('click', function(e) {
-  if (window.innerWidth <= 768) {
-    const sidebar = document.getElementById('sidebar');
-    const menuBtn = document.getElementById('mobile-menu-btn');
-    if (!sidebar.contains(e.target) && !menuBtn.contains(e.target)) {
-      sidebar.classList.remove('open');
-    }
-  }
-});
    
 // VARIABLES
 let playConfig = { chapters: [], modes: ['qcm','vf','quote'] };
@@ -1960,5 +1524,21 @@ function addTestButton() {
 
 // Appeler au chargement pour ajouter le bouton de test
 addTestButton();
+
+function toggleMobileSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+}
+
+// Ferme la sidebar si on clique à l'extérieur
+document.addEventListener('click', function(e) {
+  if (window.innerWidth <= 768) {
+    const sidebar = document.getElementById('sidebar');
+    const menuBtn = document.getElementById('mobile-menu-btn');
+    if (!sidebar.contains(e.target) && e.target !== menuBtn) {
+      sidebar.classList.remove('open');
+    }
+  }
+});
+   
 
 </script>
