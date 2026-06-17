@@ -426,12 +426,13 @@ function ls(key, def) { try { const v = localStorage.getItem(key); return v ? JS
 function lsSet(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch {} }
 
 // ETAT
+// --- ÉTAT GLOBAL DE L'APPLICATION ---
 let state = {
-  // --- DONNÉES PERSONNELLES (Restent en local) ---
   xp: ls('bl_xp', 0),
+  questions: [], // On démarre à vide, le chargement se fera via le fichier JSON
   sr_data: ls('bl_sr_data', {}),
-  streak: ls('bl_streak', 0),
-  lastActivityDate: ls('bl_last_activity', null),
+  cours: [],     // Idem pour les cours
+  chapters: {ses: SES_CHAPTERS, lettres: [], philo: [], histoire: [], geo: []}, // Sera mis à jour par le JSON
   theme: ls('bl_theme', 'auto'),
   sidebarCollapsed: ls('bl_sidebar', false),
   currentView: 'dashboard',
@@ -439,13 +440,40 @@ let state = {
   currentChapter: null,
   editingCours: null,
   editingQuestion: null,
-  
-  // --- DONNÉES GLOBALES (Vides au départ, seront remplies par GitHub) ---
-  questions: [],
-  cours: [],
-  chapters: {}
+  streak: ls('bl_streak', 0),
+  lastActivityDate: ls('bl_last_activity', null)
 };
-if (!state.questions) { state.questions = SEED_QUESTIONS; lsSet('bl_questions', state.questions); }
+
+async function initApp() {
+  try {
+    // Le cache-busting (?t=...) évite que le navigateur ne serve une vieille version
+    const noCache = new Date().getTime();
+    
+    // On télécharge les fichiers depuis ton dépôt
+    const resQ = await fetch(`./data/questions.json?t=${noCache}`);
+    const resC = await fetch(`./data/cours.json?t=${noCache}`);
+    const resCh = await fetch(`./data/chapters.json?t=${noCache}`);
+    
+    // Si le fichier existe, on l'injecte dans l'application
+    if (resQ.ok) state.questions = await resQ.json();
+    else state.questions = SEED_QUESTIONS; // Secours si le fichier JSON est vide ou absent
+    
+    if (resC.ok) state.cours = await resC.json();
+    if (resCh.ok) state.chapters = await resCh.json();
+    
+  } catch (error) {
+    console.warn("Erreur lors du chargement des fichiers JSON, utilisation des données par défaut.", error);
+    state.questions = SEED_QUESTIONS;
+  }
+  
+  // On relance l'affichage de l'interface avec les vraies données
+  buildSidebarSubjects();
+  updateBadges();
+  applyTheme();
+  renderView();
+}
+
+
 
 // --- CONFIGURATION GITHUB AUTOMATIQUE ---
 const GITHUB_CONFIG = {
@@ -1086,7 +1114,7 @@ if (typeof marked !== 'undefined') {
 } else { 
   window.marked = { parse: function(text) { return renderMarkdown(text); } };
 }
-async function initApp() {
+/*async function initApp() {
   try {
     // On crée un identifiant unique basé sur l'heure actuelle
     const noCache = new Date().getTime();
@@ -1110,7 +1138,7 @@ async function initApp() {
   updateBadges();
   applyTheme();
   renderView();
-}
+}*/
    
 // Lancement de l'application
 initApp();
