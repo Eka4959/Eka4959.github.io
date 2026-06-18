@@ -490,7 +490,10 @@ a { color: inherit; text-decoration: none; }
     <div class="auth-sub">Entre ton identifiant pour retrouver ta progression, ton XP et tes erreurs.</div>
     <input type="text" id="auth-username" class="auth-input" placeholder="Ton pseudo..." autocomplete="off">
     <button class="auth-btn" onclick="login()">Se connecter</button>
-    <button class="auth-btn-alt" onclick="register()">Créer un compte</button>
+    <button class="auth-btn-alt" onclick="register()" style="margin-bottom: 16px;">Créer un compte</button>
+    <button onclick="continueAsGuest()" style="background: transparent; border: none; color: var(--text3); font-size: 0.85rem; font-family: 'Inter', sans-serif; cursor: pointer; text-decoration: underline;">
+      Continuer en tant qu'invité (sans sauvegarde)
+    </button>
   </div>
 </div>
    
@@ -626,25 +629,64 @@ function hideAuth() {
   document.getElementById('user-badge').innerHTML = `👤 ${escapeHtml(state.currentUser)}`;
 }
 
-function login() {
-  const username = document.getElementById('auth-username').value.trim().toLowerCase();
-  if (!username) return showToast("Veuillez entrer un pseudo", "err");
+// --- CONNEXION ET MODE INVITÉ ---
 
-  if (usersDb[username]) {
-    // L'utilisateur existe, on charge ses données
-    state.currentUser = username;
-    state.xp = usersDb[username].xp || 0;
-    state.streak = usersDb[username].streak || 0;
-    state.lastActivityDate = usersDb[username].lastActivityDate || null;
-    state.sr_data = usersDb[username].sr_data || {};
-    
-    lsSet('bl_current_user', username);
-    updateBadges();
-    hideAuth();
-    showToast(`Bon retour, ${username} !`, "ok");
-  } else {
-    showToast("Ce compte n'existe pas. Clique sur Créer un compte.", "err");
+// Permet d'appuyer sur "Entrée" pour se connecter directement
+document.getElementById('auth-username')?.addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') {
+    login();
   }
+});
+
+function login() {
+  try {
+    const usernameInput = document.getElementById('auth-username');
+    const username = usernameInput.value.trim().toLowerCase();
+    
+    if (!username) {
+      showToast("Veuillez entrer un pseudo", "err");
+      return;
+    }
+
+    // Sécurité : on s'assure que usersDb existe bien
+    if (typeof usersDb === 'undefined' || usersDb === null) {
+      usersDb = {};
+    }
+
+    if (usersDb[username]) {
+      // L'utilisateur existe, on charge ses données
+      state.currentUser = username;
+      state.xp = usersDb[username].xp || 0;
+      state.streak = usersDb[username].streak || 0;
+      state.lastActivityDate = usersDb[username].lastActivityDate || null;
+      state.sr_data = usersDb[username].sr_data || {};
+      
+      lsSet('bl_current_user', username);
+      updateBadges();
+      hideAuth();
+      showToast(`Bon retour, ${username} !`, "ok");
+    } else {
+      // Message d'erreur explicite si le compte n'existe pas
+      showToast(`Le compte "${username}" n'existe pas. Clique sur "Créer un compte".`, "err");
+    }
+  } catch (erreur) {
+    console.error("Erreur bloquante lors de la connexion:", erreur);
+    showToast("Une erreur a empêché la connexion. Réessaie.", "err");
+  }
+}
+
+function continueAsGuest() {
+  state.currentUser = null;
+  localStorage.removeItem('bl_current_user'); // On nettoie toute trace d'ancienne connexion
+  
+  // On remet les stats à zéro pour l'invité
+  state.xp = 0;
+  state.streak = 0;
+  state.sr_data = {};
+  
+  updateBadges();
+  hideAuth();
+  showToast("Connecté en tant qu'invité. Progression non sauvegardée.", "info");
 }
 
 async function register() {
