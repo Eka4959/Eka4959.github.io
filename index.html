@@ -508,7 +508,6 @@ let dbTab = 'questions';
 let dbSearch = '';
 let coursFocusId = null;
 let addMode = 'qcm';
-let usersDb = {};
 
 // DONNEES
 const SEED_QUESTIONS = [{"id":"ses_inegalites_qcm_0","subject":"ses","chapter":"inegalites","mode":"qcm","q":"Quel concept correspond a : indicateur synthetique qui mesure l'intensite des inegalites de revenus ou de patrimoine ?","expl":"Le concept vise est coefficient de Gini : indicateur synthetique qui mesure l'intensite des inegalites de revenus ou de patrimoine.","opts":["reproduction sociale","redistribution","impot progressif","coefficient de Gini"],"correct":3}];
@@ -551,24 +550,38 @@ const GITHUB_CONFIG = {
   branch: "main" 
 };
 
+// ==========================================
+// 1. GESTION DU TOKEN ET DE GITHUB
+// ==========================================
+
 function getGitHubToken() {
-  // Utilisation de localStorage pour mémoriser le token à vie sur ce navigateur
   let token = localStorage.getItem('gh_admin_token');
   
+  // Si l'utilisateur a déjà annulé dans le passé, on ne le dérange plus
+  if (token === 'NO_TOKEN') {
+    return null; 
+  }
+  
   if (!token) {
-    token = prompt("🔒 Pour sauvegarder ta progression, entre ton Token GitHub (il sera mémorisé sur cet appareil) :");
-    if (token) {
-      localStorage.setItem('gh_admin_token', token);
+    token = prompt("🔒 Configuration de la sauvegarde :\n\nPour synchroniser tes données sur GitHub, entre ton Token.\n\n👉 Si tu cliques sur 'Annuler', tes données resteront sauvegardées LOCALEMENT sur ce navigateur et on ne t'embêtera plus.");
+    
+    if (token && token.trim() !== '') {
+      localStorage.setItem('gh_admin_token', token.trim());
+    } else {
+      // On sauvegarde l'information que l'utilisateur ne veut pas utiliser GitHub
+      localStorage.setItem('gh_admin_token', 'NO_TOKEN');
+      showToast("Mode hors-ligne : sauvegarde locale uniquement.", "info");
+      return null;
     }
   }
   return token;
 }
-   
+
 async function pushToGitHub(path, data, commitMessage) {
-  // On récupère le token de façon sécurisée
   const token = getGitHubToken();
   if (!token) {
-    showToast("⚠️ Synchronisation annulée : aucun token fourni.", "err");
+    // Si pas de token (ou si refusé), on arrête silencieusement.
+    // Les données sont déjà sauvegardées en local via lsSet.
     return;
   }
 
@@ -576,49 +589,40 @@ async function pushToGitHub(path, data, commitMessage) {
   const contentBase64 = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
 
   try {
-    showToast("Connexion à GitHub...", "info");
-    
-    // 1. Récupération du SHA
-    const fileRes = await fetch(url, {
-      headers: { "Authorization": `token ${token}` }
-    });
-    
+    const fileRes = await fetch(url, { headers: { "Authorization": `token ${token}` } });
     let sha = null;
     if (fileRes.ok) {
       const fileData = await fileRes.json();
       sha = fileData.sha;
     }
 
-    // 2. Envoi à GitHub
-    const body = {
-      message: commitMessage,
-      content: contentBase64,
-      branch: GITHUB_CONFIG.branch
-    };
+    const body = { message: commitMessage, content: contentBase64, branch: GITHUB_CONFIG.branch };
     if (sha) body.sha = sha;
 
     const pushRes = await fetch(url, {
       method: "PUT",
-      headers: {
-        "Authorization": `token ${token}`,
-        "Content-Type": "application/json"
-      },
+      headers: { "Authorization": `token ${token}`, "Content-Type": "application/json" },
       body: JSON.stringify(body)
     });
 
-    if (pushRes.ok) {
-      showToast("✅ Synchronisé sur GitHub ! (Màj d'ici 1-2 min)", "ok");
-    } else {
-      const errData = await pushRes.json();
-      throw new Error(errData.message);
-    }
+    if (!pushRes.ok) throw new Error("Erreur lors du push");
   } catch (error) {
     console.error("Erreur GitHub Sync:", error);
-    showToast("❌ Erreur de synchronisation GitHub", "err");
+    // On cache l'erreur pour ne pas spammer l'utilisateur si internet coupe
   }
 }
 
-   // --- AUTHENTIFICATION & COMPTES ---
+// ==========================================
+// 2. AUTHENTIFICATION ET COMPTES
+// ==========================================
+
+// On initialise la base utilisateur IMMÉDIATEMENT depuis le cache local pour éviter le plantage au rechargement
+let usersDb = ls('bl_usersDb', {});
+
+// Permet d'appuyer sur "Entrée" pour valider le pseudo
+document.getElementById('auth-username')?.addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') login();
+});
 
 function showAuth() {
   document.getElementById('auth-overlay').classList.add('show');
@@ -626,77 +630,147 @@ function showAuth() {
 
 function hideAuth() {
   document.getElementById('auth-overlay').classList.remove('show');
-  document.getElementById('user-badge').innerHTML = `👤 ${escapeHtml(state.currentUser)}`;
+  const badge = document.getElementById('user-badge');
+  if (badge) badge.innerHTML = `👤 ${escapeHtml(state.currentUser)}`;
 }
 
-// --- CONNEXION ET MODE INVITÉ ---
-
-// Permet d'appuyer sur "Entrée" pour se connecter directement
-document.getElementById('auth-username')?.addEventListener('keypress', function(e) {
-  if (e.key === 'Enter') {
-    login();
-  }
-});
-
-function login() {
-  try {
-    const usernameInput = document.getElementById('auth-username');
-    const username = usernameInput.value.trim().toLowerCase();
-    
-    if (!username) {
-      showToast("Veuillez entrer un pseudo", "err");
-      return;
-    }
-
-    // Sécurité : on s'assure que usersDb existe bien
-    if (typeof usersDb === 'undefined' || usersDb === null) {
-      usersDb = {};
-    }
-
-    if (usersDb[username]) {
-      // L'utilisateur existe, on charge ses données
-      state.currentUser = username;
-      state.xp = usersDb[username].xp || 0;
-      state.streak = usersDb[username].streak || 0;
-      state.lastActivityDate = usersDb[username].lastActivityDate || null;
-      state.sr_data = usersDb[username].sr_data || {};
-      
-      lsSet('bl_current_user', username);
-      updateBadges();
-      hideAuth();
-      showToast(`Bon retour, ${username} !`, "ok");
-    } else {
-      // Message d'erreur explicite si le compte n'existe pas
-      showToast(`Le compte "${username}" n'existe pas. Clique sur "Créer un compte".`, "err");
-    }
-  } catch (erreur) {
-    console.error("Erreur bloquante lors de la connexion:", erreur);
-    showToast("Une erreur a empêché la connexion. Réessaie.", "err");
-  }
-}
-
-function continueAsGuest() {
-  state.currentUser = null;
-  localStorage.removeItem('bl_current_user'); // On nettoie toute trace d'ancienne connexion
+function loginUser(username) {
+  // Charge l'état
+  state.currentUser = username;
+  state.xp = usersDb[username].xp || 0;
+  state.streak = usersDb[username].streak || 0;
+  state.lastActivityDate = usersDb[username].lastActivityDate || null;
+  state.sr_data = usersDb[username].sr_data || {};
   
-  // On remet les stats à zéro pour l'invité
-  state.xp = 0;
-  state.streak = 0;
-  state.sr_data = {};
-  
+  lsSet('bl_current_user', username);
   updateBadges();
   hideAuth();
-  showToast("Connecté en tant qu'invité. Progression non sauvegardée.", "info");
+}
+
+function login() {
+  const input = document.getElementById('auth-username');
+  if (!input) return;
+  const username = input.value.trim().toLowerCase();
+  
+  if (!username) return showToast("Veuillez entrer un pseudo", "err");
+
+  if (usersDb[username]) {
+    loginUser(username);
+    showToast(`Bon retour, ${username} !`, "ok");
+  } else {
+    showToast(`Le compte "${username}" n'existe pas.`, "err");
+  }
 }
 
 async function register() {
-  const username = document.getElementById('auth-username').value.trim().toLowerCase();
+  const input = document.getElementById('auth-username');
+  if (!input) return;
+  const username = input.value.trim().toLowerCase();
+  
   if (!username) return showToast("Veuillez entrer un pseudo", "err");
   if (username.length < 3) return showToast("Pseudo trop court (min. 3 caractères)", "err");
 
   if (usersDb[username]) {
-    return showToast("Ce pseudo est déjà pris !", "err");
+    return showToast("Ce compte existe déjà. Clique sur Se connecter.", "err");
   }
+
+  // Création
+  usersDb[username] = { xp: 0, streak: 0, lastActivityDate: null, sr_data: {} };
+  lsSet('bl_usersDb', usersDb); // Sauvegarde locale en priorité
+  
+  loginUser(username);
+  showToast(`Compte créé ! Bienvenue ${username} 🎉`, "ok");
+  
+  // Tentative de sauvegarde GitHub (ignorée silencieusement si pas de Token)
+  await pushToGitHub("data/users.json", usersDb, `Nouvel utilisateur : ${username}`);
+}
+
+function continueAsGuest() {
+  state.currentUser = null;
+  localStorage.removeItem('bl_current_user'); 
+  state.xp = 0; state.streak = 0; state.sr_data = {}; // Reset invité
+  updateBadges();
+  hideAuth();
+  showToast("Mode Invité : ta progression ne sera pas mémorisée.", "info");
+}
+
+function logout() {
+  if(confirm("Veux-tu vraiment te déconnecter ?")) {
+    state.currentUser = null;
+    localStorage.removeItem('bl_current_user');
+    showAuth();
+  }
+}
+
+async function syncUserStats() {
+  if (!state.currentUser) return;
+  
+  usersDb[state.currentUser] = {
+    xp: state.xp,
+    streak: state.streak,
+    lastActivityDate: state.lastActivityDate,
+    sr_data: state.sr_data
+  };
+  
+  lsSet('bl_usersDb', usersDb); // Mise en sécurité locale systématique
+  await pushToGitHub("data/users.json", usersDb, `Sauvegarde stats : ${state.currentUser}`);
+}
+
+// ==========================================
+// 3. CHARGEMENT INITIAL (SÉCURISÉ)
+// ==========================================
+
+async function initApp() {
+  try {
+    const noCache = new Date().getTime();
+    
+    // Promise.all pour charger tout en même temps.
+    // Le .catch(() => null) empêche un fichier introuvable (404) de faire planter toute l'application.
+    const [resQ, resC, resCh, resU] = await Promise.all([
+      fetch(`./data/questions.json?t=${noCache}`).catch(() => null),
+      fetch(`./data/cours.json?t=${noCache}`).catch(() => null),
+      fetch(`./data/chapters.json?t=${noCache}`).catch(() => null),
+      fetch(`./data/users.json?t=${noCache}`).catch(() => null)
+    ]);
+    
+    if (resQ && resQ.ok) { state.questions = await resQ.json(); lsSet('bl_questions', state.questions); }
+    if (resC && resC.ok) { state.cours = await resC.json(); lsSet('bl_cours', state.cours); }
+    if (resCh && resCh.ok) { state.chapters = await resCh.json(); lsSet('bl_chapters', state.chapters); }
+    
+    // Gestion sans échec des utilisateurs
+    if (resU && resU.ok) { 
+        const fetchedUsers = await resU.json(); 
+        usersDb = { ...usersDb, ...fetchedUsers }; // Fusion local + web
+        lsSet('bl_usersDb', usersDb);
+    }
+    
+  } catch (error) {
+    console.warn("Démarrage en mode hors-ligne complet.", error);
+  }
+  
+  // Filet de sécurité au cas où GitHub serait inaccessible au tout premier lancement
+  if (!state.questions || state.questions.length === 0) {
+    state.questions = SEED_QUESTIONS;
+    state.chapters = {ses: SES_CHAPTERS, lettres: [], philo: [], histoire: [], geo: []};
+  }
+  
+  buildSidebarSubjects();
+  applyTheme();
+  renderView();
+
+  // Reconnexion automatique ou affichage de l'écran d'accueil
+  const savedUser = ls('bl_current_user', null);
+  if (savedUser && usersDb[savedUser]) {
+    loginUser(savedUser); 
+  } else {
+    showAuth();
+  }
+}
+
+
+// --- CONNEXION ET MODE INVITÉ ---
+
+
 
   // Création du nouvel utilisateur
   usersDb[username] = {
@@ -721,31 +795,6 @@ async function register() {
   showToast(`Compte créé ! Bienvenue ${username} 🎉`, "ok");
   
   await pushToGitHub("data/users.json", usersDb, `Nouvel utilisateur : ${username}`);
-}
-
-async function syncUserStats() {
-  if (!state.currentUser) return;
-  
-  usersDb[state.currentUser] = {
-    xp: state.xp,
-    streak: state.streak,
-    lastActivityDate: state.lastActivityDate,
-    sr_data: state.sr_data
-  };
-  
-  // Mise en cache local
-  lsSet('bl_usersDb', usersDb);
-  
-  // Sauvegarde silencieuse (tu ne verras plus le prompt grâce au localStorage)
-  pushToGitHub("data/users.json", usersDb, `Sauvegarde stat. de ${state.currentUser}`);
-}
-
-function logout() {
-  if(confirm("Veux-tu vraiment te déconnecter ?")) {
-    state.currentUser = null;
-    localStorage.removeItem('bl_current_user');
-    showAuth();
-  }
 }
 
    
@@ -1319,59 +1368,6 @@ function saveQuestion() {
 if (typeof marked !== 'undefined') { 
 } else { 
   window.marked = { parse: function(text) { return renderMarkdown(text); } };
-}
-async function initApp() {
-  try {
-    const noCache = new Date().getTime();
-    
-    // On ajoute le chargement de users.json
-    const resQ = await fetch(`./data/questions.json?t=${noCache}`);
-    const resC = await fetch(`./data/cours.json?t=${noCache}`);
-    const resCh = await fetch(`./data/chapters.json?t=${noCache}`);
-    const resU = await fetch(`./data/users.json?t=${noCache}`);
-    
-    if (resQ.ok) { state.questions = await resQ.json(); lsSet('bl_questions', state.questions); }
-    if (resC.ok) { state.cours = await resC.json(); lsSet('bl_cours', state.cours); }
-    if (resCh.ok) { state.chapters = await resCh.json(); lsSet('bl_chapters', state.chapters); }
-    
-    // Chargement de la base d'utilisateurs
-    if (resU.ok) { 
-        const fetchedUsers = await resU.json(); 
-        const localUsers = ls('bl_usersDb', {});
-        // On fusionne le local et GitHub pour ne rien perdre
-        usersDb = { ...localUsers, ...fetchedUsers };
-        lsSet('bl_usersDb', usersDb);
-    } else {
-        usersDb = ls('bl_usersDb', {}); 
-    }
-    
-  } catch (error) {
-    console.warn("Fichiers JSON introuvables ou erreur, chargement local.", error);
-    if (!state.questions) {
-      state.questions = SEED_QUESTIONS;
-      state.chapters = {ses: SES_CHAPTERS, lettres: [], philo: [], histoire: [], geo: []};
-    }
-  }
-  
-  buildSidebarSubjects();
-  applyTheme();
-  renderView();
-
-  // Gestion de l'authentification au lancement
-  const savedUser = ls('bl_current_user', null);
-  if (savedUser && usersDb[savedUser]) {
-    // Si l'utilisateur était déjà connecté, on restaure sa session
-    state.currentUser = savedUser;
-    state.xp = usersDb[savedUser].xp || 0;
-    state.streak = usersDb[savedUser].streak || 0;
-    state.lastActivityDate = usersDb[savedUser].lastActivityDate || null;
-    state.sr_data = usersDb[savedUser].sr_data || {};
-    document.getElementById('user-badge').innerHTML = `👤 ${escapeHtml(savedUser)}`;
-    updateBadges();
-  } else {
-    // Sinon, on affiche l'écran de connexion
-    showAuth();
-  }
 }
    
 // Lancement de l'application
