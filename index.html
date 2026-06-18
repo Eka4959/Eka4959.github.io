@@ -548,15 +548,14 @@ const GITHUB_CONFIG = {
   branch: "main" 
 };
 
-   function getGitHubToken() {
-  // 1. On regarde si le token a déjà été saisi durant cette session de navigation
-  let token = sessionStorage.getItem('gh_admin_token');
+function getGitHubToken() {
+  // Utilisation de localStorage pour mémoriser le token à vie sur ce navigateur
+  let token = localStorage.getItem('gh_admin_token');
   
-  // 2. Si non, on le demande à l'utilisateur
   if (!token) {
-    token = prompt("🔒 Action d'administration : Veuillez entrer votre GitHub Personal Access Token pour synchroniser les données :");
+    token = prompt("🔒 Pour sauvegarder ta progression, entre ton Token GitHub (il sera mémorisé sur cet appareil) :");
     if (token) {
-      sessionStorage.setItem('gh_admin_token', token);
+      localStorage.setItem('gh_admin_token', token);
     }
   }
   return token;
@@ -671,13 +670,32 @@ async function register() {
   state.lastActivityDate = null;
   state.sr_data = {};
 
+  // Mise en cache local pour éviter le bug de délai GitHub
+  lsSet('bl_usersDb', usersDb);
   lsSet('bl_current_user', username);
+  
   updateBadges();
   hideAuth();
   showToast(`Compte créé ! Bienvenue ${username} 🎉`, "ok");
   
-  // On pousse la nouvelle BDD utilisateurs sur GitHub
   await pushToGitHub("data/users.json", usersDb, `Nouvel utilisateur : ${username}`);
+}
+
+async function syncUserStats() {
+  if (!state.currentUser) return;
+  
+  usersDb[state.currentUser] = {
+    xp: state.xp,
+    streak: state.streak,
+    lastActivityDate: state.lastActivityDate,
+    sr_data: state.sr_data
+  };
+  
+  // Mise en cache local
+  lsSet('bl_usersDb', usersDb);
+  
+  // Sauvegarde silencieuse (tu ne verras plus le prompt grâce au localStorage)
+  pushToGitHub("data/users.json", usersDb, `Sauvegarde stat. de ${state.currentUser}`);
 }
 
 function logout() {
@@ -688,20 +706,6 @@ function logout() {
   }
 }
 
-async function syncUserStats() {
-  if (!state.currentUser) return;
-  
-  // Met à jour la base locale
-  usersDb[state.currentUser] = {
-    xp: state.xp,
-    streak: state.streak,
-    lastActivityDate: state.lastActivityDate,
-    sr_data: state.sr_data
-  };
-  
-  // Sauvegarde sur GitHub en arrière-plan
-  pushToGitHub("data/users.json", usersDb, `Sauvegarde stat. de ${state.currentUser}`);
-}
    
 // UTILS
 function escapeHtml(text) { if (text === null || text === undefined) return ''; const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
@@ -1290,9 +1294,13 @@ async function initApp() {
     
     // Chargement de la base d'utilisateurs
     if (resU.ok) { 
-        usersDb = await resU.json(); 
+        const fetchedUsers = await resU.json(); 
+        const localUsers = ls('bl_usersDb', {});
+        // On fusionne le local et GitHub pour ne rien perdre
+        usersDb = { ...localUsers, ...fetchedUsers };
+        lsSet('bl_usersDb', usersDb);
     } else {
-        usersDb = {}; // Si le fichier n'existe pas encore
+        usersDb = ls('bl_usersDb', {}); 
     }
     
   } catch (error) {
