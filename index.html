@@ -427,6 +427,22 @@ a { color: inherit; text-decoration: none; }
     display: block;
   }
 }
+
+/* AUTHENTIFICATION */
+#auth-overlay { position: fixed; inset: 0; background: var(--bg); z-index: 9999; display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+#auth-overlay.show { display: flex; }
+.auth-box { background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; padding: 32px; width: 100%; max-width: 400px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+.auth-title { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.5rem; margin-bottom: 8px; color: var(--text); }
+.auth-sub { font-size: 0.9rem; color: var(--text2); margin-bottom: 24px; line-height: 1.5; }
+.auth-input { width: 100%; background: var(--bg); border: 1.5px solid var(--border); border-radius: 8px; padding: 12px 16px; font-size: 1rem; color: var(--text); margin-bottom: 16px; outline: none; transition: border-color 0.2s; text-align: center; }
+.auth-input:focus { border-color: var(--yellow); }
+.auth-btn { width: 100%; background: var(--yellow); color: var(--bg); font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; padding: 12px; border: none; border-radius: 8px; cursor: pointer; transition: background 0.2s; margin-bottom: 12px; }
+.auth-btn:hover { background: #e8b820; }
+.auth-btn-alt { width: 100%; background: none; color: var(--text2); font-family: 'Syne', sans-serif; font-weight: 600; font-size: 0.9rem; padding: 10px; border: 1.5px solid var(--border); border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+.auth-btn-alt:hover { border-color: var(--text); color: var(--text); }
+.user-badge { display: flex; align-items: center; gap: 8px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.85rem; padding: 6px 12px; background: var(--bg3); border-radius: 8px; cursor: pointer; transition: background 0.2s; }
+.user-badge:hover { background: rgba(224,92,92,0.15); color: var(--red); }
+   
    
 </style>
 </head>
@@ -453,6 +469,7 @@ a { color: inherit; text-decoration: none; }
   <div id="main">
     <div id="topbar"><div class="topbar-breadcrumb" id="breadcrumb"><span>Tableau de bord</span></div>
       <div class="topbar-right">
+        <button class="user-badge" id="user-badge" onclick="logout()" title="Se déconnecter">👤 Invité</button>
         <div class="xp-pill" id="xp-pill">0 XP</div>
         <div class="streak-pill" id="streak-pill">🔥 0</div>
         <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn" title="Thème">🌙</button>
@@ -466,6 +483,17 @@ a { color: inherit; text-decoration: none; }
   <div class="quiz-body"><div class="quiz-inner"><div class="streak-dots" id="streak-dots"></div><div class="q-card"><div class="q-badge"><span id="q-mode-label">QCM</span><span class="q-chapter-tag" id="q-chapter-tag"></span></div><div class="q-text" id="q-text"></div></div><div id="q-options"></div><div class="feedback" id="q-feedback"><strong id="q-fb-title"></strong><span id="q-fb-text"></span></div><button class="next-btn" id="next-btn" onclick="nextQ()">Question suivante →</button></div></div>
 </div>
 <div id="toast"></div>
+
+<div id="auth-overlay">
+  <div class="auth-box">
+    <div class="auth-title">Connexion B/L</div>
+    <div class="auth-sub">Entre ton identifiant pour retrouver ta progression, ton XP et tes erreurs.</div>
+    <input type="text" id="auth-username" class="auth-input" placeholder="Ton pseudo..." autocomplete="off">
+    <button class="auth-btn" onclick="login()">Se connecter</button>
+    <button class="auth-btn-alt" onclick="register()">Créer un compte</button>
+  </div>
+</div>
+   
 <script>
 
    
@@ -477,6 +505,7 @@ let dbTab = 'questions';
 let dbSearch = '';
 let coursFocusId = null;
 let addMode = 'qcm';
+let usersDb = {};
 
 // DONNEES
 const SEED_QUESTIONS = [{"id":"ses_inegalites_qcm_0","subject":"ses","chapter":"inegalites","mode":"qcm","q":"Quel concept correspond a : indicateur synthetique qui mesure l'intensite des inegalites de revenus ou de patrimoine ?","expl":"Le concept vise est coefficient de Gini : indicateur synthetique qui mesure l'intensite des inegalites de revenus ou de patrimoine.","opts":["reproduction sociale","redistribution","impot progressif","coefficient de Gini"],"correct":3}];
@@ -587,6 +616,93 @@ async function pushToGitHub(path, data, commitMessage) {
   }
 }
 
+   // --- AUTHENTIFICATION & COMPTES ---
+
+function showAuth() {
+  document.getElementById('auth-overlay').classList.add('show');
+}
+
+function hideAuth() {
+  document.getElementById('auth-overlay').classList.remove('show');
+  document.getElementById('user-badge').innerHTML = `👤 ${escapeHtml(state.currentUser)}`;
+}
+
+function login() {
+  const username = document.getElementById('auth-username').value.trim().toLowerCase();
+  if (!username) return showToast("Veuillez entrer un pseudo", "err");
+
+  if (usersDb[username]) {
+    // L'utilisateur existe, on charge ses données
+    state.currentUser = username;
+    state.xp = usersDb[username].xp || 0;
+    state.streak = usersDb[username].streak || 0;
+    state.lastActivityDate = usersDb[username].lastActivityDate || null;
+    state.sr_data = usersDb[username].sr_data || {};
+    
+    lsSet('bl_current_user', username);
+    updateBadges();
+    hideAuth();
+    showToast(`Bon retour, ${username} !`, "ok");
+  } else {
+    showToast("Ce compte n'existe pas. Clique sur Créer un compte.", "err");
+  }
+}
+
+async function register() {
+  const username = document.getElementById('auth-username').value.trim().toLowerCase();
+  if (!username) return showToast("Veuillez entrer un pseudo", "err");
+  if (username.length < 3) return showToast("Pseudo trop court (min. 3 caractères)", "err");
+
+  if (usersDb[username]) {
+    return showToast("Ce pseudo est déjà pris !", "err");
+  }
+
+  // Création du nouvel utilisateur
+  usersDb[username] = {
+    xp: 0,
+    streak: 0,
+    lastActivityDate: null,
+    sr_data: {}
+  };
+
+  state.currentUser = username;
+  state.xp = 0;
+  state.streak = 0;
+  state.lastActivityDate = null;
+  state.sr_data = {};
+
+  lsSet('bl_current_user', username);
+  updateBadges();
+  hideAuth();
+  showToast(`Compte créé ! Bienvenue ${username} 🎉`, "ok");
+  
+  // On pousse la nouvelle BDD utilisateurs sur GitHub
+  await pushToGitHub("data/users.json", usersDb, `Nouvel utilisateur : ${username}`);
+}
+
+function logout() {
+  if(confirm("Veux-tu vraiment te déconnecter ?")) {
+    state.currentUser = null;
+    localStorage.removeItem('bl_current_user');
+    showAuth();
+  }
+}
+
+async function syncUserStats() {
+  if (!state.currentUser) return;
+  
+  // Met à jour la base locale
+  usersDb[state.currentUser] = {
+    xp: state.xp,
+    streak: state.streak,
+    lastActivityDate: state.lastActivityDate,
+    sr_data: state.sr_data
+  };
+  
+  // Sauvegarde sur GitHub en arrière-plan
+  pushToGitHub("data/users.json", usersDb, `Sauvegarde stat. de ${state.currentUser}`);
+}
+   
 // UTILS
 function escapeHtml(text) { if (text === null || text === undefined) return ''; const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
 
@@ -756,11 +872,18 @@ function closeQuiz() {
   document.getElementById('quiz-overlay').classList.remove('show'); 
   state.xp += quiz.xpGained; 
   lsSet('bl_xp', state.xp); 
+  
   if (quiz.xpGained > 0) { 
     updateStreak(); 
   } 
+  
   updateBadges(); 
   renderView(); 
+  
+  // NOUVEAU : Sauvegarder les données du compte sur GitHub à la fin du quiz
+  if (quiz.answered) {
+      syncUserStats();
+  }
 }
 function loadQuestion(q) {
   quiz.answered = false;
@@ -1153,31 +1276,27 @@ if (typeof marked !== 'undefined') {
 }
 async function initApp() {
   try {
-    // 1. Anti-cache : on génère un identifiant unique basé sur l'heure
     const noCache = new Date().getTime();
     
-    // 2. On télécharge les données fraîches depuis GitHub
+    // On ajoute le chargement de users.json
     const resQ = await fetch(`./data/questions.json?t=${noCache}`);
     const resC = await fetch(`./data/cours.json?t=${noCache}`);
     const resCh = await fetch(`./data/chapters.json?t=${noCache}`);
+    const resU = await fetch(`./data/users.json?t=${noCache}`);
     
-    // 3. Si le téléchargement réussit, on met à jour l'état ET la mémoire locale
-    if (resQ.ok) {
-      state.questions = await resQ.json();
-      lsSet('bl_questions', state.questions);
-    }
-    if (resC.ok) {
-      state.cours = await resC.json();
-      lsSet('bl_cours', state.cours);
-    }
-    if (resCh.ok) {
-      state.chapters = await resCh.json();
-      lsSet('bl_chapters', state.chapters);
+    if (resQ.ok) { state.questions = await resQ.json(); lsSet('bl_questions', state.questions); }
+    if (resC.ok) { state.cours = await resC.json(); lsSet('bl_cours', state.cours); }
+    if (resCh.ok) { state.chapters = await resCh.json(); lsSet('bl_chapters', state.chapters); }
+    
+    // Chargement de la base d'utilisateurs
+    if (resU.ok) { 
+        usersDb = await resU.json(); 
+    } else {
+        usersDb = {}; // Si le fichier n'existe pas encore
     }
     
   } catch (error) {
-    console.warn("Fichiers JSON introuvables ou erreur de lecture, chargement local.", error);
-    // Si GitHub est en panne ou le fichier absent, on utilise la mémoire locale existante
+    console.warn("Fichiers JSON introuvables ou erreur, chargement local.", error);
     if (!state.questions) {
       state.questions = SEED_QUESTIONS;
       state.chapters = {ses: SES_CHAPTERS, lettres: [], philo: [], histoire: [], geo: []};
@@ -1185,9 +1304,24 @@ async function initApp() {
   }
   
   buildSidebarSubjects();
-  updateBadges();
   applyTheme();
   renderView();
+
+  // Gestion de l'authentification au lancement
+  const savedUser = ls('bl_current_user', null);
+  if (savedUser && usersDb[savedUser]) {
+    // Si l'utilisateur était déjà connecté, on restaure sa session
+    state.currentUser = savedUser;
+    state.xp = usersDb[savedUser].xp || 0;
+    state.streak = usersDb[savedUser].streak || 0;
+    state.lastActivityDate = usersDb[savedUser].lastActivityDate || null;
+    state.sr_data = usersDb[savedUser].sr_data || {};
+    document.getElementById('user-badge').innerHTML = `👤 ${escapeHtml(savedUser)}`;
+    updateBadges();
+  } else {
+    // Sinon, on affiche l'écran de connexion
+    showAuth();
+  }
 }
    
 // Lancement de l'application
