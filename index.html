@@ -770,7 +770,40 @@ async function initApp() {
 
 // --- CONNEXION ET MODE INVITÉ ---
 
+// Permet d'appuyer sur "Entrée" pour valider le pseudo
+document.getElementById('auth-username')?.addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') login();
+});
 
+function login() {
+  const input = document.getElementById('auth-username');
+  if (!input) return;
+  const username = input.value.trim().toLowerCase();
+  
+  if (!username) return showToast("Veuillez entrer un pseudo", "err");
+
+  if (usersDb && usersDb[username]) {
+    loginUser(username);
+    showToast(`Bon retour, ${username} !`, "ok");
+  } else {
+    showToast(`Le compte "${username}" n'existe pas.`, "err");
+  }
+}
+
+async function register() {
+  const input = document.getElementById('auth-username');
+  if (!input) return;
+  const username = input.value.trim().toLowerCase();
+  
+  if (!username) return showToast("Veuillez entrer un pseudo", "err");
+  if (username.length < 3) return showToast("Pseudo trop court (min. 3 caractères)", "err");
+
+  if (usersDb && usersDb[username]) {
+    return showToast("Ce compte existe déjà. Clique sur Se connecter.", "err");
+  }
+
+  // Si usersDb n'est pas initialisé
+  if (!usersDb) usersDb = {};
 
   // Création du nouvel utilisateur
   usersDb[username] = {
@@ -795,6 +828,29 @@ async function initApp() {
   showToast(`Compte créé ! Bienvenue ${username} 🎉`, "ok");
   
   await pushToGitHub("data/users.json", usersDb, `Nouvel utilisateur : ${username}`);
+}
+
+function loginUser(username) {
+  state.currentUser = username;
+  state.xp = usersDb[username].xp || 0;
+  state.streak = usersDb[username].streak || 0;
+  state.lastActivityDate = usersDb[username].lastActivityDate || null;
+  state.sr_data = usersDb[username].sr_data || {};
+  
+  lsSet('bl_current_user', username);
+  updateBadges();
+  hideAuth();
+}
+
+function continueAsGuest() {
+  state.currentUser = null;
+  localStorage.removeItem('bl_current_user'); 
+  state.xp = 0; 
+  state.streak = 0; 
+  state.sr_data = {}; 
+  updateBadges();
+  hideAuth();
+  showToast("Mode Invité : ta progression ne sera pas mémorisée.", "info");
 }
 
    
