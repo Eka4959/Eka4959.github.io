@@ -647,12 +647,29 @@ function loginUser(username) {
   hideAuth();
 }
 
-function login() {
+async function refreshUsersDb() {
+  try {
+    const res = await fetch(`./data/users.json?t=${Date.now()}`).catch(() => null);
+    if (res && res.ok) {
+      const fetchedUsers = await res.json();
+      usersDb = { ...usersDb, ...fetchedUsers };
+      lsSet('bl_usersDb', usersDb);
+    }
+  } catch (error) {
+    console.warn('Impossible de recharger users.json', error);
+  }
+}
+
+async function login() {
   const input = document.getElementById('auth-username');
   if (!input) return;
   const username = input.value.trim().toLowerCase();
   
   if (!username) return showToast("Veuillez entrer un pseudo", "err");
+
+  if (!usersDb[username]) {
+    await refreshUsersDb();
+  }
 
   if (usersDb[username]) {
     loginUser(username);
