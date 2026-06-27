@@ -207,6 +207,7 @@ a { color: inherit; text-decoration: none; }
 .quiz-prog-bar { height: 100%; background: var(--yellow); border-radius: 2px; transition: width 0.4s; }
 .quiz-counter { font-size: 0.78rem; color: var(--text2); white-space: nowrap; }
 .quiz-xp-live { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.82rem; color: var(--yellow); }
+.quiz-timer { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.82rem; color: var(--red); white-space: nowrap; }
 .quiz-body { flex: 1; overflow-y: auto; display: flex; justify-content: center; padding: 32px 24px; }
 .quiz-inner { width: 100%; max-width: 640px; }
 .streak-dots { display: flex; gap: 5px; margin-bottom: 20px; flex-wrap: wrap; }
@@ -569,7 +570,7 @@ a { color: inherit; text-decoration: none; }
   </div>
 </div>
 <div id="quiz-overlay">
-  <div class="quiz-topbar"><button class="quiz-close" onclick="closeQuiz()">✕</button><div class="quiz-prog-wrap"><div class="quiz-prog-bar" id="qpb" style="width:0%"></div></div><span class="quiz-counter" id="qcounter">1 / 10</span><span class="quiz-xp-live" id="qxp">+0 XP</span></div>
+  <div class="quiz-topbar"><button class="quiz-close" onclick="closeQuiz()">✕</button><div class="quiz-prog-wrap"><div class="quiz-prog-bar" id="qpb" style="width:0%"></div></div><span class="quiz-counter" id="qcounter">1 / 10</span><span class="quiz-xp-live" id="qxp">+0 XP</span><span class="quiz-timer" id="qtimer" style="display:none">15s</span></div>
   <div class="quiz-body"><div class="quiz-inner"><div class="streak-dots" id="streak-dots"></div><div class="q-card"><div class="q-badge"><span id="q-mode-label">QCM</span><span class="q-chapter-tag" id="q-chapter-tag"></span></div><div class="q-text" id="q-text"></div></div><div id="q-options"></div><div class="feedback" id="q-feedback"><strong id="q-fb-title"></strong><span id="q-fb-text"></span></div><button class="next-btn" id="next-btn" onclick="nextQ()">Question suivante →</button></div></div>
 </div>
 <div id="toast"></div>
@@ -591,8 +592,8 @@ a { color: inherit; text-decoration: none; }
 
    
 // VARIABLES
-let playConfig = { chapters: [], modes: ['qcm','vf','quote'] };
-let quiz = { questions: [], index: 0, xpGained: 0, answered: false, currentGrade: null };
+let playConfig = { chapters: [], modes: ['qcm','vf','quote','complete'], timed: false };
+let quiz = { questions: [], index: 0, xpGained: 0, answered: false, currentGrade: null, timerId: null, remainingTime: 0 };
 let bilanTab = 'chapitres';
 let dbTab = 'questions';
 let dbSearch = '';
@@ -603,7 +604,8 @@ let addMode = 'qcm';
 const SEED_QUESTIONS = [{"id":"ses_inegalites_qcm_0","subject":"ses","chapter":"inegalites","mode":"qcm","q":"Quel concept correspond a : indicateur synthetique qui mesure l'intensite des inegalites de revenus ou de patrimoine ?","expl":"Le concept vise est coefficient de Gini : indicateur synthetique qui mesure l'intensite des inegalites de revenus ou de patrimoine.","opts":["reproduction sociale","redistribution","impot progressif","coefficient de Gini"],"correct":3}];
 const SUBJECTS = [{id:'ses',name:'Sciences Eco. & So.',icon:'📊',color:'#F2C94C',hours:'6h/sem',colorClass:'sc-ses'},{id:'lettres',name:'Lettres',icon:'📖',color:'#9B72CF',hours:'4h/sem',colorClass:'sc-lettres'},{id:'philo',name:'Philosophie',icon:'🧠',color:'#E05C5C',hours:'4h/sem',colorClass:'sc-philo'},{id:'histoire',name:'Histoire',icon:'🏛️',color:'#5B8DB8',hours:'4h/sem',colorClass:'sc-histoire'},{id:'geo',name:'Géographie',icon:'🌍',color:'#4CAF7C',hours:'3h/sem',colorClass:'sc-geo'}];
 const SES_CHAPTERS = [{id:'inegalites',name:'Inégalités & stratification'},{id:'marche',name:'Marché & prix'},{id:'travail',name:'Travail & emploi'},{id:'mondialisation',name:'Mondialisation'},{id:'solidarites',name:'Solidarités & protection'},{id:'lien_social',name:'Lien social & déviance'},{id:'europe',name:'Construction européenne'},{id:'croissance',name:'Croissance & innovation'}];
-const MODE_LABELS = {qcm:'🎯 QCM',vf:'⚖️ Vrai / Faux',quote:'💬 Qui a dit ça ?'};
+const MODE_LABELS = {qcm:'🎯 QCM',vf:'⚖️ Vrai / Faux',quote:'💬 Qui a dit ça ?',complete:'✏️ Compléter la phrase'};
+const QUESTION_MODES = ['qcm','vf','quote','complete'];
 
 // STORAGE
 function ls(key, def) { try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : def; } catch { return def; } }
@@ -721,7 +723,7 @@ function showAuth() {
 function hideAuth() {
   document.getElementById('auth-overlay').classList.remove('show');
   const badge = document.getElementById('user-badge');
-  if (badge) badge.innerHTML = `👤 ${escapeHtml(state.currentUser)}`;
+  if (badge) badge.innerHTML = `👤 ${state.currentUser ? escapeHtml(state.currentUser) : 'Invité'}`;
 }
 
 function loginUser(username) {
@@ -877,6 +879,10 @@ async function initApp() {
 
 // UTILS
 function escapeHtml(text) { if (text === null || text === undefined) return ''; const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
+function normalizeText(text) {
+  if (text === null || text === undefined) return '';
+  return text.toString().normalize('NFD').replace(/\p{Diacritic}/gu, '').replace(/[^a-z0-9]/gi, '').toLowerCase().trim();
+}
 
 // STREAK - NOUVELLES FONCTIONS
 
@@ -932,7 +938,7 @@ function chapterName(subject, chapterId) { const chs = state.chapters[subject] |
 
 // FONCTIONS POUR LA REVISION CIBLEE
 function getChapterErrorQuestions(chapterId, subjectId) { return state.questions.filter(q => { if (subjectId && q.subject !== subjectId) return false; if (q.chapter !== chapterId) return false; const sr = getSR(q.id); return sr && sr.errors > 0; }); }
-function reviewChapter(chapterId, subjectId) { const questions = getChapterErrorQuestions(chapterId, subjectId); if (questions.length === 0) { showToast('Aucune erreur à réviser pour ce chapitre', 'err'); return; } playConfig = { chapters: [chapterId], modes: ['qcm', 'vf', 'quote'], subject: subjectId }; startQuiz(); nav('play'); }
+function reviewChapter(chapterId, subjectId) { const questions = getChapterErrorQuestions(chapterId, subjectId); if (questions.length === 0) { showToast('Aucune erreur à réviser pour ce chapitre', 'err'); return; } playConfig = { chapters: [chapterId], modes: [...QUESTION_MODES], timed: false }; state.currentSubject = subjectId; startQuiz(); nav('play'); }
 
 // THEME
 let sunriseH = 6, sunsetH = 20;
@@ -1035,14 +1041,37 @@ function deleteChapter(subj, chId) { const qCount = state.questions.filter(q => 
 function renderDashboard(c) { setBreadcrumb(['Tableau de bord']); const totalDue = getDueQuestions(null, null, null).length; const totalErrors = Object.values(state.sr_data).reduce((a, b) => a + (b.errors || 0), 0); const totalAttempts = Object.values(state.sr_data).reduce((a, b) => a + (b.attempts || 0), 0); const totalCorrect = totalAttempts - totalErrors; c.innerHTML = `<h1 class="page-title">Prepa B/L · Révisions</h1><p class="page-sub">Hypokhâgne</p><div class="stats-row"><div class="stat-card"><div class="stat-card-num stat-xp">${state.xp.toLocaleString()}</div><div class="stat-card-label">XP total</div></div><div class="stat-card"><div class="stat-card-num stat-ok">${totalCorrect}</div><div class="stat-card-label">Bonnes réponses</div></div><div class="stat-card"><div class="stat-card-num stat-err">${totalErrors}</div><div class="stat-card-label">Erreurs</div></div><div class="stat-card"><div class="stat-card-num stat-due">${totalDue}</div><div class="stat-card-label">À réviser</div></div></div><div class="dashboard-grid">${SUBJECTS.map(s => { const subjectQuestions = state.questions.filter(q => q.subject === s.id); const dueCount = getDueQuestions(s.id, null, null).length; const subjectSr = subjectQuestions.map(q => getSR(q.id)).filter(sr => sr.attempts > 0); const progress = subjectSr.length > 0 ? (subjectSr.reduce((a, b) => a + (b.attempts - b.errors), 0) / subjectSr.reduce((a, b) => a + b.attempts, 0) * 100) : 0; return `<div class="subject-card ${s.colorClass}" onclick="state.currentSubject='${s.id}';nav('play')">${dueCount > 0 ? '<div class="due-badge">' + dueCount + '</div>' : ''}<div class="sc-header"><span class="sc-icon">${s.icon}</span><div><div class="sc-name">${s.name}</div><div class="sc-hours">${s.hours}</div></div></div><div class="sc-stats"><div class="sc-stat"><div class="sc-stat-num">${subjectQuestions.length}</div><div class="sc-stat-label">Questions</div></div><div class="sc-stat"><div class="sc-stat-num">${subjectSr.length}</div><div class="sc-stat-label">Révisées</div></div><div class="sc-stat"><div class="sc-stat-num">${Math.round(progress)}%</div><div class="sc-stat-label">Maîtrise</div></div></div><div class="sc-progress"><div class="sc-progress-bar" style="width:${progress}%;background:${s.color}"></div></div></div>`; }).join('')}</div>`; }
 
 // PLAY
-function renderPlay(c) { setBreadcrumb([SUBJECTS.find(s => s.id === state.currentSubject)?.name || 'Toutes matières', state.currentChapter ? chapterName(state.currentSubject, state.currentChapter) : 'Tous chapitres']); const subject = state.currentSubject; const chapters = subject ? (state.currentChapter ? [state.currentChapter] : (state.chapters[subject] || []).map(ch => ch.id)) : []; const allChapters = subject ? (state.chapters[subject] || []).map(ch => ch.id) : []; const availableChapters = allChapters.filter(chId => state.questions.some(q => q.subject === subject && q.chapter === chId)); const dueQuestions = getDueQuestions(subject, chapters.length > 0 ? chapters : null, playConfig.modes); const nextDue = nextDueTime(subject, chapters.length > 0 ? chapters : null, playConfig.modes); c.innerHTML = `<h1 class="page-title">Session de révision</h1><p class="page-sub">${subject ? SUBJECTS.find(s => s.id === subject)?.name : 'Toutes les matières'}${state.currentChapter ? ' · ' + chapterName(subject, state.currentChapter) : ''}</p><div class="play-config"><div class="config-section"><div class="config-title">Chapitres à réviser</div><div class="chapter-pills" id="chapter-pills">${availableChapters.map(chId => { const isActive = chapters.length === 0 || chapters.includes(chId); return `<button class="chapter-pill ${isActive ? 'active' : ''}" onclick="toggleChapter('${chId}')">${escapeHtml(chapterName(subject, chId))}</button>`; }).join('')}</div><div class="pill-actions"><button class="pill-action" onclick="selectAllChapters()">Tout sélectionner</button><button class="pill-action" onclick="deselectAllChapters()">Tout désélectionner</button></div></div><div class="config-section"><div class="config-title">Mode de questions</div><div class="mode-cards">${['qcm', 'vf', 'quote'].map(mode => { const isActive = playConfig.modes.includes(mode); const count = getDueQuestions(subject, chapters.length > 0 ? chapters : null, [mode]).length; const dueCount = count > 0 ? count : 0; return `<button class="mode-card ${isActive ? 'active' : ''}" onclick="toggleMode('${mode}')"><span class="mode-card-icon">${MODE_LABELS[mode].split(' ')[0]}</span><span class="mode-card-name">${MODE_LABELS[mode].split(' ').slice(1).join(' ')}</span><span class="mode-card-count ${dueCount > 0 ? 'due' : ''}">${dueCount} à réviser</span></button>`; }).join('')}</div></div><div style="display:flex;align-items:center;gap:12px;margin-bottom:16px"><span style="color:var(--text2);font-size:0.85rem">Questions disponibles :</span><strong style="font-family:'Syne',sans-serif;font-size:0.95rem">${dueQuestions.length}</strong>${nextDue ? `<span style="color:var(--text3);font-size:0.8rem">Prochaine révision dans ${fmtDuration(nextDue - Date.now())}</span>` : ''}</div>${dueQuestions.length > 0 ? `<button class="start-big" onclick="startQuiz()"><span>🎮</span> Commencer la session (${dueQuestions.length} questions)</button>` : `<div class="all-done-box"><div class="all-done-icon">✅</div><div class="all-done-title">Tout est à jour !</div><div class="all-done-sub">Aucune question n'est due pour la révision.</div></div>`}</div>`; }
+function renderPlay(c) { setBreadcrumb([SUBJECTS.find(s => s.id === state.currentSubject)?.name || 'Toutes matières', state.currentChapter ? chapterName(state.currentSubject, state.currentChapter) : 'Tous chapitres']); const subject = state.currentSubject; const allChapters = subject ? (state.chapters[subject] || []).map(ch => ch.id) : []; const selectedChapters = subject ? (state.currentChapter ? [state.currentChapter] : (playConfig.chapters?.length ? playConfig.chapters.filter(chId => allChapters.includes(chId)) : allChapters)) : []; const availableChapters = allChapters.filter(chId => state.questions.some(q => q.subject === subject && q.chapter === chId)); const dueQuestions = getDueQuestions(subject, selectedChapters.length > 0 ? selectedChapters : null, playConfig.modes); const nextDue = nextDueTime(subject, selectedChapters.length > 0 ? selectedChapters : null, playConfig.modes); c.innerHTML = `<h1 class="page-title">Session de révision</h1><p class="page-sub">${subject ? SUBJECTS.find(s => s.id === subject)?.name : 'Toutes les matières'}${state.currentChapter ? ' · ' + chapterName(subject, state.currentChapter) : ''}</p><div class="play-config"><div class="config-section"><div class="config-title">Chapitres à réviser</div><div class="chapter-pills" id="chapter-pills">${availableChapters.map(chId => { const isActive = selectedChapters.length === 0 || selectedChapters.includes(chId); return `<button class="chapter-pill ${isActive ? 'active' : ''}" onclick="toggleChapter('${chId}')">${escapeHtml(chapterName(subject, chId))}</button>`; }).join('')}</div><div class="pill-actions"><button class="pill-action" onclick="selectAllChapters()">Tout sélectionner</button><button class="pill-action" onclick="deselectAllChapters()">Tout désélectionner</button></div></div><div class="config-section"><div class="config-title">Mode de questions</div><div class="mode-cards">${QUESTION_MODES.map(mode => { const isActive = playConfig.modes.includes(mode); const count = getDueQuestions(subject, selectedChapters.length > 0 ? selectedChapters : null, [mode]).length; const dueCount = count > 0 ? count : 0; return `<button class="mode-card ${isActive ? 'active' : ''}" onclick="toggleMode('${mode}')"><span class="mode-card-icon">${MODE_LABELS[mode].split(' ')[0]}</span><span class="mode-card-name">${MODE_LABELS[mode].split(' ').slice(1).join(' ')}</span><span class="mode-card-count ${dueCount > 0 ? 'due' : ''}">${dueCount} à réviser</span></button>`; }).join('')}</div></div><div class="config-section"><div class="config-title">Mode chronométré</div><div class="mode-cards"><button class="mode-card ${playConfig.timed ? 'active' : ''}" onclick="toggleTimedMode()"><span class="mode-card-icon">⏱️</span><span class="mode-card-name">Mode chronométré</span><span class="mode-card-count ${playConfig.timed ? 'due' : ''}">${playConfig.timed ? 'Activé' : 'Désactivé'}</span></button></div></div><div style="display:flex;align-items:center;gap:12px;margin-bottom:16px"><span style="color:var(--text2);font-size:0.85rem">Questions disponibles :</span><strong style="font-family:'Syne',sans-serif;font-size:0.95rem">${dueQuestions.length}</strong>${nextDue ? `<span style="color:var(--text3);font-size:0.8rem">Prochaine révision dans ${fmtDuration(nextDue - Date.now())}</span>` : ''}</div>${dueQuestions.length > 0 ? `<button class="start-big" onclick="startQuiz()"><span>🎮</span> Commencer la session (${dueQuestions.length} questions)</button>` : `<div class="all-done-box"><div class="all-done-icon">✅</div><div class="all-done-title">Tout est à jour !</div><div class="all-done-sub">Aucune question n'est due pour la révision.</div></div>`}</div>`; }
 function toggleChapter(chId) { if (!state.currentSubject) return; if (!playConfig.chapters) playConfig.chapters = []; const idx = playConfig.chapters.indexOf(chId); if (idx === -1) { playConfig.chapters.push(chId); } else { playConfig.chapters.splice(idx, 1); } renderPlay(document.getElementById('content')); }
 function selectAllChapters() { if (!state.currentSubject) return; const allChapters = (state.chapters[state.currentSubject] || []).map(ch => ch.id); playConfig.chapters = [...allChapters]; renderPlay(document.getElementById('content')); }
 function deselectAllChapters() { playConfig.chapters = []; renderPlay(document.getElementById('content')); }
 function toggleMode(mode) { const idx = playConfig.modes.indexOf(mode); if (idx === -1) { playConfig.modes.push(mode); } else { playConfig.modes.splice(idx, 1); } renderPlay(document.getElementById('content')); }
-function startQuiz() { const subject = state.currentSubject; const chapters = subject ? (state.currentChapter ? [state.currentChapter] : (playConfig.chapters.length > 0 ? playConfig.chapters : (state.chapters[subject] || []).map(ch => ch.id))) : []; const questions = getDueQuestions(subject, chapters.length > 0 ? chapters : null, playConfig.modes); if (questions.length === 0) { showToast('Aucune question disponible avec ces critères', 'err'); return; } quiz.questions = shuffle(questions); quiz.index = 0; quiz.xpGained = 0; quiz.answered = false; quiz.currentGrade = null; showQuiz(); }
+function toggleTimedMode() { playConfig.timed = !playConfig.timed; renderPlay(document.getElementById('content')); }
+function startQuiz() {
+  const subject = state.currentSubject;
+  const allChapters = subject ? (state.chapters[subject] || []).map(ch => ch.id) : [];
+  const selectedChapters = subject ? (state.currentChapter ? [state.currentChapter] : (playConfig.chapters?.length ? playConfig.chapters.filter(chId => allChapters.includes(chId)) : allChapters)) : null;
+  const dueQuestions = getDueQuestions(subject, selectedChapters?.length > 0 ? selectedChapters : null, playConfig.modes);
+  if (!dueQuestions.length) {
+    showToast('Aucune question due pour cette session.', 'info');
+    return;
+  }
+  quiz.questions = shuffle(dueQuestions);
+  quiz.index = 0;
+  quiz.xpGained = 0;
+  quiz.answered = false;
+  quiz.currentGrade = null;
+  quiz.timerId = null;
+  quiz.remainingTime = playConfig.timed ? 15 : null;
+  showQuiz();
+}
+function clearQuizTimer() { if (quiz.timerId) { clearInterval(quiz.timerId); quiz.timerId = null; } }
+function updateTimerDisplay() { const timerEl = document.getElementById('qtimer'); if (!timerEl) return; if (playConfig.timed && quiz.remainingTime !== null && quiz.remainingTime !== undefined) { timerEl.style.display = 'inline-block'; timerEl.textContent = quiz.remainingTime + 's'; } else { timerEl.style.display = 'none'; } }
+function startQuizTimer() { clearQuizTimer(); if (!playConfig.timed) return; quiz.remainingTime = 15; updateTimerDisplay(); quiz.timerId = setInterval(() => { quiz.remainingTime--; if (quiz.remainingTime <= 0) { clearQuizTimer(); autoFailQuestion(); } else { updateTimerDisplay(); } }, 1000); }
+function autoFailQuestion() { if (quiz.answered) return; quiz.answered = true; const q = quiz.questions[quiz.index]; const grade = 1; const fbEl = document.getElementById('q-feedback'); fbEl.className = 'feedback ko'; fbEl.style.display = 'block'; document.getElementById('q-fb-title').textContent = 'Temps écoulé !'; document.getElementById('q-fb-text').textContent = q.expl || 'Réponse manquée.'; document.getElementById('qxp').textContent = '+ ' + quiz.xpGained + ' XP'; document.getElementById('next-btn').style.display = 'block'; if (q.mode === 'qcm') { document.querySelectorAll('.opt').forEach((el, i) => { el.disabled = true; if (i === q.correct) el.classList.add('correct'); }); } else if (q.mode === 'vf') { document.querySelectorAll('.vf-btn').forEach(el => el.disabled = true); const qid = q.correct ? 'vf-true' : 'vf-false'; document.getElementById(qid).classList.add('correct'); } else if (q.mode === 'quote' || q.mode === 'complete') { const input = document.getElementById(q.mode === 'quote' ? 'quote-answer-input' : 'complete-answer-input'); if (input) input.disabled = true; } updateSR(q.id, grade); const dots = document.querySelectorAll('.streak-dot'); if (dots[quiz.index]) { dots[quiz.index].className = 'streak-dot ko'; } }
 function showQuiz() { document.getElementById('quiz-overlay').classList.add('show'); loadQuestion(quiz.questions[quiz.index]); }
 function closeQuiz() { 
+  clearQuizTimer();
   document.getElementById('quiz-overlay').classList.remove('show'); 
   state.xp += quiz.xpGained; 
   lsSet('bl_xp', state.xp); 
@@ -1074,6 +1103,8 @@ function loadQuestion(q) {
     optsEl.innerHTML = `<div class="vf-row"><button class="vf-btn" onclick="selectVF(true)" id="vf-true">✓ Vrai</button><button class="vf-btn" onclick="selectVF(false)" id="vf-false">✗ Faux</button></div>`;
   } else if (q.mode === 'quote') {
     optsEl.innerHTML = '<div class="quote-input-wrap"><input type="text" class="quote-input" id="quote-answer-input" placeholder="Nom de l\'auteur..." autofocus autocomplete="off"><button class="quote-submit-btn" onclick="submitQuoteAnswer()">Valider</button></div>';
+  } else if (q.mode === 'complete') {
+    optsEl.innerHTML = '<div class="quote-input-wrap"><input type="text" class="quote-input" id="complete-answer-input" placeholder="Mot ou expression à compléter" autofocus autocomplete="off"><button class="quote-submit-btn" onclick="submitCompleteAnswer()">Valider</button></div>';
   } else {
     optsEl.innerHTML = '<div style="color:var(--text2);font-size:0.85rem">Mode non supporté</div>';
   }
@@ -1088,18 +1119,26 @@ function loadQuestion(q) {
     return `<div class="streak-dot ${lastGrade}"></div>`;
   }).join('') + '<div class="streak-dot"></div>';
   
-  // Ajout de l'event listener pour la touche Entrée (mode citation)
-  if (q.mode === 'quote') {
-    const input = document.getElementById('quote-answer-input');
+  // Ajout de l'event listener pour la touche Entrée (mode citation ou compléter la phrase)
+  if (q.mode === 'quote' || q.mode === 'complete') {
+    const input = document.getElementById(q.mode === 'quote' ? 'quote-answer-input' : 'complete-answer-input');
     if (input) {
-      input.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter') submitQuoteAnswer();
-      });
+      input.onkeydown = function(e) {
+        if (e.key === 'Enter') {
+          if (q.mode === 'quote') submitQuoteAnswer(); else submitCompleteAnswer();
+        }
+      };
     }
   }
+  if (playConfig.timed) {
+    startQuizTimer();
+  }
 }
-function selectOpt(idx) { if (quiz.answered) return; quiz.answered = true; const q = quiz.questions[quiz.index]; const isCorrect = idx === q.correct; const grade = isCorrect ? 4 : 1; document.querySelectorAll('.opt').forEach((el, i) => { el.disabled = true; if (i === q.correct) el.classList.add('correct'); else if (i === idx) el.classList.add('wrong'); }); const xpGain = Math.round(10 * (grade / 4)); quiz.xpGained += xpGain; quiz.currentGrade = grade; const fbEl = document.getElementById('q-feedback'); fbEl.className = 'feedback ' + (isCorrect ? 'ok' : 'ko'); fbEl.style.display = 'block'; document.getElementById('q-fb-title').textContent = isCorrect ? 'Bonne réponse !' : 'Faux'; document.getElementById('q-fb-text').textContent = q.expl; document.getElementById('qxp').textContent = '+ ' + quiz.xpGained + ' XP'; updateSR(q.id, grade); document.getElementById('next-btn').style.display = 'block'; const dots = document.querySelectorAll('.streak-dot'); if (dots[quiz.index]) { dots[quiz.index].className = 'streak-dot ' + (isCorrect ? 'ok' : 'ko'); } }
-function selectVF(isTrue) { if (quiz.answered) return; quiz.answered = true; const q = quiz.questions[quiz.index]; const isCorrect = isTrue === q.correct; const grade = isCorrect ? 4 : 1; document.querySelectorAll('.vf-btn').forEach(el => { el.disabled = true; }); const btnId = isTrue ? 'vf-true' : 'vf-false'; document.getElementById(btnId).classList.add(isCorrect ? 'correct' : 'wrong'); const xpGain = Math.round(10 * (grade / 4)); quiz.xpGained += xpGain; quiz.currentGrade = grade; const fbEl = document.getElementById('q-feedback'); fbEl.className = 'feedback ' + (isCorrect ? 'ok' : 'ko'); fbEl.style.display = 'block'; document.getElementById('q-fb-title').textContent = isCorrect ? 'Bonne réponse !' : 'Faux'; document.getElementById('q-fb-text').textContent = q.expl; document.getElementById('qxp').textContent = '+ ' + quiz.xpGained + ' XP'; updateSR(q.id, grade); document.getElementById('next-btn').style.display = 'block'; const dots = document.querySelectorAll('.streak-dot'); if (dots[quiz.index]) { dots[quiz.index].className = 'streak-dot ' + (isCorrect ? 'ok' : 'ko'); } }
+function selectOpt(idx) { if (quiz.answered) return; clearQuizTimer(); quiz.answered = true; const q = quiz.questions[quiz.index]; const isCorrect = idx === q.correct; const grade = isCorrect ? 4 : 1; document.querySelectorAll('.opt').forEach((el, i) => { el.disabled = true; if (i === q.correct) el.classList.add('correct'); else if (i === idx) el.classList.add('wrong'); }); const xpGain = Math.round(10 * (grade / 4)); quiz.xpGained += xpGain; quiz.currentGrade = grade; const fbEl = document.getElementById('q-feedback'); fbEl.className = 'feedback ' + (isCorrect ? 'ok' : 'ko'); fbEl.style.display = 'block'; document.getElementById('q-fb-title').textContent = isCorrect ? 'Bonne réponse !' : 'Faux'; document.getElementById('q-fb-text').textContent = q.expl; document.getElementById('qxp').textContent = '+ ' + quiz.xpGained + ' XP'; updateSR(q.id, grade); document.getElementById('next-btn').style.display = 'block'; const dots = document.querySelectorAll('.streak-dot'); if (dots[quiz.index]) { dots[quiz.index].className = 'streak-dot ' + (isCorrect ? 'ok' : 'ko'); } }
+function selectVF(isTrue) { if (quiz.answered) return; clearQuizTimer(); quiz.answered = true; const q = quiz.questions[quiz.index]; const isCorrect = isTrue === q.correct; const grade = isCorrect ? 4 : 1; document.querySelectorAll('.vf-btn').forEach(el => { el.disabled = true; }); const btnId = isTrue ? 'vf-true' : 'vf-false'; document.getElementById(btnId).classList.add(isCorrect ? 'correct' : 'wrong'); const xpGain = Math.round(10 * (grade / 4)); quiz.xpGained += xpGain; quiz.currentGrade = grade; const fbEl = document.getElementById('q-feedback'); fbEl.className = 'feedback ' + (isCorrect ? 'ok' : 'ko'); fbEl.style.display = 'block'; document.getElementById('q-fb-title').textContent = isCorrect ? 'Bonne réponse !' : 'Faux'; document.getElementById('q-fb-text').textContent = q.expl; document.getElementById('qxp').textContent = '+ ' + quiz.xpGained + ' XP'; updateSR(q.id, grade); document.getElementById('next-btn').style.display = 'block'; const dots = document.querySelectorAll('.streak-dot'); if (dots[quiz.index]) { dots[quiz.index].className = 'streak-dot ' + (isCorrect ? 'ok' : 'ko'); } }
+function submitTextAnswer(answer) { if (quiz.answered) return; clearQuizTimer(); const q = quiz.questions[quiz.index]; const normalizedAnswer = normalizeText(answer); const normalizedCorrect = normalizeText(q.correct || q.author || ''); const isCorrect = normalizedAnswer === normalizedCorrect; const grade = isCorrect ? 4 : 1; quiz.answered = true; const fbEl = document.getElementById('q-feedback'); fbEl.className = 'feedback ' + (isCorrect ? 'ok' : 'ko'); fbEl.style.display = 'block'; document.getElementById('q-fb-title').textContent = isCorrect ? 'Bonne réponse !' : 'Faux'; document.getElementById('q-fb-text').textContent = q.expl; const xpGain = Math.round(10 * (grade / 4)); quiz.xpGained += xpGain; quiz.currentGrade = grade; document.getElementById('qxp').textContent = '+ ' + quiz.xpGained + ' XP'; const inputId = q.mode === 'quote' ? 'quote-answer-input' : 'complete-answer-input'; const input = document.getElementById(inputId); if (input) input.disabled = true; document.getElementById('next-btn').style.display = 'block'; updateSR(q.id, grade); const dots = document.querySelectorAll('.streak-dot'); if (dots[quiz.index]) { dots[quiz.index].className = 'streak-dot ' + (isCorrect ? 'ok' : 'ko'); } }
+function submitQuoteAnswer() { const input = document.getElementById('quote-answer-input'); if (!input) return; const answer = input.value.trim(); if (!answer) return showToast('Saisis une réponse', 'err'); submitTextAnswer(answer); }
+function submitCompleteAnswer() { const input = document.getElementById('complete-answer-input'); if (!input) return; const answer = input.value.trim(); if (!answer) return showToast('Saisis la partie manquante', 'err'); submitTextAnswer(answer); }
 function nextQ() { quiz.index++; if (quiz.index >= quiz.questions.length) { closeQuiz(); showToast('Session terminée ! +' + quiz.xpGained + ' XP', 'ok'); return; } loadQuestion(quiz.questions[quiz.index]); }
 
 // BILAN
@@ -1241,7 +1280,7 @@ function renderAddQuestion(c) {
         <div class="form-group">
           <label class="form-label">Mode</label>
           <select class="form-select" id="aq-mode" onchange="addMode=this.value;updateAddForm()">
-            ${['qcm', 'vf', 'quote'].map(m => `<option value="${m}" ${eq && eq.mode === m ? 'selected' : ''}>${MODE_LABELS[m]}</option>`).join('')}
+            ${QUESTION_MODES.map(m => `<option value="${m}" ${eq && eq.mode === m ? 'selected' : ''}>${MODE_LABELS[m]}</option>`).join('')}
           </select>
         </div>
         <div class="form-group">
@@ -1270,7 +1309,7 @@ function renderAddQuestion(c) {
    <div class="form-divider" style="margin:32px 0"></div>
     <h2 style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;margin-bottom:8px">⚡ Import rapide (Excel / Sheets)</h2>
     <p class="form-hint" style="margin-bottom:16px">Colle directement les lignes de ton tableur ici. Les colonnes attendues (séparées par des tabulations) :<br>
-    <strong>Matière (ses, lettres, philo, histoire, geo) | Chapitre | Mode (qcm, vf, quote) | Question | Bonne Rép | Mauvaise 1 | Mauvaise 2 | Mauvaise 3 | Explication</strong></p>
+    <strong>Matière (ses, lettres, philo, histoire, geo) | Chapitre | Mode (qcm, vf, quote, complete) | Question | Bonne Rép | Mauvaise 1 | Mauvaise 2 | Mauvaise 3 | Explication</strong></p>
     <div class="add-q-form">
       <textarea class="form-textarea" id="import-tsv" style="min-height:120px;font-family:'JetBrains Mono',monospace;white-space:pre;font-size:0.8rem;" placeholder="ses&#9;Inégalités&#9;qcm&#9;Qui a écrit Le Capital ?&#9;Marx&#9;Bourdieu&#9;Keynes&#9;Smith&#9;Livre majeur..."></textarea>
       <button class="form-submit" onclick="importTSV()" style="background:var(--blue)">📥 Importer les questions</button>
@@ -1297,6 +1336,8 @@ function updateAddForm() {
     container.innerHTML = `<div class="form-group"><label class="form-label">Réponse correcte</label><select class="form-select" id="vf-correct"><option value="true" ${eq && eq.correct === true ? 'selected' : ''}>Vrai</option><option value="false" ${eq && eq.correct === false ? 'selected' : ''}>Faux</option></select></div>`; 
   } else if (mode === 'quote') { 
     container.innerHTML = '<div class="form-group"><label class="form-label">Auteur de la citation</label><input type="text" class="form-input" id="quote-author" placeholder="Nom de l\'auteur" value="' + (eq ? escapeHtml(eq.author || '') : '') + '" autocomplete="off"></div>';
+  } else if (mode === 'complete') {
+    container.innerHTML = '<div class="form-group"><label class="form-label">Phrase attendue</label><input type="text" class="form-input" id="complete-answer" placeholder="Mot ou expression à compléter" value="' + (eq ? escapeHtml(eq.correct || eq.answer || '') : '') + '" autocomplete="off"></div><div class="form-hint">Entrez la partie manquante de la phrase.</div>';
   }
 }
 function addQuestion() { 
@@ -1321,6 +1362,10 @@ function addQuestion() {
     if (!author) { showToast('Auteur obligatoire', 'err'); return; } 
     newQuestion.author = author; 
     newQuestion.correct = author; 
+  } else if (mode === 'complete') {
+    const answer = document.getElementById('complete-answer').value.trim(); 
+    if (!answer) { showToast('Réponse obligatoire', 'err'); return; } 
+    newQuestion.correct = answer; 
   } 
   state.questions.push(newQuestion); 
   lsSet('bl_questions', state.questions); 
@@ -1355,6 +1400,10 @@ function saveQuestion() {
     if (!author) { showToast('Auteur obligatoire', 'err'); return; } 
     updatedQuestion.author = author; 
     updatedQuestion.correct = author; 
+  } else if (mode === 'complete') {
+    const answer = document.getElementById('complete-answer').value.trim(); 
+    if (!answer) { showToast('Réponse obligatoire', 'err'); return; } 
+    updatedQuestion.correct = answer; 
   } 
   state.questions = state.questions.map(q => q.id === id ? updatedQuestion : q); 
   lsSet('bl_questions', state.questions); 
@@ -1386,7 +1435,7 @@ function saveQuestion() {
     
     // Validation de la matière
     if (!SUBJECTS.find(s => s.id === subject)) continue;
-    if (!['qcm', 'vf', 'quote'].includes(mode)) continue;
+    if (!QUESTION_MODES.includes(mode)) continue;
     
     // Gestion du Chapitre (Création automatique si absent)
     if (!state.chapters[subject]) state.chapters[subject] = [];
@@ -1413,8 +1462,15 @@ function saveQuestion() {
     if (mode === 'vf') {
       // Pour Vrai/Faux, on cherche si le mot "vrai" est dans la réponse
       entry.correct = correctAns.toLowerCase().includes('vrai') || correctAns.toLowerCase() === 'v';
+    } else if (mode === 'complete') {
+      // Pour Compléter la phrase, on stocke directement la bonne réponse
+      entry.correct = correctAns;
+    } else if (mode === 'quote') {
+      // Pour la citation, on stocke l'auteur attendu
+      entry.author = correctAns;
+      entry.correct = correctAns;
     } else {
-      // Pour QCM ou Quote, on rassemble les réponses et on les mélange
+      // Pour QCM, on rassemble les réponses et on les mélange
       let options = [correctAns];
       if (bad1) options.push(bad1);
       if (bad2) options.push(bad2);
