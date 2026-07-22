@@ -546,6 +546,7 @@ a { color: inherit; text-decoration: none; }
       <div class="nav-section"><div class="nav-section-header"><span>🏠</span><span>Général</span></div>
         <button class="nav-item active" onclick="nav('dashboard')" id="nav-dashboard"><span class="nav-icon">◈</span><span class="nav-label">Tableau de bord</span></button>
         <button class="nav-item" onclick="nav('bilan')" id="nav-bilan"><span class="nav-icon">📊</span><span class="nav-label">Bilan & erreurs</span><span class="nav-badge" id="badge-errors" style="display:none">0</span></button>
+        <button class="nav-item" onclick="startErrorQuiz()" id="nav-error-quiz"><span class="nav-icon">↻</span><span class="nav-label">Réviser mes erreurs</span></button>
         <button class="nav-item" onclick="nav('methode')" id="nav-methode"><span class="nav-icon">📐</span><span class="nav-label">Méthode</span></button>
       </div>
       <div class="nav-section"><div class="nav-section-header"><span>📚</span><span>Matières</span></div><div id="subjects-nav"></div></div>
@@ -592,8 +593,8 @@ a { color: inherit; text-decoration: none; }
 
    
 // VARIABLES
-let playConfig = { chapters: [], modes: ['qcm','vf','quote','complete'], timed: false };
-let quiz = { questions: [], index: 0, xpGained: 0, answered: false, currentGrade: null, timerId: null, remainingTime: 0 };
+let playConfig = { chapters: [], modes: ['qcm','vf','quote','complete'], timed: false, exam: false, questionsPerSession: 'all' };
+let quiz = { questions: [], index: 0, xpGained: 0, answered: false, currentGrade: null, timerId: null, remainingTime: 0, exam: false, examResults: [], examFinished: false };
 let bilanTab = 'chapitres';
 let dbTab = 'questions';
 let dbSearch = '';
@@ -647,61 +648,12 @@ const GITHUB_CONFIG = {
 // ==========================================
 
 function getGitHubToken() {
-  let token = localStorage.getItem('gh_admin_token');
-  
-  // Si l'utilisateur a déjà annulé dans le passé, on ne le dérange plus
-  if (token === 'NO_TOKEN') {
-    return null; 
-  }
-  
-  if (!token) {
-    token = prompt("🔒 Configuration de la sauvegarde :\n\nPour synchroniser tes données sur GitHub, entre ton Token.\n\n👉 Si tu cliques sur 'Annuler', tes données resteront sauvegardées LOCALEMENT sur ce navigateur et on ne t'embêtera plus.");
-    
-    if (token && token.trim() !== '') {
-      localStorage.setItem('gh_admin_token', token.trim());
-    } else {
-      // On sauvegarde l'information que l'utilisateur ne veut pas utiliser GitHub
-      localStorage.setItem('gh_admin_token', 'NO_TOKEN');
-      showToast("Mode hors-ligne : sauvegarde locale uniquement.", "info");
-      return null;
-    }
-  }
-  return token;
+  localStorage.removeItem('gh_admin_token');
+  return null;
 }
 
 async function pushToGitHub(path, data, commitMessage) {
-  const token = getGitHubToken();
-  if (!token) {
-    // Si pas de token (ou si refusé), on arrête silencieusement.
-    // Les données sont déjà sauvegardées en local via lsSet.
-    return;
-  }
-
-  const url = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${path}`;
-  const contentBase64 = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
-
-  try {
-    const fileRes = await fetch(url, { headers: { "Authorization": `token ${token}` } });
-    let sha = null;
-    if (fileRes.ok) {
-      const fileData = await fileRes.json();
-      sha = fileData.sha;
-    }
-
-    const body = { message: commitMessage, content: contentBase64, branch: GITHUB_CONFIG.branch };
-    if (sha) body.sha = sha;
-
-    const pushRes = await fetch(url, {
-      method: "PUT",
-      headers: { "Authorization": `token ${token}`, "Content-Type": "application/json" },
-      body: JSON.stringify(body)
-    });
-
-    if (!pushRes.ok) throw new Error("Erreur lors du push");
-  } catch (error) {
-    console.error("Erreur GitHub Sync:", error);
-    // On cache l'erreur pour ne pas spammer l'utilisateur si internet coupe
-  }
+  return Promise.resolve();
 }
 
 // ==========================================
@@ -830,32 +782,38 @@ async function syncUserStats() {
 // ==========================================
 
 async function initApp() {
-  try {
-    const noCache = new Date().getTime();
-    
-    // Promise.all pour charger tout en même temps.
-    // Le .catch(() => null) empêche un fichier introuvable (404) de faire planter toute l'application.
-    const [resQ, resC, resCh, resU] = await Promise.all([
-      fetch(`./data/questions.json?t=${noCache}`).catch(() => null),
-      fetch(`./data/cours.json?t=${noCache}`).catch(() => null),
-      fetch(`./data/chapters.json?t=${noCache}`).catch(() => null),
-      fetch(`./data/users.json?t=${noCache}`).catch(() => null)
-    ]);
-    
-    if (resQ && resQ.ok) { state.questions = await resQ.json(); lsSet('bl_questions', state.questions); }
-    if (resC && resC.ok) { state.cours = await resC.json(); lsSet('bl_cours', state.cours); }
-    if (resCh && resCh.ok) { state.chapters = await resCh.json(); lsSet('bl_chapters', state.chapters); }
-    
-    // Gestion sans échec des utilisateurs
-    if (resU && resU.ok) { 
-        const fetchedUsers = await resU.json(); 
-        usersDb = { ...usersDb, ...fetchedUsers }; // Fusion local + web
-        lsSet('bl_usersDb', usersDb);
+  const noCache = new Date().getTime();
+  const localQuestions = ls('bl_questions', SEED_QUESTIONS);
+  const localCours = ls('bl_cours', []);
+  const localChapters = ls('bl_chapters', {ses: SES_CHAPTERS, lettres: [], philo: [], histoire: [], geo: []});
+  const loadJson = async (path, localKey, fallback, validate, hasContent) => {
+    const cached = ls(localKey, fallback);
+    try {
+      const response = await fetch(`${path}?t=${noCache}`);
+      if (!response.ok) return cached;
+      const value = await response.json();
+      return validate(value) && hasContent(value) ? value : cached;
+    } catch (error) {
+      console.warn(`Impossible de charger ${path}`, error);
+      return cached;
     }
-    
-  } catch (error) {
-    console.warn("Démarrage en mode hors-ligne complet.", error);
-  }
+  };
+
+  const [questions, cours, chapters, fetchedUsers] = await Promise.all([
+    loadJson('./data/questions.json', 'bl_questions', localQuestions, value => Array.isArray(value), value => value.length > 0),
+    loadJson('./data/cours.json', 'bl_cours', localCours, value => Array.isArray(value), value => value.length > 0),
+    loadJson('./data/chapters.json', 'bl_chapters', localChapters, value => value && typeof value === 'object' && !Array.isArray(value), value => Object.keys(value).length > 0),
+    loadJson('./data/users.json', 'bl_usersDb', {}, value => value && typeof value === 'object' && !Array.isArray(value), value => Object.keys(value).length > 0)
+  ]);
+
+  state.questions = questions;
+  state.cours = cours;
+  state.chapters = chapters;
+  lsSet('bl_questions', state.questions);
+  lsSet('bl_cours', state.cours);
+  lsSet('bl_chapters', state.chapters);
+  usersDb = { ...usersDb, ...fetchedUsers };
+  lsSet('bl_usersDb', usersDb);
   
   // Filet de sécurité au cas où GitHub serait inaccessible au tout premier lancement
   if (!state.questions || state.questions.length === 0) {
@@ -928,6 +886,7 @@ function updateSR(qid, grade) {
   }
   state.sr_data[qid] = sr; 
   lsSet('bl_sr_data', state.sr_data); 
+  if (state.currentUser) syncUserStats();
 }
 function isDue(qid) { const sr = state.sr_data[qid]; if (!sr) return true; if (sr.due === 0) return true; return Date.now() >= sr.due - 5 * 60 * 1000; }
 function getDueQuestions(subject, chapters, modes) { return state.questions.filter(q => { if (subject && q.subject !== subject) return false; if (chapters?.length && !chapters.includes(q.chapter)) return false; if (modes?.length && !modes.includes(q.mode)) return false; return isDue(q.id); }); }
@@ -938,7 +897,7 @@ function chapterName(subject, chapterId) { const chs = state.chapters[subject] |
 
 // FONCTIONS POUR LA REVISION CIBLEE
 function getChapterErrorQuestions(chapterId, subjectId) { return state.questions.filter(q => { if (subjectId && q.subject !== subjectId) return false; if (q.chapter !== chapterId) return false; const sr = getSR(q.id); return sr && sr.errors > 0; }); }
-function reviewChapter(chapterId, subjectId) { const questions = getChapterErrorQuestions(chapterId, subjectId); if (questions.length === 0) { showToast('Aucune erreur à réviser pour ce chapitre', 'err'); return; } playConfig = { chapters: [chapterId], modes: [...QUESTION_MODES], timed: false }; state.currentSubject = subjectId; startQuiz(); nav('play'); }
+function reviewChapter(chapterId, subjectId) { const questions = getChapterErrorQuestions(chapterId, subjectId); if (questions.length === 0) { showToast('Aucune erreur à réviser pour ce chapitre', 'err'); return; } playConfig = { chapters: [chapterId], modes: [...QUESTION_MODES], timed: false, exam: false, questionsPerSession: 'all' }; state.currentSubject = subjectId; startQuiz(); nav('play'); }
 
 // THEME
 let sunriseH = 6, sunsetH = 20;
@@ -980,8 +939,8 @@ function resetAllData() {
   };
   
   // Réinitialiser les variables globales
-  playConfig = { chapters: [], modes: ['qcm','vf','quote'] };
-  quiz = { questions: [], index: 0, xpGained: 0, answered: false, currentGrade: null };
+  playConfig = { chapters: [], modes: [...QUESTION_MODES], timed: false, exam: false, questionsPerSession: 'all' };
+  quiz = { questions: [], index: 0, xpGained: 0, answered: false, currentGrade: null, timerId: null, remainingTime: 0, exam: false, examResults: [], examFinished: false };
   bilanTab = 'chapitres';
   dbTab = 'questions';
   dbSearch = '';
@@ -1013,7 +972,7 @@ function toggleSidebar() { state.sidebarCollapsed = !state.sidebarCollapsed; lsS
 function buildSidebarSubjects() { const el = document.getElementById('subjects-nav'); el.innerHTML = ''; SUBJECTS.forEach(s => { const btn = document.createElement('button'); btn.className = 'nav-item'; btn.id = 'nav-subj-' + s.id; btn.innerHTML = `<span class="nav-icon">${s.icon}</span><span class="nav-label">${s.name}</span>`; btn.onclick = () => { state.currentSubject = s.id; state.currentChapter = null; nav('play'); toggleSubjectTree(s.id); }; el.appendChild(btn); const tree = document.createElement('div'); tree.className = 'subject-tree'; tree.id = 'tree-' + s.id; tree.style.display = 'none'; (state.chapters[s.id] || []).forEach(ch => { const cb = document.createElement('button'); cb.className = 'subject-chapter'; cb.innerHTML = '<span>·</span> ' + escapeHtml(ch.name); cb.onclick = (e) => { e.stopPropagation(); state.currentSubject = s.id; state.currentChapter = ch.id; nav('play'); }; tree.appendChild(cb); }); el.appendChild(tree); }); }
 function toggleSubjectTree(sid) { SUBJECTS.forEach(s => { const t = document.getElementById('tree-' + s.id); if (t) t.style.display = s.id === sid ? (t.style.display === 'none' ? 'block' : 'none') : 'none'; }); }
 if (state.sidebarCollapsed) document.getElementById('sidebar').classList.add('collapsed'); buildSidebarSubjects();
-function setBreadcrumb(parts) { document.getElementById('breadcrumb').innerHTML = parts.map((p, i) => i < parts.length - 1 ? `${p} <span style="color:var(--text3)">›</span>` : `<span>${p}</span>` ).join(''); }
+function setBreadcrumb(parts) { document.getElementById('breadcrumb').innerHTML = parts.map((p, i) => i < parts.length - 1 ? `${escapeHtml(p)} <span style="color:var(--text3)">›</span>` : `<span>${escapeHtml(p)}</span>` ).join(''); }
 function nav(view) { if (view !== 'add-question') state.editingQuestion = null; state.currentView = view; document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active')); const navEl = document.getElementById('nav-' + view) || document.getElementById('nav-subj-' + state.currentSubject); if (navEl) navEl.classList.add('active'); renderView(); updateBadges(); }
 
 // UPDATE BADGES MODIFIEE POUR AFFICHER LE STREAK
@@ -1034,19 +993,71 @@ function switchDbTab(tab) { dbTab = tab; renderDatabase(document.getElementById(
 function renderDbContent() { const el = document.getElementById('db-content'); if (dbTab === 'questions') { const qs = state.questions.filter(q => q.q.toLowerCase().includes(dbSearch.toLowerCase()) || (q.expl && q.expl.toLowerCase().includes(dbSearch.toLowerCase()))); el.innerHTML = `<input type="text" class="search-bar" placeholder="Rechercher une question ou une explication..." value="${escapeHtml(dbSearch)}" onkeyup="dbSearch = this.value; renderDbContent()"><div style="overflow-x:auto;"><table class="db-table"><thead><tr><th>Matière</th><th>Chapitre</th><th>Type</th><th>Question</th><th style="text-align:right">Actions</th></tr></thead><tbody>${qs.slice(0, 50).map(q => `<tr><td>${SUBJECTS.find(s=>s.id===q.subject)?.icon || ''}</td><td>${escapeHtml(chapterName(q.subject, q.chapter))}</td><td><span class="err-mode">${q.mode.toUpperCase()}</span></td><td style="max-width:300px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(q.q)}</td><td style="text-align:right"><button class="db-action" onclick="editQuestion('${q.id}')" title="Modifier">✏️</button><button class="db-action del" onclick="deleteQuestion('${q.id}')" title="Supprimer">🗑️</button></td></tr>`).join('')}${qs.length === 0 ? '<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--text3)">Aucune question trouvée.</td></tr>' : ''}${qs.length > 50 ? `<tr><td colspan="5" style="text-align:center;color:var(--text3);padding:15px">Et ${qs.length - 50} autres résultats...</td></tr>` : ''}</tbody></table></div>`; } else { let html = `<div style="overflow-x:auto;"><table class="db-table"><thead><tr><th>Matière</th><th>Chapitre</th><th>Questions</th><th style="text-align:right">Actions</th></tr></thead><tbody>`; SUBJECTS.forEach(s => { const chaps = state.chapters[s.id] || []; chaps.forEach(ch => { const qCount = state.questions.filter(q => q.subject === s.id && q.chapter === ch.id).length; html += `<tr><td>${s.icon} ${s.name}</td><td><strong>${escapeHtml(ch.name)}</strong></td><td>${qCount} questions</td><td style="text-align:right"><button class="db-action" onclick="editChapterName('${s.id}', '${ch.id}')" title="Renommer">✏️</button><button class="db-action del" onclick="deleteChapter('${s.id}', '${ch.id}')" title="Supprimer">🗑️</button></td></tr>`; }); }); html += `</tbody></table></div>`; el.innerHTML = html; } }
 function deleteQuestion(id) { if(!confirm('Es-tu sûr de vouloir supprimer cette question définitivement ?')) return; state.questions = state.questions.filter(q => q.id !== id); delete state.sr_data[id]; lsSet('bl_questions', state.questions); pushToGitHub("data/questions.json", state.questions, "Suppression automatique d'une question via l'interface web"); lsSet('bl_sr_data', state.sr_data); showToast('Question supprimée', 'ok'); renderDbContent(); }
 function editQuestion(id) { state.editingQuestion = id; const eq = state.questions.find(q => q.id === id); if(eq) addMode = eq.mode; nav('add-question'); }
-function editChapterName(subj, chId) { const chList = state.chapters[subj]; const ch = chList.find(c => c.id === chId); const newName = prompt('Renommer le chapitre :', ch.name); if (newName && newName.trim() !== '') { ch.name = newName.trim(); lsSet('bl_chapters', state.chapters); buildSidebarSubjects(); showToast('Chapitre renommé', 'ok'); renderDbContent(); } }
-function deleteChapter(subj, chId) { const qCount = state.questions.filter(q => q.subject === subj && q.chapter === chId).length; if(!confirm(`ATTENTION : Supprimer ce chapitre va aussi supprimer ses ${qCount} questions. Continuer ?`)) return; state.chapters[subj] = state.chapters[subj].filter(c => c.id !== chId); state.questions = state.questions.filter(q => !(q.subject === subj && q.chapter === chId)); lsSet('bl_chapters', state.chapters); lsSet('bl_questions', state.questions); buildSidebarSubjects(); showToast('Chapitre et questions supprimés', 'ok'); renderDbContent(); }
+function editChapterName(subj, chId) { const chList = state.chapters[subj]; const ch = chList.find(c => c.id === chId); const newName = prompt('Renommer le chapitre :', ch.name); if (newName && newName.trim() !== '') { ch.name = newName.trim(); lsSet('bl_chapters', state.chapters); pushToGitHub('data/chapters.json', state.chapters, 'Renommage automatique d\'un chapitre'); buildSidebarSubjects(); showToast('Chapitre renommé', 'ok'); renderDbContent(); } }
+function deleteChapter(subj, chId) { const qCount = state.questions.filter(q => q.subject === subj && q.chapter === chId).length; if(!confirm(`ATTENTION : Supprimer ce chapitre va aussi supprimer ses ${qCount} questions. Continuer ?`)) return; state.chapters[subj] = state.chapters[subj].filter(c => c.id !== chId); state.questions = state.questions.filter(q => !(q.subject === subj && q.chapter === chId)); lsSet('bl_chapters', state.chapters); lsSet('bl_questions', state.questions); pushToGitHub('data/chapters.json', state.chapters, 'Suppression automatique d\'un chapitre'); pushToGitHub('data/questions.json', state.questions, 'Suppression automatique des questions d\'un chapitre'); buildSidebarSubjects(); showToast('Chapitre et questions supprimés', 'ok'); renderDbContent(); }
 
 // DASHBOARD
 function renderDashboard(c) { setBreadcrumb(['Tableau de bord']); const totalDue = getDueQuestions(null, null, null).length; const totalErrors = Object.values(state.sr_data).reduce((a, b) => a + (b.errors || 0), 0); const totalAttempts = Object.values(state.sr_data).reduce((a, b) => a + (b.attempts || 0), 0); const totalCorrect = totalAttempts - totalErrors; c.innerHTML = `<h1 class="page-title">Prepa B/L · Révisions</h1><p class="page-sub">Hypokhâgne</p><div class="stats-row"><div class="stat-card"><div class="stat-card-num stat-xp">${state.xp.toLocaleString()}</div><div class="stat-card-label">XP total</div></div><div class="stat-card"><div class="stat-card-num stat-ok">${totalCorrect}</div><div class="stat-card-label">Bonnes réponses</div></div><div class="stat-card"><div class="stat-card-num stat-err">${totalErrors}</div><div class="stat-card-label">Erreurs</div></div><div class="stat-card"><div class="stat-card-num stat-due">${totalDue}</div><div class="stat-card-label">À réviser</div></div></div><div class="dashboard-grid">${SUBJECTS.map(s => { const subjectQuestions = state.questions.filter(q => q.subject === s.id); const dueCount = getDueQuestions(s.id, null, null).length; const subjectSr = subjectQuestions.map(q => getSR(q.id)).filter(sr => sr.attempts > 0); const progress = subjectSr.length > 0 ? (subjectSr.reduce((a, b) => a + (b.attempts - b.errors), 0) / subjectSr.reduce((a, b) => a + b.attempts, 0) * 100) : 0; return `<div class="subject-card ${s.colorClass}" onclick="state.currentSubject='${s.id}';nav('play')">${dueCount > 0 ? '<div class="due-badge">' + dueCount + '</div>' : ''}<div class="sc-header"><span class="sc-icon">${s.icon}</span><div><div class="sc-name">${s.name}</div><div class="sc-hours">${s.hours}</div></div></div><div class="sc-stats"><div class="sc-stat"><div class="sc-stat-num">${subjectQuestions.length}</div><div class="sc-stat-label">Questions</div></div><div class="sc-stat"><div class="sc-stat-num">${subjectSr.length}</div><div class="sc-stat-label">Révisées</div></div><div class="sc-stat"><div class="sc-stat-num">${Math.round(progress)}%</div><div class="sc-stat-label">Maîtrise</div></div></div><div class="sc-progress"><div class="sc-progress-bar" style="width:${progress}%;background:${s.color}"></div></div></div>`; }).join('')}</div>`; }
 
+function addDashboardStats(container) {
+  const statsRow = container.querySelector('.stats-row');
+  if (!statsRow || statsRow.querySelector('.stat-success-rate')) return;
+  const attempts = Object.values(state.sr_data).reduce((total, sr) => total + (sr.attempts || 0), 0);
+  const errors = Object.values(state.sr_data).reduce((total, sr) => total + (sr.errors || 0), 0);
+  const successRate = attempts ? Math.round((attempts - errors) / attempts * 100) : 0;
+  const now = Date.now();
+  const mastered = state.questions.filter(question => {
+    const sr = getSR(question.id);
+    return sr.attempts > 0 && sr.interval >= 7 && sr.due > now;
+  }).length;
+  const dueSoon = state.questions.filter(question => {
+    const sr = getSR(question.id);
+    return sr.due > now && sr.due <= now + 24 * 60 * 60 * 1000;
+  }).length;
+  const extraStats = [
+    { className: 'stat-success-rate', value: `${successRate}%`, label: 'Taux de réussite', colorClass: 'stat-ok' },
+    { className: 'stat-mastered', value: mastered, label: 'Questions maîtrisées', colorClass: 'stat-xp' },
+    { className: 'stat-due-soon', value: dueSoon, label: 'À revoir sous 24 h', colorClass: 'stat-due' }
+  ];
+  extraStats.forEach(stat => {
+    const card = document.createElement('div');
+    card.className = `stat-card ${stat.className}`;
+    card.innerHTML = `<div class="stat-card-num ${stat.colorClass}"></div><div class="stat-card-label"></div>`;
+    card.querySelector('.stat-card-num').textContent = stat.value;
+    card.querySelector('.stat-card-label').textContent = stat.label;
+    statsRow.appendChild(card);
+  });
+}
+const originalRenderDashboard = renderDashboard;
+renderDashboard = function(container) { originalRenderDashboard(container); addDashboardStats(container); };
+
 // PLAY
 function renderPlay(c) { setBreadcrumb([SUBJECTS.find(s => s.id === state.currentSubject)?.name || 'Toutes matières', state.currentChapter ? chapterName(state.currentSubject, state.currentChapter) : 'Tous chapitres']); const subject = state.currentSubject; const allChapters = subject ? (state.chapters[subject] || []).map(ch => ch.id) : []; const selectedChapters = subject ? (state.currentChapter ? [state.currentChapter] : (playConfig.chapters?.length ? playConfig.chapters.filter(chId => allChapters.includes(chId)) : allChapters)) : []; const availableChapters = allChapters.filter(chId => state.questions.some(q => q.subject === subject && q.chapter === chId)); const dueQuestions = getDueQuestions(subject, selectedChapters.length > 0 ? selectedChapters : null, playConfig.modes); const nextDue = nextDueTime(subject, selectedChapters.length > 0 ? selectedChapters : null, playConfig.modes); c.innerHTML = `<h1 class="page-title">Session de révision</h1><p class="page-sub">${subject ? SUBJECTS.find(s => s.id === subject)?.name : 'Toutes les matières'}${state.currentChapter ? ' · ' + chapterName(subject, state.currentChapter) : ''}</p><div class="play-config"><div class="config-section"><div class="config-title">Chapitres à réviser</div><div class="chapter-pills" id="chapter-pills">${availableChapters.map(chId => { const isActive = selectedChapters.length === 0 || selectedChapters.includes(chId); return `<button class="chapter-pill ${isActive ? 'active' : ''}" onclick="toggleChapter('${chId}')">${escapeHtml(chapterName(subject, chId))}</button>`; }).join('')}</div><div class="pill-actions"><button class="pill-action" onclick="selectAllChapters()">Tout sélectionner</button><button class="pill-action" onclick="deselectAllChapters()">Tout désélectionner</button></div></div><div class="config-section"><div class="config-title">Mode de questions</div><div class="mode-cards">${QUESTION_MODES.map(mode => { const isActive = playConfig.modes.includes(mode); const count = getDueQuestions(subject, selectedChapters.length > 0 ? selectedChapters : null, [mode]).length; const dueCount = count > 0 ? count : 0; return `<button class="mode-card ${isActive ? 'active' : ''}" onclick="toggleMode('${mode}')"><span class="mode-card-icon">${MODE_LABELS[mode].split(' ')[0]}</span><span class="mode-card-name">${MODE_LABELS[mode].split(' ').slice(1).join(' ')}</span><span class="mode-card-count ${dueCount > 0 ? 'due' : ''}">${dueCount} à réviser</span></button>`; }).join('')}</div></div><div class="config-section"><div class="config-title">Mode chronométré</div><div class="mode-cards"><button class="mode-card ${playConfig.timed ? 'active' : ''}" onclick="toggleTimedMode()"><span class="mode-card-icon">⏱️</span><span class="mode-card-name">Mode chronométré</span><span class="mode-card-count ${playConfig.timed ? 'due' : ''}">${playConfig.timed ? 'Activé' : 'Désactivé'}</span></button></div></div><div style="display:flex;align-items:center;gap:12px;margin-bottom:16px"><span style="color:var(--text2);font-size:0.85rem">Questions disponibles :</span><strong style="font-family:'Syne',sans-serif;font-size:0.95rem">${dueQuestions.length}</strong>${nextDue ? `<span style="color:var(--text3);font-size:0.8rem">Prochaine révision dans ${fmtDuration(nextDue - Date.now())}</span>` : ''}</div>${dueQuestions.length > 0 ? `<button class="start-big" onclick="startQuiz()"><span>🎮</span> Commencer la session (${dueQuestions.length} questions)</button>` : `<div class="all-done-box"><div class="all-done-icon">✅</div><div class="all-done-title">Tout est à jour !</div><div class="all-done-sub">Aucune question n'est due pour la révision.</div></div>`}</div>`; }
+function addSessionSizeControl(container) {
+  const playConfigEl = container.querySelector('.play-config');
+  if (!playConfigEl || playConfigEl.querySelector('#session-size')) return;
+  const section = document.createElement('div');
+  section.className = 'config-section';
+  section.innerHTML = '<div class="config-title">Taille de la session</div><select class="form-select" id="session-size" aria-label="Nombre de questions par session"><option value="5">5 questions</option><option value="10">10 questions</option><option value="20">20 questions</option><option value="all">Toutes les questions</option></select>';
+  const select = section.querySelector('#session-size');
+  select.value = playConfig.questionsPerSession;
+  select.onchange = () => setQuestionsPerSession(select.value);
+  playConfigEl.insertBefore(section, playConfigEl.firstElementChild);
+  const examSection = document.createElement('div');
+  examSection.className = 'config-section';
+  examSection.innerHTML = `<div class="config-title">Type de session</div><button class="mode-card ${playConfig.exam ? 'active' : ''}" type="button"><span class="mode-card-icon">${playConfig.exam ? '📝' : '🎯'}</span><span class="mode-card-name">${playConfig.exam ? 'Mode examen' : 'Mode révision'}</span><span class="mode-card-count">${playConfig.exam ? 'Correction à la fin' : 'Correction immédiate'}</span></button>`;
+  examSection.querySelector('button').onclick = toggleExamMode;
+  playConfigEl.insertBefore(examSection, section.nextSibling);
+}
+const originalRenderPlay = renderPlay;
+renderPlay = function(container) { originalRenderPlay(container); addSessionSizeControl(container); };
 function toggleChapter(chId) { if (!state.currentSubject) return; if (!playConfig.chapters) playConfig.chapters = []; const idx = playConfig.chapters.indexOf(chId); if (idx === -1) { playConfig.chapters.push(chId); } else { playConfig.chapters.splice(idx, 1); } renderPlay(document.getElementById('content')); }
 function selectAllChapters() { if (!state.currentSubject) return; const allChapters = (state.chapters[state.currentSubject] || []).map(ch => ch.id); playConfig.chapters = [...allChapters]; renderPlay(document.getElementById('content')); }
 function deselectAllChapters() { playConfig.chapters = []; renderPlay(document.getElementById('content')); }
 function toggleMode(mode) { const idx = playConfig.modes.indexOf(mode); if (idx === -1) { playConfig.modes.push(mode); } else { playConfig.modes.splice(idx, 1); } renderPlay(document.getElementById('content')); }
 function toggleTimedMode() { playConfig.timed = !playConfig.timed; renderPlay(document.getElementById('content')); }
+function toggleExamMode() { playConfig.exam = !playConfig.exam; renderPlay(document.getElementById('content')); }
+function setQuestionsPerSession(value) { playConfig.questionsPerSession = value; renderPlay(document.getElementById('content')); }
 function startQuiz() {
   const subject = state.currentSubject;
   const allChapters = subject ? (state.chapters[subject] || []).map(ch => ch.id) : [];
@@ -1057,20 +1068,48 @@ function startQuiz() {
     return;
   }
   quiz.questions = shuffle(dueQuestions);
+  if (playConfig.questionsPerSession !== 'all') {
+    quiz.questions = quiz.questions.slice(0, Number(playConfig.questionsPerSession));
+  }
   quiz.index = 0;
   quiz.xpGained = 0;
   quiz.answered = false;
   quiz.currentGrade = null;
   quiz.timerId = null;
   quiz.remainingTime = playConfig.timed ? 15 : null;
+  quiz.exam = playConfig.exam;
+  quiz.examResults = [];
+  quiz.examFinished = false;
+  showQuiz();
+}
+function startErrorQuiz() {
+  const errorQuestions = state.questions.filter(question => getSR(question.id).errors > 0);
+  if (!errorQuestions.length) {
+    showToast('Aucune erreur à réviser pour le moment.', 'info');
+    return;
+  }
+  quiz.questions = shuffle(errorQuestions);
+  if (playConfig.questionsPerSession !== 'all') {
+    quiz.questions = quiz.questions.slice(0, Number(playConfig.questionsPerSession));
+  }
+  quiz.index = 0;
+  quiz.xpGained = 0;
+  quiz.answered = false;
+  quiz.currentGrade = null;
+  quiz.timerId = null;
+  quiz.remainingTime = playConfig.timed ? 15 : null;
+  quiz.exam = false;
+  quiz.examResults = [];
+  quiz.examFinished = false;
   showQuiz();
 }
 function clearQuizTimer() { if (quiz.timerId) { clearInterval(quiz.timerId); quiz.timerId = null; } }
 function updateTimerDisplay() { const timerEl = document.getElementById('qtimer'); if (!timerEl) return; if (playConfig.timed && quiz.remainingTime !== null && quiz.remainingTime !== undefined) { timerEl.style.display = 'inline-block'; timerEl.textContent = quiz.remainingTime + 's'; } else { timerEl.style.display = 'none'; } }
 function startQuizTimer() { clearQuizTimer(); if (!playConfig.timed) return; quiz.remainingTime = 15; updateTimerDisplay(); quiz.timerId = setInterval(() => { quiz.remainingTime--; if (quiz.remainingTime <= 0) { clearQuizTimer(); autoFailQuestion(); } else { updateTimerDisplay(); } }, 1000); }
-function autoFailQuestion() { if (quiz.answered) return; quiz.answered = true; const q = quiz.questions[quiz.index]; const grade = 1; const fbEl = document.getElementById('q-feedback'); fbEl.className = 'feedback ko'; fbEl.style.display = 'block'; document.getElementById('q-fb-title').textContent = 'Temps écoulé !'; document.getElementById('q-fb-text').textContent = q.expl || 'Réponse manquée.'; document.getElementById('qxp').textContent = '+ ' + quiz.xpGained + ' XP'; document.getElementById('next-btn').style.display = 'block'; if (q.mode === 'qcm') { document.querySelectorAll('.opt').forEach((el, i) => { el.disabled = true; if (i === q.correct) el.classList.add('correct'); }); } else if (q.mode === 'vf') { document.querySelectorAll('.vf-btn').forEach(el => el.disabled = true); const qid = q.correct ? 'vf-true' : 'vf-false'; document.getElementById(qid).classList.add('correct'); } else if (q.mode === 'quote' || q.mode === 'complete') { const input = document.getElementById(q.mode === 'quote' ? 'quote-answer-input' : 'complete-answer-input'); if (input) input.disabled = true; } updateSR(q.id, grade); const dots = document.querySelectorAll('.streak-dot'); if (dots[quiz.index]) { dots[quiz.index].className = 'streak-dot ko'; } }
+function autoFailQuestion() { if (quiz.answered) return; quiz.answered = true; const q = quiz.questions[quiz.index]; const grade = 1; if (quiz.exam) { document.querySelectorAll('.opt, .vf-btn').forEach(el => { el.disabled = true; }); const input = document.getElementById(q.mode === 'quote' ? 'quote-answer-input' : 'complete-answer-input'); if (input) input.disabled = true; recordExamAnswer(q, false, null); return; } const fbEl = document.getElementById('q-feedback'); fbEl.className = 'feedback ko'; fbEl.style.display = 'block'; document.getElementById('q-fb-title').textContent = 'Temps écoulé !'; document.getElementById('q-fb-text').textContent = q.expl || 'Réponse manquée.'; document.getElementById('qxp').textContent = '+ ' + quiz.xpGained + ' XP'; document.getElementById('next-btn').style.display = 'block'; if (q.mode === 'qcm') { document.querySelectorAll('.opt').forEach((el, i) => { el.disabled = true; if (i === q.correct) el.classList.add('correct'); }); } else if (q.mode === 'vf') { document.querySelectorAll('.vf-btn').forEach(el => el.disabled = true); const qid = q.correct ? 'vf-true' : 'vf-false'; document.getElementById(qid).classList.add('correct'); } else if (q.mode === 'quote' || q.mode === 'complete') { const input = document.getElementById(q.mode === 'quote' ? 'quote-answer-input' : 'complete-answer-input'); if (input) input.disabled = true; } updateSR(q.id, grade); const dots = document.querySelectorAll('.streak-dot'); if (dots[quiz.index]) { dots[quiz.index].className = 'streak-dot ko'; } }
 function showQuiz() { document.getElementById('quiz-overlay').classList.add('show'); loadQuestion(quiz.questions[quiz.index]); }
-function closeQuiz() { 
+function closeQuiz(force = false) { 
+  if (!force && !quiz.answered && quiz.questions.length > 0 && !confirm('Quitter cette session ? La question en cours ne sera pas comptabilisée.')) return;
   clearQuizTimer();
   document.getElementById('quiz-overlay').classList.remove('show'); 
   state.xp += quiz.xpGained; 
@@ -1143,12 +1182,57 @@ function loadQuestion(q) {
     startQuizTimer();
   }
 }
-function selectOpt(idx) { if (quiz.answered) return; clearQuizTimer(); quiz.answered = true; const q = quiz.questions[quiz.index]; const isCorrect = idx === q.correct; const grade = isCorrect ? 4 : 1; document.querySelectorAll('.opt').forEach((el, i) => { el.disabled = true; if (i === q.correct) el.classList.add('correct'); else if (i === idx) el.classList.add('wrong'); }); const xpGain = Math.round(10 * (grade / 4)); quiz.xpGained += xpGain; quiz.currentGrade = grade; const fbEl = document.getElementById('q-feedback'); fbEl.className = 'feedback ' + (isCorrect ? 'ok' : 'ko'); fbEl.style.display = 'block'; document.getElementById('q-fb-title').textContent = isCorrect ? 'Bonne réponse !' : 'Faux'; document.getElementById('q-fb-text').textContent = q.expl; document.getElementById('qxp').textContent = '+ ' + quiz.xpGained + ' XP'; updateSR(q.id, grade); document.getElementById('next-btn').style.display = 'block'; const dots = document.querySelectorAll('.streak-dot'); if (dots[quiz.index]) { dots[quiz.index].className = 'streak-dot ' + (isCorrect ? 'ok' : 'ko'); } }
-function selectVF(isTrue) { if (quiz.answered) return; clearQuizTimer(); quiz.answered = true; const q = quiz.questions[quiz.index]; const isCorrect = isTrue === q.correct; const grade = isCorrect ? 4 : 1; document.querySelectorAll('.vf-btn').forEach(el => { el.disabled = true; }); const btnId = isTrue ? 'vf-true' : 'vf-false'; document.getElementById(btnId).classList.add(isCorrect ? 'correct' : 'wrong'); const xpGain = Math.round(10 * (grade / 4)); quiz.xpGained += xpGain; quiz.currentGrade = grade; const fbEl = document.getElementById('q-feedback'); fbEl.className = 'feedback ' + (isCorrect ? 'ok' : 'ko'); fbEl.style.display = 'block'; document.getElementById('q-fb-title').textContent = isCorrect ? 'Bonne réponse !' : 'Faux'; document.getElementById('q-fb-text').textContent = q.expl; document.getElementById('qxp').textContent = '+ ' + quiz.xpGained + ' XP'; updateSR(q.id, grade); document.getElementById('next-btn').style.display = 'block'; const dots = document.querySelectorAll('.streak-dot'); if (dots[quiz.index]) { dots[quiz.index].className = 'streak-dot ' + (isCorrect ? 'ok' : 'ko'); } }
-function submitTextAnswer(answer) { if (quiz.answered) return; clearQuizTimer(); const q = quiz.questions[quiz.index]; const normalizedAnswer = normalizeText(answer); const normalizedCorrect = normalizeText(q.correct || q.author || ''); const isCorrect = normalizedAnswer === normalizedCorrect; const grade = isCorrect ? 4 : 1; quiz.answered = true; const fbEl = document.getElementById('q-feedback'); fbEl.className = 'feedback ' + (isCorrect ? 'ok' : 'ko'); fbEl.style.display = 'block'; document.getElementById('q-fb-title').textContent = isCorrect ? 'Bonne réponse !' : 'Faux'; document.getElementById('q-fb-text').textContent = q.expl; const xpGain = Math.round(10 * (grade / 4)); quiz.xpGained += xpGain; quiz.currentGrade = grade; document.getElementById('qxp').textContent = '+ ' + quiz.xpGained + ' XP'; const inputId = q.mode === 'quote' ? 'quote-answer-input' : 'complete-answer-input'; const input = document.getElementById(inputId); if (input) input.disabled = true; document.getElementById('next-btn').style.display = 'block'; updateSR(q.id, grade); const dots = document.querySelectorAll('.streak-dot'); if (dots[quiz.index]) { dots[quiz.index].className = 'streak-dot ' + (isCorrect ? 'ok' : 'ko'); } }
+function recordExamAnswer(q, isCorrect, answer) {
+  quiz.examResults[quiz.index] = { id: q.id, question: q.q, correct: isCorrect, answer: answer };
+  quiz.xpGained += isCorrect ? 10 : 0;
+  updateSR(q.id, isCorrect ? 4 : 1);
+  document.getElementById('next-btn').style.display = 'block';
+}
+function finishExam() {
+  clearQuizTimer();
+  const correctCount = quiz.examResults.filter(result => result && result.correct).length;
+  const total = quiz.questions.length;
+  const percentage = total ? Math.round(correctCount / total * 100) : 0;
+  state.xp += quiz.xpGained;
+  lsSet('bl_xp', state.xp);
+  if (quiz.xpGained > 0) updateStreak();
+  updateBadges();
+  if (state.currentUser) syncUserStats();
+  quiz.xpGained = 0;
+  quiz.examFinished = true;
+  document.getElementById('q-mode-label').textContent = 'Résultat de l’examen';
+  document.getElementById('q-chapter-tag').textContent = `${correctCount}/${total}`;
+  document.getElementById('q-text').textContent = `${percentage}% de réussite`;
+  document.getElementById('q-options').innerHTML = `<div class="feedback" style="display:block"><strong>${correctCount} bonne${correctCount > 1 ? 's' : ''} réponse${correctCount > 1 ? 's' : ''} sur ${total}</strong><span>Les corrections détaillées sont disponibles ci-dessous.</span></div>${quiz.examResults.map(result => `<div class="error-item"><div class="err-count">${result.correct ? 'OK' : 'À revoir'}</div><div class="err-body"><div class="err-q">${escapeHtml(result.question)}</div></div></div>`).join('')}`;
+  document.getElementById('q-feedback').style.display = 'none';
+  document.getElementById('next-btn').style.display = 'none';
+}
+function selectOpt(idx) { if (quiz.answered) return; clearQuizTimer(); quiz.answered = true; const q = quiz.questions[quiz.index]; const isCorrect = idx === q.correct; const grade = isCorrect ? 4 : 1; if (quiz.exam) { document.querySelectorAll('.opt').forEach(el => { el.disabled = true; }); recordExamAnswer(q, isCorrect, idx); return; } document.querySelectorAll('.opt').forEach((el, i) => { el.disabled = true; if (i === q.correct) el.classList.add('correct'); else if (i === idx) el.classList.add('wrong'); }); const xpGain = Math.round(10 * (grade / 4)); quiz.xpGained += xpGain; quiz.currentGrade = grade; const fbEl = document.getElementById('q-feedback'); fbEl.className = 'feedback ' + (isCorrect ? 'ok' : 'ko'); fbEl.style.display = 'block'; document.getElementById('q-fb-title').textContent = isCorrect ? 'Bonne réponse !' : 'Faux'; document.getElementById('q-fb-text').textContent = q.expl; document.getElementById('qxp').textContent = '+ ' + quiz.xpGained + ' XP'; updateSR(q.id, grade); document.getElementById('next-btn').style.display = 'block'; const dots = document.querySelectorAll('.streak-dot'); if (dots[quiz.index]) { dots[quiz.index].className = 'streak-dot ' + (isCorrect ? 'ok' : 'ko'); } }
+function selectVF(isTrue) { if (quiz.answered) return; clearQuizTimer(); quiz.answered = true; const q = quiz.questions[quiz.index]; const isCorrect = isTrue === q.correct; const grade = isCorrect ? 4 : 1; document.querySelectorAll('.vf-btn').forEach(el => { el.disabled = true; }); if (quiz.exam) { recordExamAnswer(q, isCorrect, isTrue); return; } const btnId = isTrue ? 'vf-true' : 'vf-false'; document.getElementById(btnId).classList.add(isCorrect ? 'correct' : 'wrong'); const xpGain = Math.round(10 * (grade / 4)); quiz.xpGained += xpGain; quiz.currentGrade = grade; const fbEl = document.getElementById('q-feedback'); fbEl.className = 'feedback ' + (isCorrect ? 'ok' : 'ko'); fbEl.style.display = 'block'; document.getElementById('q-fb-title').textContent = isCorrect ? 'Bonne réponse !' : 'Faux'; document.getElementById('q-fb-text').textContent = q.expl; document.getElementById('qxp').textContent = '+ ' + quiz.xpGained + ' XP'; updateSR(q.id, grade); document.getElementById('next-btn').style.display = 'block'; const dots = document.querySelectorAll('.streak-dot'); if (dots[quiz.index]) { dots[quiz.index].className = 'streak-dot ' + (isCorrect ? 'ok' : 'ko'); } }
+function submitTextAnswer(answer) { if (quiz.answered) return; clearQuizTimer(); const q = quiz.questions[quiz.index]; const normalizedAnswer = normalizeText(answer); const normalizedCorrect = normalizeText(q.correct || q.author || ''); const isCorrect = normalizedAnswer === normalizedCorrect; const grade = isCorrect ? 4 : 1; quiz.answered = true; const inputId = q.mode === 'quote' ? 'quote-answer-input' : 'complete-answer-input'; const input = document.getElementById(inputId); if (input) input.disabled = true; if (quiz.exam) { recordExamAnswer(q, isCorrect, answer); return; } const fbEl = document.getElementById('q-feedback'); fbEl.className = 'feedback ' + (isCorrect ? 'ok' : 'ko'); fbEl.style.display = 'block'; document.getElementById('q-fb-title').textContent = isCorrect ? 'Bonne réponse !' : 'Faux'; document.getElementById('q-fb-text').textContent = q.expl; const xpGain = Math.round(10 * (grade / 4)); quiz.xpGained += xpGain; quiz.currentGrade = grade; document.getElementById('qxp').textContent = '+ ' + quiz.xpGained + ' XP'; document.getElementById('next-btn').style.display = 'block'; updateSR(q.id, grade); const dots = document.querySelectorAll('.streak-dot'); if (dots[quiz.index]) { dots[quiz.index].className = 'streak-dot ' + (isCorrect ? 'ok' : 'ko'); } }
 function submitQuoteAnswer() { const input = document.getElementById('quote-answer-input'); if (!input) return; const answer = input.value.trim(); if (!answer) return showToast('Saisis une réponse', 'err'); submitTextAnswer(answer); }
 function submitCompleteAnswer() { const input = document.getElementById('complete-answer-input'); if (!input) return; const answer = input.value.trim(); if (!answer) return showToast('Saisis la partie manquante', 'err'); submitTextAnswer(answer); }
-function nextQ() { quiz.index++; if (quiz.index >= quiz.questions.length) { closeQuiz(); showToast('Session terminée ! +' + quiz.xpGained + ' XP', 'ok'); return; } loadQuestion(quiz.questions[quiz.index]); }
+function nextQ() { quiz.index++; if (quiz.index >= quiz.questions.length) { if (quiz.exam) { finishExam(); } else { closeQuiz(); showToast('Session terminée ! +' + quiz.xpGained + ' XP', 'ok'); } return; } loadQuestion(quiz.questions[quiz.index]); }
+
+document.addEventListener('keydown', function(event) {
+  const quizOverlay = document.getElementById('quiz-overlay');
+  if (!quizOverlay?.classList.contains('show')) return;
+  if (event.key === 'Escape') {
+    event.preventDefault();
+    closeQuiz();
+    return;
+  }
+  if (event.key === 'Enter' && quiz.answered) {
+    event.preventDefault();
+    nextQ();
+    return;
+  }
+  const question = quiz.questions[quiz.index];
+  if (!quiz.answered && question?.mode === 'qcm' && /^[a-d]$/i.test(event.key)) {
+    event.preventDefault();
+    selectOpt(event.key.toUpperCase().charCodeAt(0) - 65);
+  }
+});
 
 // BILAN
 function renderBilan(c) { setBreadcrumb(['Bilan & erreurs']); c.innerHTML = `<h1 class="page-title">Bilan & erreurs</h1><div class="bilan-tabs"><button class="bilan-tab ${bilanTab === 'chapitres' ? 'active' : ''}" onclick="bilanTab='chapitres';renderBilan(content)">Chapitres</button><button class="bilan-tab ${bilanTab === 'erreurs' ? 'active' : ''}" onclick="bilanTab='erreurs';renderBilan(content)">Erreurs</button></div>${bilanTab === 'chapitres' ? renderChaptersBilan() : renderErrorsBilan()}`; }
@@ -1165,6 +1249,7 @@ function renderCoursViewer() { const cours = state.cours.find(c => c.id === cour
 // FONCTION DE RENDU MARKDOWN AMÉLIORÉE
 function renderMarkdown(text) {
   if (!text) return '';
+  text = escapeHtml(text);
   let result = text
     .replace(/:::\s*def\s*([\s\S]*?)\n:::/g, '<div class="block-def"><div class="block-label">Définition</div>$1</div>')
     .replace(/:::\s*cite\s*([\s\S]*?)\n:::/g, '<div class="block-cite">$1</div>')
@@ -1199,7 +1284,7 @@ function renderCoursEditor(c, cours) {
     <h1 class="page-title">${escapeHtml(title)}</h1>
     <div class="cours-editor">
       <input type="text" class="cours-editor-title" id="cours-title" placeholder="Titre du cours" value="${cours ? escapeHtml(cours.title || '') : ''}">
-      <textarea class="cours-editor-body" id="cours-content" placeholder="Contenu du cours (Markdown supporté)">${cours ? cours.content : ''}</textarea>
+      <textarea class="cours-editor-body" id="cours-content" placeholder="Contenu du cours (Markdown supporté)">${cours ? escapeHtml(cours.content || '') : ''}</textarea>
       <div class="editor-toolbar">
         <button class="toolbar-btn" onclick="insertSnippet(event, '**texte**')" title="Gras">Gras</button>
         <button class="toolbar-btn" onclick="insertSnippet(event, '*texte*')" title="Italique">Italique</button>
@@ -1295,9 +1380,9 @@ function renderAddQuestion(c) {
         <div class="form-group">
           <label class="form-label">Difficulté</label>
           <select class="form-select" id="aq-difficulty">
-            <option value="1">Facile</option>
-            <option value="2" selected>Moyenne</option>
-            <option value="3">Difficile</option>
+            <option value="1" ${eq?.difficulty === 1 ? 'selected' : ''}>Facile</option>
+            <option value="2" ${!eq || eq.difficulty === 2 || !eq.difficulty ? 'selected' : ''}>Moyenne</option>
+            <option value="3" ${eq?.difficulty === 3 ? 'selected' : ''}>Difficile</option>
           </select>
         </div>
       </div>
@@ -1356,7 +1441,7 @@ function addQuestion() {
   const question = document.getElementById('aq-question').value.trim(); 
   const explanation = document.getElementById('aq-explanation').value.trim(); 
   if (!subject || !chapter || !question) { showToast('Champs obligatoires manquants', 'err'); return; } 
-  let newQuestion = { id: 'q_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4), subject: subject, chapter: chapter, mode: mode, q: question, expl: explanation };
+  let newQuestion = { id: 'q_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4), subject: subject, chapter: chapter, mode: mode, q: question, expl: explanation, difficulty: Number(document.getElementById('aq-difficulty').value) };
   if (mode === 'qcm') { 
     const opts = []; 
     document.querySelectorAll('#qcm-opts .form-input').forEach(input => { opts.push(input.value.trim()); }); 
@@ -1394,7 +1479,7 @@ function saveQuestion() {
   const question = document.getElementById('aq-question').value.trim(); 
   const explanation = document.getElementById('aq-explanation').value.trim(); 
   if (!subject || !chapter || !question) { showToast('Champs obligatoires manquants', 'err'); return; } 
-  let updatedQuestion = { id: id, subject: subject, chapter: chapter, mode: mode, q: question, expl: explanation };
+  let updatedQuestion = { id: id, subject: subject, chapter: chapter, mode: mode, q: question, expl: explanation, difficulty: Number(document.getElementById('aq-difficulty').value) };
   if (mode === 'qcm') { 
     const opts = []; 
     document.querySelectorAll('#qcm-opts .form-input').forEach(input => { opts.push(input.value.trim()); }); 
@@ -1465,7 +1550,8 @@ function saveQuestion() {
       chapter: chapId,
       mode,
       q: qText,
-      expl: expl || ''
+      expl: expl || '',
+      difficulty: 2
     };
     
     if (mode === 'vf') {
@@ -1496,8 +1582,10 @@ function saveQuestion() {
   
   if (count > 0) {
     lsSet('bl_questions', state.questions);
+    pushToGitHub('data/questions.json', state.questions, 'Import automatique de questions');
     if (newChaptersCount > 0) {
         lsSet('bl_chapters', state.chapters);
+      pushToGitHub('data/chapters.json', state.chapters, 'Création automatique de chapitres');
         buildSidebarSubjects(); // Mettre à jour le menu latéral
     }
     showToast(`${count} questions importées ✓`, 'ok');
