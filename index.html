@@ -1089,6 +1089,15 @@ function closeQuiz() {
   }
 }
 function loadQuestion(q) {
+  if (q.mode === 'qcm') {
+    const shuffledOptions = shuffle(q.opts.map((text, index) => ({ text, index })));
+    q = {
+      ...q,
+      opts: shuffledOptions.map(option => option.text),
+      correct: shuffledOptions.findIndex(option => option.index === q.correct)
+    };
+    quiz.questions[quiz.index] = q;
+  }
   quiz.answered = false;
   document.getElementById('next-btn').style.display = 'none';
   document.getElementById('q-feedback').style.display = 'none';
