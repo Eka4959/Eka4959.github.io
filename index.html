@@ -232,6 +232,11 @@ a { color: inherit; text-decoration: none; }
 .vf-btn:hover:not(:disabled) { background: var(--bg3); }
 .vf-btn.correct { border-color: var(--green); background: rgba(76,175,124,0.1); color: var(--green); }
 .vf-btn.wrong { border-color: var(--red); background: rgba(224,92,92,0.08); color: var(--red); }
+.quote-input-wrap { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.quote-input { flex: 1; background: var(--bg2); border: 1.5px solid var(--border); border-radius: 9px; color: var(--text); padding: 11px 12px; font-size: 0.9rem; outline: none; }
+.quote-input:focus { border-color: var(--yellow); }
+.quote-submit-btn { background: var(--yellow); color: var(--bg); border: none; border-radius: 8px; padding: 10px 16px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.8rem; }
+.quote-submit-btn:hover { background: #e8b820; }
 .feedback { display: none; background: var(--bg3); border-radius: 9px; padding: 14px 16px; margin-bottom: 14px; border-left: 3px solid var(--green); font-size: 0.86rem; line-height: 1.6; }
 .feedback.ko { border-left-color: var(--red); }
 .feedback strong { display: block; font-family: 'Syne', sans-serif; font-size: 0.88rem; margin-bottom: 3px; }
@@ -648,12 +653,54 @@ const GITHUB_CONFIG = {
 // ==========================================
 
 function getGitHubToken() {
-  localStorage.removeItem('gh_admin_token');
-  return null;
+  return localStorage.getItem('gh_admin_token') || null;
+}
+
+function persistLocally(path, data) {
+  const localKey = `bl_pending_sync_${path.replace(/[\\/]/g, '_')}`;
+  lsSet(localKey, data);
 }
 
 async function pushToGitHub(path, data, commitMessage) {
-  return Promise.resolve();
+  const token = getGitHubToken();
+  if (!token) {
+    persistLocally(path, data);
+    return Promise.resolve();
+  }
+
+  try {
+    const apiUrl = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${path}`;
+    const currentRes = await fetch(apiUrl, {
+      headers: {
+        'Authorization': `token ${token}`,
+        'Accept': 'application/vnd.github+json'
+      }
+    });
+    const current = await currentRes.json();
+    const payload = {
+      message: commitMessage,
+      branch: GITHUB_CONFIG.branch,
+      content: btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2)))),
+      sha: current?.sha
+    };
+    const res = await fetch(apiUrl, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `token ${token}`,
+        'Accept': 'application/vnd.github+json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+    if (!res.ok) {
+      throw new Error('GitHub write failed');
+    }
+    return Promise.resolve();
+  } catch (error) {
+    persistLocally(path, data);
+    console.warn(`Sauvegarde GitHub impossible pour ${path}, data enregistrée localement.`, error);
+    return Promise.resolve();
+  }
 }
 
 // ==========================================
@@ -681,10 +728,11 @@ function hideAuth() {
 function loginUser(username) {
   // Charge l'état
   state.currentUser = username;
-  state.xp = usersDb[username].xp || 0;
-  state.streak = usersDb[username].streak || 0;
-  state.lastActivityDate = usersDb[username].lastActivityDate || null;
-  state.sr_data = usersDb[username].sr_data || {};
+  const userStats = usersDb[username] || {};
+  state.xp = userStats.xp ?? state.xp;
+  state.streak = userStats.streak ?? state.streak;
+  state.lastActivityDate = userStats.lastActivityDate ?? null;
+  state.sr_data = userStats.sr_data || state.sr_data || {};
   
   lsSet('bl_current_user', username);
   updateBadges();
@@ -792,7 +840,10 @@ async function initApp() {
       const response = await fetch(`${path}?t=${noCache}`);
       if (!response.ok) return cached;
       const value = await response.json();
-      return validate(value) && hasContent(value) ? value : cached;
+      if (validate(value) && hasContent(value)) {
+        return value;
+      }
+      return cached;
     } catch (error) {
       console.warn(`Impossible de charger ${path}`, error);
       return cached;
@@ -841,6 +892,17 @@ function normalizeText(text) {
   if (text === null || text === undefined) return '';
   return text.toString().normalize('NFD').replace(/\p{Diacritic}/gu, '').replace(/[^a-z0-9]/gi, '').toLowerCase().trim();
 }
+function matchesTextAnswer(answer, expected) {
+  const normalizedAnswer = normalizeText(answer);
+  const normalizedExpected = normalizeText(expected);
+  if (!normalizedAnswer || !normalizedExpected) return normalizedAnswer === normalizedExpected;
+  if (normalizedAnswer === normalizedExpected) return true;
+  if (normalizedAnswer.includes(normalizedExpected) || normalizedExpected.includes(normalizedAnswer)) return true;
+  const answerTokens = normalizedAnswer.split(/\s+/).filter(Boolean);
+  const expectedTokens = normalizedExpected.split(/\s+/).filter(Boolean);
+  const overlaps = answerTokens.filter(token => expectedTokens.includes(token));
+  return overlaps.length >= Math.max(1, Math.min(answerTokens.length, expectedTokens.length) - 1);
+}
 
 // STREAK - NOUVELLES FONCTIONS
 
@@ -876,11 +938,17 @@ function updateSR(qid, grade) {
     sr.interval = 0; 
     sr.due = now + 1 * 60 * 1000; 
   } else { 
-    if (sr.interval === 0) sr.interval = 1; 
-    else if (sr.interval === 1) sr.interval = 3; 
+    const hadErrors = sr.errors > 0;
+    if (sr.interval === 0) sr.interval = 1;
+    else if (sr.interval === 1) sr.interval = 3;
     else sr.interval = Math.round(sr.interval * sr.ef);
     if (grade === 2) sr.interval = Math.max(1, Math.round(sr.interval * 0.6));
     if (grade === 4) sr.interval = Math.round(sr.interval * 1.3);
+    if (hadErrors) {
+      sr.errors = Math.max(0, sr.errors - 1);
+      sr.ef = Math.max(1.3, sr.ef - 0.12);
+      sr.interval = Math.max(1, Math.round(sr.interval * 0.85));
+    }
     sr.ef = Math.max(1.3, sr.ef + 0.1 - (4 - grade) * (0.08 + (4 - grade) * 0.02));
     sr.due = now + sr.interval * 24 * 60 * 60 * 1000;
   }
@@ -897,7 +965,27 @@ function chapterName(subject, chapterId) { const chs = state.chapters[subject] |
 
 // FONCTIONS POUR LA REVISION CIBLEE
 function getChapterErrorQuestions(chapterId, subjectId) { return state.questions.filter(q => { if (subjectId && q.subject !== subjectId) return false; if (q.chapter !== chapterId) return false; const sr = getSR(q.id); return sr && sr.errors > 0; }); }
-function reviewChapter(chapterId, subjectId) { const questions = getChapterErrorQuestions(chapterId, subjectId); if (questions.length === 0) { showToast('Aucune erreur à réviser pour ce chapitre', 'err'); return; } playConfig = { chapters: [chapterId], modes: [...QUESTION_MODES], timed: false, exam: false, questionsPerSession: 'all' }; state.currentSubject = subjectId; startQuiz(); nav('play'); }
+function startQuizFromQuestions(questions) {
+  if (!questions || questions.length === 0) {
+    showToast('Aucune question à réviser pour cette session.', 'info');
+    return;
+  }
+  quiz.questions = shuffle(questions);
+  if (playConfig.questionsPerSession !== 'all') {
+    quiz.questions = quiz.questions.slice(0, Number(playConfig.questionsPerSession));
+  }
+  quiz.index = 0;
+  quiz.xpGained = 0;
+  quiz.answered = false;
+  quiz.currentGrade = null;
+  quiz.timerId = null;
+  quiz.remainingTime = playConfig.timed ? 15 : null;
+  quiz.exam = playConfig.exam;
+  quiz.examResults = [];
+  quiz.examFinished = false;
+  showQuiz();
+}
+function reviewChapter(chapterId, subjectId) { const questions = getChapterErrorQuestions(chapterId, subjectId); if (questions.length === 0) { showToast('Aucune erreur à réviser pour ce chapitre', 'err'); return; } playConfig = { chapters: [chapterId], modes: [...QUESTION_MODES], timed: false, exam: false, questionsPerSession: 'all' }; state.currentSubject = subjectId; state.currentChapter = chapterId; startQuizFromQuestions(questions); nav('play'); }
 
 // THEME
 let sunriseH = 6, sunsetH = 20;
@@ -1067,20 +1155,7 @@ function startQuiz() {
     showToast('Aucune question due pour cette session.', 'info');
     return;
   }
-  quiz.questions = shuffle(dueQuestions);
-  if (playConfig.questionsPerSession !== 'all') {
-    quiz.questions = quiz.questions.slice(0, Number(playConfig.questionsPerSession));
-  }
-  quiz.index = 0;
-  quiz.xpGained = 0;
-  quiz.answered = false;
-  quiz.currentGrade = null;
-  quiz.timerId = null;
-  quiz.remainingTime = playConfig.timed ? 15 : null;
-  quiz.exam = playConfig.exam;
-  quiz.examResults = [];
-  quiz.examFinished = false;
-  showQuiz();
+  startQuizFromQuestions(dueQuestions);
 }
 function startErrorQuiz() {
   const errorQuestions = state.questions.filter(question => getSR(question.id).errors > 0);
@@ -1088,20 +1163,8 @@ function startErrorQuiz() {
     showToast('Aucune erreur à réviser pour le moment.', 'info');
     return;
   }
-  quiz.questions = shuffle(errorQuestions);
-  if (playConfig.questionsPerSession !== 'all') {
-    quiz.questions = quiz.questions.slice(0, Number(playConfig.questionsPerSession));
-  }
-  quiz.index = 0;
-  quiz.xpGained = 0;
-  quiz.answered = false;
-  quiz.currentGrade = null;
-  quiz.timerId = null;
-  quiz.remainingTime = playConfig.timed ? 15 : null;
-  quiz.exam = false;
-  quiz.examResults = [];
-  quiz.examFinished = false;
-  showQuiz();
+  playConfig.exam = false;
+  startQuizFromQuestions(errorQuestions);
 }
 function clearQuizTimer() { if (quiz.timerId) { clearInterval(quiz.timerId); quiz.timerId = null; } }
 function updateTimerDisplay() { const timerEl = document.getElementById('qtimer'); if (!timerEl) return; if (playConfig.timed && quiz.remainingTime !== null && quiz.remainingTime !== undefined) { timerEl.style.display = 'inline-block'; timerEl.textContent = quiz.remainingTime + 's'; } else { timerEl.style.display = 'none'; } }
@@ -1209,7 +1272,7 @@ function finishExam() {
 }
 function selectOpt(idx) { if (quiz.answered) return; clearQuizTimer(); quiz.answered = true; const q = quiz.questions[quiz.index]; const isCorrect = idx === q.correct; const grade = isCorrect ? 4 : 1; if (quiz.exam) { document.querySelectorAll('.opt').forEach(el => { el.disabled = true; }); recordExamAnswer(q, isCorrect, idx); return; } document.querySelectorAll('.opt').forEach((el, i) => { el.disabled = true; if (i === q.correct) el.classList.add('correct'); else if (i === idx) el.classList.add('wrong'); }); const xpGain = Math.round(10 * (grade / 4)); quiz.xpGained += xpGain; quiz.currentGrade = grade; const fbEl = document.getElementById('q-feedback'); fbEl.className = 'feedback ' + (isCorrect ? 'ok' : 'ko'); fbEl.style.display = 'block'; document.getElementById('q-fb-title').textContent = isCorrect ? 'Bonne réponse !' : 'Faux'; document.getElementById('q-fb-text').textContent = q.expl; document.getElementById('qxp').textContent = '+ ' + quiz.xpGained + ' XP'; updateSR(q.id, grade); document.getElementById('next-btn').style.display = 'block'; const dots = document.querySelectorAll('.streak-dot'); if (dots[quiz.index]) { dots[quiz.index].className = 'streak-dot ' + (isCorrect ? 'ok' : 'ko'); } }
 function selectVF(isTrue) { if (quiz.answered) return; clearQuizTimer(); quiz.answered = true; const q = quiz.questions[quiz.index]; const isCorrect = isTrue === q.correct; const grade = isCorrect ? 4 : 1; document.querySelectorAll('.vf-btn').forEach(el => { el.disabled = true; }); if (quiz.exam) { recordExamAnswer(q, isCorrect, isTrue); return; } const btnId = isTrue ? 'vf-true' : 'vf-false'; document.getElementById(btnId).classList.add(isCorrect ? 'correct' : 'wrong'); const xpGain = Math.round(10 * (grade / 4)); quiz.xpGained += xpGain; quiz.currentGrade = grade; const fbEl = document.getElementById('q-feedback'); fbEl.className = 'feedback ' + (isCorrect ? 'ok' : 'ko'); fbEl.style.display = 'block'; document.getElementById('q-fb-title').textContent = isCorrect ? 'Bonne réponse !' : 'Faux'; document.getElementById('q-fb-text').textContent = q.expl; document.getElementById('qxp').textContent = '+ ' + quiz.xpGained + ' XP'; updateSR(q.id, grade); document.getElementById('next-btn').style.display = 'block'; const dots = document.querySelectorAll('.streak-dot'); if (dots[quiz.index]) { dots[quiz.index].className = 'streak-dot ' + (isCorrect ? 'ok' : 'ko'); } }
-function submitTextAnswer(answer) { if (quiz.answered) return; clearQuizTimer(); const q = quiz.questions[quiz.index]; const normalizedAnswer = normalizeText(answer); const normalizedCorrect = normalizeText(q.correct || q.author || ''); const isCorrect = normalizedAnswer === normalizedCorrect; const grade = isCorrect ? 4 : 1; quiz.answered = true; const inputId = q.mode === 'quote' ? 'quote-answer-input' : 'complete-answer-input'; const input = document.getElementById(inputId); if (input) input.disabled = true; if (quiz.exam) { recordExamAnswer(q, isCorrect, answer); return; } const fbEl = document.getElementById('q-feedback'); fbEl.className = 'feedback ' + (isCorrect ? 'ok' : 'ko'); fbEl.style.display = 'block'; document.getElementById('q-fb-title').textContent = isCorrect ? 'Bonne réponse !' : 'Faux'; document.getElementById('q-fb-text').textContent = q.expl; const xpGain = Math.round(10 * (grade / 4)); quiz.xpGained += xpGain; quiz.currentGrade = grade; document.getElementById('qxp').textContent = '+ ' + quiz.xpGained + ' XP'; document.getElementById('next-btn').style.display = 'block'; updateSR(q.id, grade); const dots = document.querySelectorAll('.streak-dot'); if (dots[quiz.index]) { dots[quiz.index].className = 'streak-dot ' + (isCorrect ? 'ok' : 'ko'); } }
+function submitTextAnswer(answer) { if (quiz.answered) return; clearQuizTimer(); const q = quiz.questions[quiz.index]; const expected = q.correct || q.author || q.answer || ''; const isCorrect = matchesTextAnswer(answer, expected); const grade = isCorrect ? 4 : 1; quiz.answered = true; const inputId = q.mode === 'quote' ? 'quote-answer-input' : 'complete-answer-input'; const input = document.getElementById(inputId); if (input) input.disabled = true; if (quiz.exam) { recordExamAnswer(q, isCorrect, answer); return; } const fbEl = document.getElementById('q-feedback'); fbEl.className = 'feedback ' + (isCorrect ? 'ok' : 'ko'); fbEl.style.display = 'block'; document.getElementById('q-fb-title').textContent = isCorrect ? 'Bonne réponse !' : 'Faux'; const feedbackText = isCorrect ? (q.expl || 'Bonne réponse.') : `${q.expl ? q.expl + ' ' : ''}Réponse attendue : ${expected}`; document.getElementById('q-fb-text').textContent = feedbackText; const xpGain = Math.round(10 * (grade / 4)); quiz.xpGained += xpGain; quiz.currentGrade = grade; document.getElementById('qxp').textContent = '+ ' + quiz.xpGained + ' XP'; document.getElementById('next-btn').style.display = 'block'; updateSR(q.id, grade); const dots = document.querySelectorAll('.streak-dot'); if (dots[quiz.index]) { dots[quiz.index].className = 'streak-dot ' + (isCorrect ? 'ok' : 'ko'); } }
 function submitQuoteAnswer() { const input = document.getElementById('quote-answer-input'); if (!input) return; const answer = input.value.trim(); if (!answer) return showToast('Saisis une réponse', 'err'); submitTextAnswer(answer); }
 function submitCompleteAnswer() { const input = document.getElementById('complete-answer-input'); if (!input) return; const answer = input.value.trim(); if (!answer) return showToast('Saisis la partie manquante', 'err'); submitTextAnswer(answer); }
 function nextQ() { quiz.index++; if (quiz.index >= quiz.questions.length) { if (quiz.exam) { finishExam(); } else { closeQuiz(); showToast('Session terminée ! +' + quiz.xpGained + ' XP', 'ok'); } return; } loadQuestion(quiz.questions[quiz.index]); }
@@ -1237,7 +1300,7 @@ document.addEventListener('keydown', function(event) {
 // BILAN
 function renderBilan(c) { setBreadcrumb(['Bilan & erreurs']); c.innerHTML = `<h1 class="page-title">Bilan & erreurs</h1><div class="bilan-tabs"><button class="bilan-tab ${bilanTab === 'chapitres' ? 'active' : ''}" onclick="bilanTab='chapitres';renderBilan(content)">Chapitres</button><button class="bilan-tab ${bilanTab === 'erreurs' ? 'active' : ''}" onclick="bilanTab='erreurs';renderBilan(content)">Erreurs</button></div>${bilanTab === 'chapitres' ? renderChaptersBilan() : renderErrorsBilan()}`; }
 function renderChaptersBilan() { const errorQuestions = state.questions.filter(q => { const sr = getSR(q.id); return sr && sr.errors > 0; }); const chaptersMap = {}; errorQuestions.forEach(q => { const key = q.subject + '_' + q.chapter; if (!chaptersMap[key]) { chaptersMap[key] = { subject: q.subject, chapter: q.chapter, questions: [], totalAttempts: 0, totalErrors: 0 }; } const sr = getSR(q.id); chaptersMap[key].questions.push(q); chaptersMap[key].totalAttempts += sr.attempts || 0; chaptersMap[key].totalErrors += sr.errors || 0; }); const chapters = Object.values(chaptersMap); chapters.sort((a, b) => { const rateA = a.totalAttempts > 0 ? (a.totalErrors / a.totalAttempts) : 0; const rateB = b.totalAttempts > 0 ? (b.totalErrors / b.totalAttempts) : 0; return rateB - rateA; }); if (chapters.length === 0) { return `<div class="empty-state"><div class="empty-state-icon">📊</div><div class="empty-state-title">Aucune erreur à afficher</div><div class="empty-state-sub">Faites des sessions de révision pour voir vos points faibles</div></div>`; } return `<div class="chapter-bilan-list">${chapters.map((ch, idx) => { const progress = ch.totalAttempts > 0 ? ((ch.totalAttempts - ch.totalErrors) / ch.totalAttempts * 100) : 0; const subject = SUBJECTS.find(s => s.id === ch.subject); const color = subject ? subject.color : '#F2C94C'; return `<div class="chapter-bilan-item"><div class="cbi-rank">${idx + 1}</div><div class="cbi-info"><div class="cbi-name">${escapeHtml(chapterName(ch.subject, ch.chapter))}</div><div class="cbi-subject">${subject ? subject.icon + ' ' + subject.name : ''}</div></div><div class="cbi-bar-wrap"><div class="cbi-bar"><div class="cbi-bar-fill" style="width:${progress}%;background:${color}"></div></div><div class="cbi-bar-label">${Math.round(progress)}% de réussite</div></div><div class="cbi-stats"><div class="cbi-stat"><div class="cbi-stat-n">${ch.totalErrors}</div><div class="cbi-stat-l">erreurs</div></div><div class="cbi-stat"><div class="cbi-stat-n">${ch.questions.length}</div><div class="cbi-stat-l">questions</div></div></div><button class="btn-review" onclick="reviewChapter('${ch.chapter}', '${ch.subject}')">Réviser</button></div>`; }).join('')}</div>`; }
-function renderErrorsBilan() { const errorQuestions = state.questions.filter(q => { const sr = getSR(q.id); return sr && sr.errors > 0; }); const errorsMap = {}; errorQuestions.forEach(q => { const sr = getSR(q.id); if (sr.errors > 0) { if (!errorsMap[q.id]) { errorsMap[q.id] = { question: q, sr: sr, count: sr.errors }; } } }); const errors = Object.values(errorsMap); errors.sort((a, b) => b.count - a.count); if (errors.length === 0) { return `<div class="empty-state"><div class="empty-state-icon">📋</div><div class="empty-state-title">Aucune erreur enregistrée</div><div class="empty-state-sub">Vos réponses sont toutes correctes pour l'instant</div></div>`; } return `<div class="errors-list">${errors.map(err => { const q = err.question; const subject = SUBJECTS.find(s => s.id === q.subject); return `<div class="error-item"><div class="err-count">${err.count}x</div><div class="err-body"><div class="err-q">${escapeHtml(q.q)}</div><div class="err-meta"><span class="err-mode">${MODE_LABELS[q.mode]}</span><span>${subject ? subject.icon + ' ' + subject.name : ''} · ${escapeHtml(chapterName(q.subject, q.chapter))}</span></div></div></div>`; }).join('')}</div>`; }
+function renderErrorsBilan() { const errorQuestions = state.questions.filter(q => { const sr = getSR(q.id); return sr && sr.errors > 0; }); const errorsMap = {}; errorQuestions.forEach(q => { const sr = getSR(q.id); if (sr.errors > 0) { if (!errorsMap[q.id]) { errorsMap[q.id] = { question: q, sr: sr, count: sr.errors }; } } }); const errors = Object.values(errorsMap); errors.sort((a, b) => b.count - a.count); if (errors.length === 0) { return `<div class="empty-state"><div class="empty-state-icon">📋</div><div class="empty-state-title">Aucune erreur enregistrée</div><div class="empty-state-sub">Vos réponses sont toutes correctes pour l'instant</div></div>`; } return `<div class="errors-list">${errors.map(err => { const q = err.question; const subject = SUBJECTS.find(s => s.id === q.subject); const attempts = err.sr.attempts || 0; const errorsCount = err.sr.errors || 0; const successRate = attempts > 0 ? Math.round(((attempts - errorsCount) / attempts) * 100) : 0; const subjectColor = subject ? subject.color : '#F2C94C'; return `<div class="error-item"><div class="err-count">${err.count}x</div><div class="err-body"><div class="err-q">${escapeHtml(q.q)}</div><div class="err-meta"><span class="err-mode">${MODE_LABELS[q.mode]}</span><span>${subject ? subject.icon + ' ' + subject.name : ''} · ${escapeHtml(chapterName(q.subject, q.chapter))}</span></div><div class="cbi-bar-wrap" style="margin-top:8px;max-width:220px"><div class="cbi-bar"><div class="cbi-bar-fill" style="width:${successRate}%;background:${subjectColor}"></div></div><div class="cbi-bar-label">${successRate}% de réussite</div></div></div></div>`; }).join('')}</div>`; }
 
 // METHODE
 function renderMethode(c) { setBreadcrumb(['Méthode']); c.innerHTML = `<h1 class="page-title">Méthodologie</h1><p class="page-sub">Conseils pour optimiser vos révisions</p><div class="methode-grid"><div class="methode-card"><div class="methode-card-title"><span>🎯</span> Spaced Repetition</div><div class="methode-card-body"><p>L'algorithme adapte la fréquence de révision en fonction de vos performances.</p><p><strong>Astuce :</strong> Ne trichez pas ! Répondez honnêtement.</p></div></div><div class="methode-card"><div class="methode-card-title"><span>📊</span> Analysez vos erreurs</div><div class="methode-card-body"><p>L'onglet Bilan vous montre vos chapitres les plus faibles.</p><p><strong>Nouveau :</strong> Utilisez le bouton "Réviser" pour cibler directement les questions problématiques d'un chapitre.</p></div></div><div class="methode-card"><div class="methode-card-title"><span>🔥</span> Série quotidienne</div><div class="methode-card-body"><p>Votre série de jours actifs s'affiche en haut à droite. Répondez à au moins une question par jour pour la faire grandir !</p><p>Un jour sans activité et elle retombe à zéro.</p></div></div></div>`; }
@@ -1380,9 +1443,9 @@ function renderAddQuestion(c) {
         <div class="form-group">
           <label class="form-label">Difficulté</label>
           <select class="form-select" id="aq-difficulty">
-            <option value="1" ${eq?.difficulty === 1 ? 'selected' : ''}>Facile</option>
-            <option value="2" ${!eq || eq.difficulty === 2 || !eq.difficulty ? 'selected' : ''}>Moyenne</option>
-            <option value="3" ${eq?.difficulty === 3 ? 'selected' : ''}>Difficile</option>
+            <option value="1">Facile</option>
+            <option value="2" selected>Moyenne</option>
+            <option value="3">Difficile</option>
           </select>
         </div>
       </div>
@@ -1441,7 +1504,7 @@ function addQuestion() {
   const question = document.getElementById('aq-question').value.trim(); 
   const explanation = document.getElementById('aq-explanation').value.trim(); 
   if (!subject || !chapter || !question) { showToast('Champs obligatoires manquants', 'err'); return; } 
-  let newQuestion = { id: 'q_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4), subject: subject, chapter: chapter, mode: mode, q: question, expl: explanation, difficulty: Number(document.getElementById('aq-difficulty').value) };
+  let newQuestion = { id: 'q_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4), subject: subject, chapter: chapter, mode: mode, q: question, expl: explanation };
   if (mode === 'qcm') { 
     const opts = []; 
     document.querySelectorAll('#qcm-opts .form-input').forEach(input => { opts.push(input.value.trim()); }); 
@@ -1479,7 +1542,7 @@ function saveQuestion() {
   const question = document.getElementById('aq-question').value.trim(); 
   const explanation = document.getElementById('aq-explanation').value.trim(); 
   if (!subject || !chapter || !question) { showToast('Champs obligatoires manquants', 'err'); return; } 
-  let updatedQuestion = { id: id, subject: subject, chapter: chapter, mode: mode, q: question, expl: explanation, difficulty: Number(document.getElementById('aq-difficulty').value) };
+  let updatedQuestion = { id: id, subject: subject, chapter: chapter, mode: mode, q: question, expl: explanation };
   if (mode === 'qcm') { 
     const opts = []; 
     document.querySelectorAll('#qcm-opts .form-input').forEach(input => { opts.push(input.value.trim()); }); 
@@ -1550,8 +1613,7 @@ function saveQuestion() {
       chapter: chapId,
       mode,
       q: qText,
-      expl: expl || '',
-      difficulty: 2
+      expl: expl || ''
     };
     
     if (mode === 'vf') {
