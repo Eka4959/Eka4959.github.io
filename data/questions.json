@@ -28,5 +28,105 @@
       "jbkiguze"
     ],
     "correct": 0
+  },
+  {
+    "id": "imp_1786107270820_6jo7",
+    "subject": "philo",
+    "chapter": "philo_race_et_histoire",
+    "mode": "complete",
+    "q": "Dans Race et histoire, la véritable barbarie consiste selon Lévi-Strauss à [...] l'humanité à ceux qui vivent selon des normes différentes des nôtres.",
+    "expl": "Pour l'auteur, le barbare est précisément celui qui qualifie l'autre de barbare en lui déniant toute appartenance à la culture.",
+    "correct": "refuser"
+  },
+  {
+    "id": "imp_1786107270820_mlex",
+    "subject": "philo",
+    "chapter": "philo_race_et_histoire",
+    "mode": "qcm",
+    "q": "Pourquoi est-il incorrect d'assimiler les sociétés contemporaines sans écriture aux sociétés préhistoriques ?",
+    "expl": "Ces sociétés ont un passé tout aussi ancien que le nôtre, mais dont la mémoire s'est transmise autrement que par des textes rédigés.",
+    "opts": [
+      "Parce que les premières ont une histoire tout aussi longue mais non consignée par écrit",
+      "Parce que les sociétés préhistoriques possédaient déjà des formes complexes d'écriture",
+      "Parce que l'absence d'écriture garantit une stabilité culturelle absolue à travers les siècles",
+      "Parce que les sociétés dites « primitives » sont apparues biologiquement beaucoup plus tard"
+    ],
+    "correct": 0
+  },
+  {
+    "id": "imp_1786107270820_h491",
+    "subject": "philo",
+    "chapter": "philo_race_et_histoire",
+    "mode": "vf",
+    "q": "Une histoire dite « cumulative » se distingue d'une histoire « stationnaire » par une capacité intrinsèque supérieure à inventer des techniques.",
+    "expl": "Le caractère cumulatif ou stationnaire dépend du regard de l'observateur et de l'intérêt qu'il porte aux progrès accomplis dans une direction donnée.",
+    "correct": false
+  },
+  {
+    "id": "imp_1786107270820_kja3",
+    "subject": "philo",
+    "chapter": "philo_race_et_histoire",
+    "mode": "complete",
+    "q": "L'humanité en progrès ne ressemble pas à un personnage gravissant un escalier, mais plutôt à un joueur dont la chance est répartie sur plusieurs [...].",
+    "expl": "Lévi-Strauss emploie la métaphore du joueur de dés pour montrer le caractère aléatoire et non linéaire des grandes avancées historiques.",
+    "correct": "dés"
+  },
+  {
+    "id": "imp_1786107270820_nbnt",
+    "subject": "philo",
+    "chapter": "philo_race_et_histoire",
+    "mode": "qcm",
+    "q": "Selon Lévi-Strauss, quelle est la véritable condition matérielle qui permet à une culture de réaliser des progrès cumulatifs majeurs ?",
+    "expl": "Aucune culture ne produit de grande révolution technique isolément ; c'est le nombre et la diversité des partenaires coalisés qui créent l'accumulation.",
+    "opts": [
+      "L'isolationnisme géographique protégeant le savoir technique de toute altération",
+      "La présence d'un pouvoir centralisé imposant la spécialisation des tâches",
+      "Un climat favorable permettant de libérer du temps pour l'innovation technique",
+      "L'intensité de la collaboration avec d'autres cultures au sein d'une coalition"
+    ],
+    "correct": 3
+  },
+  {
+    "id": "imp_1786107270820_yyda",
+    "subject": "philo",
+    "chapter": "philo_race_et_histoire",
+    "mode": "quote",
+    "q": "La civilisation mondiale ne saurait être autre chose que la coalition, à l'échelle mondiale, de cultures préservant chacune son [...].",
+    "expl": "Si la mondialisation efface les particularismes culturels, elle détruit la diversité indispensable au renouvellement du progrès.",
+    "author": "originalité",
+    "correct": "originalité"
+  },
+  {
+    "id": "imp_1786107270820_eglw",
+    "subject": "philo",
+    "chapter": "philo_race_et_histoire",
+    "mode": "qcm",
+    "q": "Quel paradoxe interne menace la poursuite du progrès au sein d'une coalition de cultures ?",
+    "expl": "En mettant en commun leurs réussites, les cultures s'uniformisent, détruisant ainsi la diversité qui constituait le moteur même de leur développement.",
+    "opts": [
+      "La coopération entraîne obligatoirement l'abandon de tout usage des technologies",
+      "Le progrès crée une homogénéisation qui réduit progressivement la diversité initiale",
+      "Les cultures en coalition finissent toujours par oublier leur langue d'origine",
+      "L'augmentation des échanges provoque un isolement géographique de chaque groupe"
+    ],
+    "correct": 1
+  },
+  {
+    "id": "imp_1786107270820_0eqp",
+    "subject": "philo",
+    "chapter": "philo_race_et_histoire",
+    "mode": "complete",
+    "q": "Pour lutter contre le risque de stagnation dû à l'homogénéisation, les sociétés créent des inégalités sociales ou intègrent de nouveaux partenaires par l'[...].",
+    "expl": "L'expansion coloniale du XIXe siècle a été analysée comme une tentative d'intégrer de nouveaux participants pour relancer le jeu culturel de l'Europe.",
+    "correct": "expansion coloniale"
+  },
+  {
+    "id": "imp_1786107270820_baw8",
+    "subject": "philo",
+    "chapter": "philo_race_et_histoire",
+    "mode": "vf",
+    "q": "Les grandes découverts préhistoriques comme la poterie ou l'agriculture résultent de découvertes purement accidentelles dues au hasard.",
+    "expl": "Bien que le hasard puisse offrir une intuition initiale, ces techniques ont exigé un travail d'expérimentation méthodique et rigoureux pour être maîtrisées.",
+    "correct": false
   }
 ]
