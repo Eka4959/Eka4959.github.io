@@ -1,20 +1,13 @@
 {
   "lucien": {
-    "xp": 20,
-    "streak": 1,
-    "lastActivityDate": "2026-08-07",
+    "xp": 0,
+    "streak": 0,
+    "lastActivityDate": null,
     "sr_data": {
-      "ses_inegalites_qcm_0": {
+      "q_1786106394623_23nx": {
         "interval": 1,
         "ef": 2.6,
-        "due": 1786192134858,
-        "errors": 0,
-        "attempts": 1
-      },
-      "q_1786105696993_vt2g": {
-        "interval": 1,
-        "ef": 2.6,
-        "due": 1786192140830,
+        "due": 1786193136176,
         "errors": 0,
         "attempts": 1
       }
