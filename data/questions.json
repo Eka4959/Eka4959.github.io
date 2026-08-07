@@ -112,5 +112,120 @@
     "q": "Les grandes découverts préhistoriques comme la poterie ou l'agriculture résultent de découvertes purement accidentelles dues au hasard.",
     "expl": "Bien que le hasard puisse offrir une intuition initiale, ces techniques ont exigé un travail d'expérimentation méthodique et rigoureux pour être maîtrisées.",
     "correct": false
+  },
+  {
+    "id": "imp_1786120779983_l28c",
+    "subject": "ses",
+    "chapter": "ses_les_acteurs_de_l__conomie",
+    "mode": "qcm",
+    "q": "Selon Gary Becker, quelle est la cause fondamentale des écarts de salaire observés entre individus ?",
+    "expl": "Becker repose sur la théorie néoclassique : l'individu effectue un calcul coût/bénéfice pour investir en capital humain, ce qui accroît directement sa productivité et donc son salaire.",
+    "opts": [
+      "Des variations de l'offre et de la demande sur le marché des qualifications",
+      "Des asymétries d'information portant sur les compétences réelles des travailleurs",
+      "Des différences de productivité résultant de choix individuels d'investissement en capital humain",
+      "Des discriminations structurelles exercées par les employeurs sur le marché du travail"
+    ],
+    "correct": 2
+  },
+  {
+    "id": "imp_1786120779983_6j2v",
+    "subject": "ses",
+    "chapter": "ses_les_acteurs_de_l__conomie",
+    "mode": "complete",
+    "q": "Pour Michael Spence, contrairement à l'analyse de Becker, le diplôme n'accroît pas directement la productivité mais sert de [...] pour réduire l'asymétrie d'information de l'employeur.",
+    "expl": "Selon la théorie du signal de Spence, le diplôme permet à l'employeur d'évaluer la productivité intrinsèque du candidat avant l'embauche.",
+    "correct": "signal"
+  },
+  {
+    "id": "imp_1786120779983_05xn",
+    "subject": "ses",
+    "chapter": "ses_les_acteurs_de_l__conomie",
+    "mode": "qcm",
+    "q": "Que se produit-il sur le marché du travail en cas de phénomène d'« inflation des diplômes » ?",
+    "expl": "Même si l'investissement en capital humain reste inchangé, une hausse de l'offre de diplômés par rapport à la demande sur le marché fait baisser la valeur salariale du titre.",
+    "opts": [
+      "Le niveau d'investissement individuel en capital humain s'ajuste immédiatement à la baisse pour rétablir l'équilibre",
+      "Les prélèvements obligatoires sur les hauts salaires augmentent pour financer la surqualification des actifs",
+      "Le salaire moyen associé à ce diplôme diminue en raison d'une offre de diplômés supérieure à la demande des employeurs",
+      "La productivité marginale des détenteurs du diplôme augmente automatiquement pour compenser la baisse des revenus"
+    ],
+    "correct": 2
+  },
+  {
+    "id": "imp_1786120779983_bsz5",
+    "subject": "ses",
+    "chapter": "ses_les_acteurs_de_l__conomie",
+    "mode": "vf",
+    "q": "Dans la représentation graphique de la courbe de Lorenz, plus la courbe s'éloigne de la première bissectrice, plus la répartition du patrimoine est égalitaire.",
+    "expl": "La première bissectrice (diagonale) représente une égalité parfaite ; plus la courbe de Lorenz s'en éloigne, plus le coefficient de Gini tend vers 1 (inégalité maximale).",
+    "correct": false
+  },
+  {
+    "id": "imp_1786120779983_wpye",
+    "subject": "ses",
+    "chapter": "ses_les_acteurs_de_l__conomie",
+    "mode": "complete",
+    "q": "Le coefficient de Gini est directement dérivé de la courbe de Lorenz et varie entre 0 et 1 : un coefficient proche de [...] indique une concentration extrême des richesses.",
+    "expl": "Un coefficient de Gini égal à 0 traduit une égalité parfaite, tandis qu'un coefficient de 1 correspond à une situation d'inégalité totale.",
+    "correct": "1"
+  },
+  {
+    "id": "imp_1786120779983_pn8x",
+    "subject": "ses",
+    "chapter": "ses_les_acteurs_de_l__conomie",
+    "mode": "quote",
+    "q": "Selon Becker, les différences de salaire selon le niveau de diplôme s'expliquent essentiellement par des différences de productivité des individus, qui résultent elles-mêmes de différences d'investissement en capital humain.",
+    "expl": "Citation fondamentale issue de la théorie du capital humain.",
+    "author": "Gary Becker",
+    "correct": "Gary Becker"
+  },
+  {
+    "id": "imp_1786120779983_g2mt",
+    "subject": "ses",
+    "chapter": "ses_les_acteurs_de_l__conomie",
+    "mode": "qcm",
+    "q": "Quelle est la spécificité institutionnelle du Revenu de Solidarité Active (RSA) instauré en France en 2009 vis-à-vis de l'incitation au travail ?",
+    "expl": "Si le RSA était réduit à due concurrence de chaque euro gagné, l'individu n'aurait aucun intérêt financier à reprendre un emploi (trappe à inactivité).",
+    "opts": [
+      "Il prend la forme d'un impôt négatif prélevé directement sur la consommation via la TVA",
+      "Il apporte un complément de revenu cumulable avec des revenus d'activité afin d'éviter les trappes à pauvreté",
+      "Il est intégralement déduit dès le premier euro gagné par le travailleur pour limiter la dépense publique",
+      "Il s'agit d'un revenu primaire versé sans condition de ressources ni exigence de recherche d'emploi"
+    ],
+    "correct": 1
+  },
+  {
+    "id": "imp_1786120779983_xdrf",
+    "subject": "ses",
+    "chapter": "ses_les_acteurs_de_l_meconomie",
+    "mode": "vf",
+    "q": "Le taux d'endettement des ménages se calcule en rapportant l'encours total des emprunts contractés au Revenu Disponible Brut (RDB).",
+    "expl": "Le taux d'endettement compare le montant global des dettes financières souscrites par les ménages aux ressources effectivement disponibles pour consommer ou épargner (RDB).",
+    "correct": true
+  },
+  {
+    "id": "imp_1786120779983_gtyo",
+    "subject": "ses",
+    "chapter": "ses_les_acteurs_de_l__conomie",
+    "mode": "qcm",
+    "q": "Dans un système de retraite financé par répartition, comment sont assurés les versements des pensions ?",
+    "expl": "La répartition repose sur une solidarité intergénérationnelle directe (les actifs paient pour les retraités), contrairement à la capitalisation qui repose sur une épargne individuelle placée.",
+    "opts": [
+      "Chaque actif accumule une épargne individuelle sur un compte bloqué placé sur les marchés financiers",
+      "L'État verse l'intégralité des pensions à partir des recettes générées par la Taxe sur la Valeur Ajoutée (TVA)",
+      "Les cotisations sociales prélevées sur les actifs du moment financent directement les pensions des retraités actuels",
+      "Les entreprises versent une fraction de leurs bénéfices annuels aux anciens salariés sous forme de dividendes"
+    ],
+    "correct": 2
+  },
+  {
+    "id": "imp_1786120779983_i9b2",
+    "subject": "ses",
+    "chapter": "ses_les_acteurs_de_l__conomie",
+    "mode": "complete",
+    "q": "Au sens de la comptabilité nationale, un ménage est défini comme tout individu ou groupe d'individus vivant sous le même [...], indépendamment de leurs liens de parenté.",
+    "expl": "La définition statistique du ménage repose uniquement sur la cohabitation dans un même logement principal et non sur la famille au sens juridique.",
+    "correct": "toit"
   }
 ]
