@@ -1,6 +1,6 @@
 {
   "lucien": {
-    "xp": 106,
+    "xp": 109,
     "streak": 1,
     "lastActivityDate": "2026-08-07",
     "sr_data": {
@@ -70,9 +70,9 @@
       "imp_1786107270820_yyda": {
         "interval": 0,
         "ef": 2.5,
-        "due": 1786107494608,
-        "errors": 2,
-        "attempts": 2
+        "due": 1786108432522,
+        "errors": 3,
+        "attempts": 3
       },
       "imp_1786107270820_kja3": {
         "interval": 1,
