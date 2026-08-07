@@ -242,6 +242,14 @@ a { color: inherit; text-decoration: none; }
 .feedback strong { display: block; font-family: 'Syne', sans-serif; font-size: 0.88rem; margin-bottom: 3px; }
 .next-btn { background: var(--text); color: var(--bg); font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.88rem; padding: 10px 22px; border: none; border-radius: 8px; cursor: pointer; display: none; transition: all 0.15s; }
 .next-btn:hover { background: var(--yellow); color: var(--bg); }
+.quiz-summary-btn { background: var(--blue); color: var(--bg); font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.88rem; padding: 10px 18px; border: none; border-radius: 8px; cursor: pointer; transition: all 0.15s; }
+.quiz-summary-btn:hover { background: #4a7da9; }
+.quiz-summary-panel { display: none; margin-top: 14px; border: 1px solid var(--border); border-radius: 14px; background: var(--bg3); padding: 16px; }
+.quiz-summary-panel.show { display: block; }
+.quiz-summary-row { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 14px; }
+.quiz-summary-card { flex: 1 1 140px; min-width: 140px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg2); padding: 12px 14px; }
+.quiz-summary-card strong { display: block; font-size: 1.2rem; margin-bottom: 4px; }
+.quiz-summary-card span { color: var(--text3); font-size: 0.85rem; }
 
 /* BILAN */
 .bilan-tabs { display: flex; gap: 4px; margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 0; }
@@ -576,8 +584,8 @@ a { color: inherit; text-decoration: none; }
   </div>
 </div>
 <div id="quiz-overlay">
-  <div class="quiz-topbar"><button class="quiz-close" onclick="closeQuiz()">✕</button><div class="quiz-prog-wrap"><div class="quiz-prog-bar" id="qpb" style="width:0%"></div></div><span class="quiz-counter" id="qcounter">1 / 10</span><span class="quiz-xp-live" id="qxp">+0 XP</span><span class="quiz-timer" id="qtimer" style="display:none">15s</span></div>
-  <div class="quiz-body"><div class="quiz-inner"><div class="streak-dots" id="streak-dots"></div><div class="q-card"><div class="q-badge"><span id="q-mode-label">QCM</span><span class="q-chapter-tag" id="q-chapter-tag"></span></div><div class="q-text" id="q-text"></div></div><div id="q-options"></div><div class="feedback" id="q-feedback"><strong id="q-fb-title"></strong><span id="q-fb-text"></span></div><button class="next-btn" id="next-btn" onclick="nextQ()">Question suivante →</button></div></div>
+  <div class="quiz-topbar"><button class="quiz-close" onclick="closeQuiz()">✕</button><button class="quiz-summary-btn" id="quiz-summary-btn" onclick="toggleSessionSummary()">📋 Récap</button><div class="quiz-prog-wrap"><div class="quiz-prog-bar" id="qpb" style="width:0%"></div></div><span class="quiz-counter" id="qcounter">1 / 10</span><span class="quiz-xp-live" id="qxp">+0 XP</span><span class="quiz-timer" id="qtimer" style="display:none">15s</span></div>
+  <div class="quiz-body"><div class="quiz-inner"><div class="streak-dots" id="streak-dots"></div><div class="q-card"><div class="q-badge"><span id="q-mode-label">QCM</span><span class="q-chapter-tag" id="q-chapter-tag"></span></div><div class="q-text" id="q-text"></div></div><div id="q-options"></div><div class="quiz-summary-panel" id="quiz-summary-panel"></div><div class="feedback" id="q-feedback"><strong id="q-fb-title"></strong><span id="q-fb-text"></span></div><button class="next-btn" id="next-btn" onclick="nextQ()">Question suivante →</button></div></div>
 </div>
 <div id="toast"></div>
 
@@ -805,6 +813,11 @@ function loginUser(username) {
   lsSet('bl_current_user', username);
   updateBadges();
   hideAuth();
+
+  if (getGitHubToken()) {
+    syncPendingGitHubData();
+    syncUserStats();
+  }
 }
 
 async function refreshUsersDb() {
@@ -963,7 +976,7 @@ async function initApp() {
 function escapeHtml(text) { if (text === null || text === undefined) return ''; const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
 function normalizeText(text) {
   if (text === null || text === undefined) return '';
-  return text.toString().normalize('NFD').replace(/\p{Diacritic}/gu, '').replace(/[^a-z0-9]/gi, '').toLowerCase().trim();
+  return text.toString().normalize('NFD').replace(/\p{Diacritic}/gu, '').replace(/[^a-z0-9 ]/gi, '').toLowerCase().trim();
 }
 function matchesTextAnswer(answer, expected) {
   const normalizedAnswer = normalizeText(answer);
@@ -975,6 +988,50 @@ function matchesTextAnswer(answer, expected) {
   const expectedTokens = normalizedExpected.split(/\s+/).filter(Boolean);
   const overlaps = answerTokens.filter(token => expectedTokens.includes(token));
   return overlaps.length >= Math.max(1, Math.min(answerTokens.length, expectedTokens.length) - 1);
+}
+function getXpForGrade(grade) {
+  if (grade === 4) return 10;
+  if (grade === 2) return 5;
+  return 0;
+}
+function recordQuizHistory(q, isCorrect, answer, grade, xpGain) {
+  if (!q) return;
+  quiz.history = quiz.history || [];
+  quiz.history.push({
+    id: q.id,
+    question: q.q,
+    mode: q.mode,
+    expected: q.correct || q.author || q.answer || '',
+    answer: answer === null || answer === undefined ? '' : answer,
+    correct: Boolean(isCorrect),
+    grade,
+    xp: xpGain
+  });
+}
+function renderSessionSummary() {
+  const panel = document.getElementById('quiz-summary-panel');
+  if (!panel) return;
+  const history = quiz.history || [];
+  const answered = history.length;
+  const correct = history.filter(item => item.correct).length;
+  const wrong = answered - correct;
+  const xp = history.reduce((sum, item) => sum + (item.xp || 0), 0);
+  const total = quiz.questions.length;
+  const remaining = Math.max(0, total - answered);
+  panel.innerHTML = `<div class="quiz-summary-row"><div class="quiz-summary-card"><strong>${total}</strong><span>Total de questions</span></div><div class="quiz-summary-card"><strong>${answered}</strong><span>Répondues</span></div><div class="quiz-summary-card"><strong>${correct}</strong><span>Correctes</span></div><div class="quiz-summary-card"><strong>${wrong}</strong><span>Incorrectes</span></div><div class="quiz-summary-card"><strong>+${xp}</strong><span>XP de cette session</span></div></div><div style="font-size:0.95rem;color:var(--text2);line-height:1.6">${remaining > 0 ? `Il reste ${remaining} question${remaining > 1 ? 's' : ''} dans la session.` : 'Session terminée ou presque.'}</div>`;
+}
+function toggleSessionSummary() {
+  const panel = document.getElementById('quiz-summary-panel');
+  if (!panel) return;
+  const isVisible = panel.classList.toggle('show');
+  if (isVisible) {
+    renderSessionSummary();
+  }
+}
+function hideSessionSummary() {
+  const panel = document.getElementById('quiz-summary-panel');
+  if (!panel) return;
+  panel.classList.remove('show');
 }
 
 // STREAK - NOUVELLES FONCTIONS
@@ -998,6 +1055,7 @@ function updateStreak() {
   state.lastActivityDate = today; 
   lsSet('bl_streak', state.streak); 
   lsSet('bl_last_activity', state.lastActivityDate); 
+  if (state.currentUser) syncUserStats();
 }
 
 // SPACED REPETITION
@@ -1056,7 +1114,28 @@ function startQuizFromQuestions(questions) {
   quiz.exam = playConfig.exam;
   quiz.examResults = [];
   quiz.examFinished = false;
+  quiz.completed = false;
+  quiz.history = [];
+  hideSessionSummary();
   showQuiz();
+}
+function endQuizSession() {
+  if (quiz.completed) return;
+  quiz.completed = true;
+  state.xp += quiz.xpGained;
+  lsSet('bl_xp', state.xp);
+  if (quiz.xpGained > 0) updateStreak();
+  updateBadges();
+  if (state.currentUser) syncUserStats();
+  const panel = document.getElementById('quiz-summary-panel');
+  if (panel) {
+    renderSessionSummary();
+    panel.classList.add('show');
+  }
+  document.getElementById('q-feedback').style.display = 'none';
+  document.getElementById('q-text').textContent = 'Session terminée !';
+  document.getElementById('q-options').innerHTML = `<div style="padding:16px 0;color:var(--text2)">Ton récap est affiché ci-dessous. Ferme la session avec ✕ quand tu as fini.</div>`;
+  document.getElementById('next-btn').style.display = 'none';
 }
 function reviewChapter(chapterId, subjectId) { const questions = getChapterErrorQuestions(chapterId, subjectId); if (questions.length === 0) { showToast('Aucune erreur à réviser pour ce chapitre', 'err'); return; } playConfig = { chapters: [chapterId], modes: [...QUESTION_MODES], timed: false, exam: false, questionsPerSession: 'all' }; state.currentSubject = subjectId; state.currentChapter = chapterId; startQuizFromQuestions(questions); nav('play'); }
 
@@ -1242,7 +1321,7 @@ function startErrorQuiz() {
 function clearQuizTimer() { if (quiz.timerId) { clearInterval(quiz.timerId); quiz.timerId = null; } }
 function updateTimerDisplay() { const timerEl = document.getElementById('qtimer'); if (!timerEl) return; if (playConfig.timed && quiz.remainingTime !== null && quiz.remainingTime !== undefined) { timerEl.style.display = 'inline-block'; timerEl.textContent = quiz.remainingTime + 's'; } else { timerEl.style.display = 'none'; } }
 function startQuizTimer() { clearQuizTimer(); if (!playConfig.timed) return; quiz.remainingTime = 15; updateTimerDisplay(); quiz.timerId = setInterval(() => { quiz.remainingTime--; if (quiz.remainingTime <= 0) { clearQuizTimer(); autoFailQuestion(); } else { updateTimerDisplay(); } }, 1000); }
-function autoFailQuestion() { if (quiz.answered) return; quiz.answered = true; const q = quiz.questions[quiz.index]; const grade = 1; if (quiz.exam) { document.querySelectorAll('.opt, .vf-btn').forEach(el => { el.disabled = true; }); const input = document.getElementById(q.mode === 'quote' ? 'quote-answer-input' : 'complete-answer-input'); if (input) input.disabled = true; recordExamAnswer(q, false, null); return; } const fbEl = document.getElementById('q-feedback'); fbEl.className = 'feedback ko'; fbEl.style.display = 'block'; document.getElementById('q-fb-title').textContent = 'Temps écoulé !'; document.getElementById('q-fb-text').textContent = q.expl || 'Réponse manquée.'; document.getElementById('qxp').textContent = '+ ' + quiz.xpGained + ' XP'; document.getElementById('next-btn').style.display = 'block'; if (q.mode === 'qcm') { document.querySelectorAll('.opt').forEach((el, i) => { el.disabled = true; if (i === q.correct) el.classList.add('correct'); }); } else if (q.mode === 'vf') { document.querySelectorAll('.vf-btn').forEach(el => el.disabled = true); const qid = q.correct ? 'vf-true' : 'vf-false'; document.getElementById(qid).classList.add('correct'); } else if (q.mode === 'quote' || q.mode === 'complete') { const input = document.getElementById(q.mode === 'quote' ? 'quote-answer-input' : 'complete-answer-input'); if (input) input.disabled = true; } updateSR(q.id, grade); const dots = document.querySelectorAll('.streak-dot'); if (dots[quiz.index]) { dots[quiz.index].className = 'streak-dot ko'; } }
+function autoFailQuestion() { if (quiz.answered) return; quiz.answered = true; const q = quiz.questions[quiz.index]; const grade = 1; if (quiz.exam) { document.querySelectorAll('.opt, .vf-btn').forEach(el => { el.disabled = true; }); const input = document.getElementById(q.mode === 'quote' ? 'quote-answer-input' : 'complete-answer-input'); if (input) input.disabled = true; recordExamAnswer(q, false, null); return; } const fbEl = document.getElementById('q-feedback'); fbEl.className = 'feedback ko'; fbEl.style.display = 'block'; document.getElementById('q-fb-title').textContent = 'Temps écoulé !'; const expected = q.correct || q.author || q.answer || ''; const expectedText = expected ? `Réponse attendue : ${expected}` : ''; document.getElementById('q-fb-text').textContent = `${q.expl ? q.expl + ' ' : ''}${expectedText}`.trim() || 'Réponse manquée.'; document.getElementById('qxp').textContent = '+ ' + quiz.xpGained + ' XP'; document.getElementById('next-btn').style.display = 'block'; if (q.mode === 'qcm') { document.querySelectorAll('.opt').forEach((el, i) => { el.disabled = true; if (i === q.correct) el.classList.add('correct'); }); } else if (q.mode === 'vf') { document.querySelectorAll('.vf-btn').forEach(el => el.disabled = true); const qid = q.correct ? 'vf-true' : 'vf-false'; document.getElementById(qid).classList.add('correct'); } else if (q.mode === 'quote' || q.mode === 'complete') { const input = document.getElementById(q.mode === 'quote' ? 'quote-answer-input' : 'complete-answer-input'); if (input) input.disabled = true; } const xpGain = getXpForGrade(grade); recordQuizHistory(q, false, '', grade, xpGain); updateSR(q.id, grade); const dots = document.querySelectorAll('.streak-dot'); if (dots[quiz.index]) { dots[quiz.index].className = 'streak-dot ko'; } }
 function showQuiz() { document.getElementById('quiz-overlay').classList.add('show'); loadQuestion(quiz.questions[quiz.index]); }
 function closeQuiz(force = false) { 
   if (!force && !quiz.answered && quiz.questions.length > 0 && !confirm('Quitter cette session ? La question en cours ne sera pas comptabilisée.')) return;
@@ -1320,8 +1399,11 @@ function loadQuestion(q) {
 }
 function recordExamAnswer(q, isCorrect, answer) {
   quiz.examResults[quiz.index] = { id: q.id, question: q.q, correct: isCorrect, answer: answer };
-  quiz.xpGained += isCorrect ? 10 : 0;
-  updateSR(q.id, isCorrect ? 4 : 1);
+  const grade = isCorrect ? 4 : 1;
+  const xpGain = getXpForGrade(grade);
+  quiz.xpGained += xpGain;
+  recordQuizHistory(q, isCorrect, answer, grade, xpGain);
+  updateSR(q.id, grade);
   document.getElementById('next-btn').style.display = 'block';
 }
 function finishExam() {
@@ -1343,12 +1425,12 @@ function finishExam() {
   document.getElementById('q-feedback').style.display = 'none';
   document.getElementById('next-btn').style.display = 'none';
 }
-function selectOpt(idx) { if (quiz.answered) return; clearQuizTimer(); quiz.answered = true; const q = quiz.questions[quiz.index]; const isCorrect = idx === q.correct; const grade = isCorrect ? 4 : 1; if (quiz.exam) { document.querySelectorAll('.opt').forEach(el => { el.disabled = true; }); recordExamAnswer(q, isCorrect, idx); return; } document.querySelectorAll('.opt').forEach((el, i) => { el.disabled = true; if (i === q.correct) el.classList.add('correct'); else if (i === idx) el.classList.add('wrong'); }); const xpGain = Math.round(10 * (grade / 4)); quiz.xpGained += xpGain; quiz.currentGrade = grade; const fbEl = document.getElementById('q-feedback'); fbEl.className = 'feedback ' + (isCorrect ? 'ok' : 'ko'); fbEl.style.display = 'block'; document.getElementById('q-fb-title').textContent = isCorrect ? 'Bonne réponse !' : 'Faux'; document.getElementById('q-fb-text').textContent = q.expl; document.getElementById('qxp').textContent = '+ ' + quiz.xpGained + ' XP'; updateSR(q.id, grade); document.getElementById('next-btn').style.display = 'block'; const dots = document.querySelectorAll('.streak-dot'); if (dots[quiz.index]) { dots[quiz.index].className = 'streak-dot ' + (isCorrect ? 'ok' : 'ko'); } }
-function selectVF(isTrue) { if (quiz.answered) return; clearQuizTimer(); quiz.answered = true; const q = quiz.questions[quiz.index]; const isCorrect = isTrue === q.correct; const grade = isCorrect ? 4 : 1; document.querySelectorAll('.vf-btn').forEach(el => { el.disabled = true; }); if (quiz.exam) { recordExamAnswer(q, isCorrect, isTrue); return; } const btnId = isTrue ? 'vf-true' : 'vf-false'; document.getElementById(btnId).classList.add(isCorrect ? 'correct' : 'wrong'); const xpGain = Math.round(10 * (grade / 4)); quiz.xpGained += xpGain; quiz.currentGrade = grade; const fbEl = document.getElementById('q-feedback'); fbEl.className = 'feedback ' + (isCorrect ? 'ok' : 'ko'); fbEl.style.display = 'block'; document.getElementById('q-fb-title').textContent = isCorrect ? 'Bonne réponse !' : 'Faux'; document.getElementById('q-fb-text').textContent = q.expl; document.getElementById('qxp').textContent = '+ ' + quiz.xpGained + ' XP'; updateSR(q.id, grade); document.getElementById('next-btn').style.display = 'block'; const dots = document.querySelectorAll('.streak-dot'); if (dots[quiz.index]) { dots[quiz.index].className = 'streak-dot ' + (isCorrect ? 'ok' : 'ko'); } }
-function submitTextAnswer(answer) { if (quiz.answered) return; clearQuizTimer(); const q = quiz.questions[quiz.index]; const expected = q.correct || q.author || q.answer || ''; const isCorrect = matchesTextAnswer(answer, expected); const grade = isCorrect ? 4 : 1; quiz.answered = true; const inputId = q.mode === 'quote' ? 'quote-answer-input' : 'complete-answer-input'; const input = document.getElementById(inputId); if (input) input.disabled = true; if (quiz.exam) { recordExamAnswer(q, isCorrect, answer); return; } const fbEl = document.getElementById('q-feedback'); fbEl.className = 'feedback ' + (isCorrect ? 'ok' : 'ko'); fbEl.style.display = 'block'; document.getElementById('q-fb-title').textContent = isCorrect ? 'Bonne réponse !' : 'Faux'; const feedbackText = isCorrect ? (q.expl || 'Bonne réponse.') : `${q.expl ? q.expl + ' ' : ''}Réponse attendue : ${expected}`; document.getElementById('q-fb-text').textContent = feedbackText; const xpGain = Math.round(10 * (grade / 4)); quiz.xpGained += xpGain; quiz.currentGrade = grade; document.getElementById('qxp').textContent = '+ ' + quiz.xpGained + ' XP'; document.getElementById('next-btn').style.display = 'block'; updateSR(q.id, grade); const dots = document.querySelectorAll('.streak-dot'); if (dots[quiz.index]) { dots[quiz.index].className = 'streak-dot ' + (isCorrect ? 'ok' : 'ko'); } }
+function selectOpt(idx) { if (quiz.answered) return; clearQuizTimer(); quiz.answered = true; const q = quiz.questions[quiz.index]; const isCorrect = idx === q.correct; const grade = isCorrect ? 4 : 1; if (quiz.exam) { document.querySelectorAll('.opt').forEach(el => { el.disabled = true; }); recordExamAnswer(q, isCorrect, idx); return; } document.querySelectorAll('.opt').forEach((el, i) => { el.disabled = true; if (i === q.correct) el.classList.add('correct'); else if (i === idx) el.classList.add('wrong'); }); const xpGain = getXpForGrade(grade); quiz.xpGained += xpGain; quiz.currentGrade = grade; const fbEl = document.getElementById('q-feedback'); fbEl.className = 'feedback ' + (isCorrect ? 'ok' : 'ko'); fbEl.style.display = 'block'; document.getElementById('q-fb-title').textContent = isCorrect ? 'Bonne réponse !' : 'Faux'; document.getElementById('q-fb-text').textContent = q.expl; document.getElementById('qxp').textContent = '+ ' + quiz.xpGained + ' XP'; recordQuizHistory(q, isCorrect, q.opts[idx], grade, xpGain); updateSR(q.id, grade); document.getElementById('next-btn').style.display = 'block'; const dots = document.querySelectorAll('.streak-dot'); if (dots[quiz.index]) { dots[quiz.index].className = 'streak-dot ' + (isCorrect ? 'ok' : 'ko'); } }
+function selectVF(isTrue) { if (quiz.answered) return; clearQuizTimer(); quiz.answered = true; const q = quiz.questions[quiz.index]; const isCorrect = isTrue === q.correct; const grade = isCorrect ? 4 : 1; document.querySelectorAll('.vf-btn').forEach(el => { el.disabled = true; }); if (quiz.exam) { recordExamAnswer(q, isCorrect, isTrue); return; } const btnId = isTrue ? 'vf-true' : 'vf-false'; document.getElementById(btnId).classList.add(isCorrect ? 'correct' : 'wrong'); const xpGain = getXpForGrade(grade); quiz.xpGained += xpGain; quiz.currentGrade = grade; const fbEl = document.getElementById('q-feedback'); fbEl.className = 'feedback ' + (isCorrect ? 'ok' : 'ko'); fbEl.style.display = 'block'; document.getElementById('q-fb-title').textContent = isCorrect ? 'Bonne réponse !' : 'Faux'; document.getElementById('q-fb-text').textContent = q.expl; document.getElementById('qxp').textContent = '+ ' + quiz.xpGained + ' XP'; recordQuizHistory(q, isCorrect, isTrue, grade, xpGain); updateSR(q.id, grade); document.getElementById('next-btn').style.display = 'block'; const dots = document.querySelectorAll('.streak-dot'); if (dots[quiz.index]) { dots[quiz.index].className = 'streak-dot ' + (isCorrect ? 'ok' : 'ko'); } }
+function submitTextAnswer(answer) { if (quiz.answered) return; clearQuizTimer(); const q = quiz.questions[quiz.index]; const expected = q.correct || q.author || q.answer || ''; const isCorrect = matchesTextAnswer(answer, expected); const grade = isCorrect ? 4 : 1; quiz.answered = true; const inputId = q.mode === 'quote' ? 'quote-answer-input' : 'complete-answer-input'; const input = document.getElementById(inputId); if (input) input.disabled = true; if (quiz.exam) { recordExamAnswer(q, isCorrect, answer); return; } const fbEl = document.getElementById('q-feedback'); fbEl.className = 'feedback ' + (isCorrect ? 'ok' : 'ko'); fbEl.style.display = 'block'; document.getElementById('q-fb-title').textContent = isCorrect ? 'Bonne réponse !' : 'Faux'; const feedbackText = isCorrect ? (q.expl ? q.expl : `Réponse attendue : ${expected}`) : `${q.expl ? q.expl + ' ' : ''}Réponse attendue : ${expected}`; document.getElementById('q-fb-text').textContent = feedbackText; const xpGain = getXpForGrade(grade); quiz.xpGained += xpGain; quiz.currentGrade = grade; document.getElementById('qxp').textContent = '+ ' + quiz.xpGained + ' XP'; recordQuizHistory(q, isCorrect, answer, grade, xpGain); updateSR(q.id, grade); document.getElementById('next-btn').style.display = 'block'; const dots = document.querySelectorAll('.streak-dot'); if (dots[quiz.index]) { dots[quiz.index].className = 'streak-dot ' + (isCorrect ? 'ok' : 'ko'); } }
 function submitQuoteAnswer() { const input = document.getElementById('quote-answer-input'); if (!input) return; const answer = input.value.trim(); if (!answer) return showToast('Saisis une réponse', 'err'); submitTextAnswer(answer); }
 function submitCompleteAnswer() { const input = document.getElementById('complete-answer-input'); if (!input) return; const answer = input.value.trim(); if (!answer) return showToast('Saisis la partie manquante', 'err'); submitTextAnswer(answer); }
-function nextQ() { quiz.index++; if (quiz.index >= quiz.questions.length) { if (quiz.exam) { finishExam(); } else { closeQuiz(); showToast('Session terminée ! +' + quiz.xpGained + ' XP', 'ok'); } return; } loadQuestion(quiz.questions[quiz.index]); }
+function nextQ() { quiz.index++; hideSessionSummary(); if (quiz.index >= quiz.questions.length) { if (quiz.exam) { finishExam(); } else { endQuizSession(); showToast('Session terminée ! +' + quiz.xpGained + ' XP', 'ok'); } return; } loadQuestion(quiz.questions[quiz.index]); }
 
 document.addEventListener('keydown', function(event) {
   const quizOverlay = document.getElementById('quiz-overlay');
