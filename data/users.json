@@ -1,6 +1,6 @@
 {
   "lucien": {
-    "xp": 339,
+    "xp": 349,
     "streak": 1,
     "lastActivityDate": "2026-08-07",
     "sr_data": {
@@ -150,6 +150,14 @@
         "interval": 1,
         "ef": 2.6,
         "due": 1786207364327,
+        "errors": 0,
+        "attempts": 1,
+        "retryPending": false
+      },
+      "imp_1786121119687_yedl": {
+        "interval": 1,
+        "ef": 2.6,
+        "due": 1786207533450,
         "errors": 0,
         "attempts": 1,
         "retryPending": false
