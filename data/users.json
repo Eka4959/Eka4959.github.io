@@ -24,6 +24,13 @@
         "due": 1786193690769,
         "errors": 0,
         "attempts": 1
+      },
+      "imp_1786107270820_baw8": {
+        "interval": 1,
+        "ef": 2.6,
+        "due": 1786193695786,
+        "errors": 0,
+        "attempts": 1
       }
     }
   }
