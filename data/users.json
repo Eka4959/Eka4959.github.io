@@ -31,6 +31,13 @@
         "due": 1786193695786,
         "errors": 0,
         "attempts": 1
+      },
+      "imp_1786107270820_mlex": {
+        "interval": 1,
+        "ef": 2.6,
+        "due": 1786193710087,
+        "errors": 0,
+        "attempts": 1
       }
     }
   }
