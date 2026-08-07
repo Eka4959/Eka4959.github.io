@@ -89,11 +89,10 @@
   {
     "id": "imp_1786107270820_yyda",
     "subject": "philo",
-    "chapter": "philo_race_et_histoire",
-    "mode": "quote",
+    "chapter": "philo_race_et_culture",
+    "mode": "complete",
     "q": "La civilisation mondiale ne saurait être autre chose que la coalition, à l'échelle mondiale, de cultures préservant chacune son [...].",
     "expl": "Si la mondialisation efface les particularismes culturels, elle détruit la diversité indispensable au renouvellement du progrès.",
-    "author": "originalité",
     "correct": "originalité"
   },
   {
