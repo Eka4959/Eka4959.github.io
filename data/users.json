@@ -4,13 +4,6 @@
     "streak": 1,
     "lastActivityDate": "2026-08-07",
     "sr_data": {
-      "q_1786106394623_23nx": {
-        "interval": 1,
-        "ef": 2.6,
-        "due": 1786193136176,
-        "errors": 0,
-        "attempts": 1
-      },
       "ses_inegalites_qcm_0": {
         "interval": 1,
         "ef": 2.6,
@@ -80,6 +73,14 @@
         "due": 1786193817742,
         "errors": 0,
         "attempts": 2
+      },
+      "imp_1786120779983_bsz5": {
+        "interval": 1,
+        "ef": 2.6,
+        "due": 1786207220148,
+        "errors": 0,
+        "attempts": 1,
+        "retryPending": false
       }
     }
   }
