@@ -1059,7 +1059,7 @@ function updateStreak() {
 }
 
 // SPACED REPETITION
-function getSR(qid) { return state.sr_data[qid] || { interval: 0, ef: 2.5, due: 0, errors: 0, attempts: 0 }; }
+function getSR(qid) { return state.sr_data[qid] || { interval: 0, ef: 2.5, due: 0, errors: 0, attempts: 0, retryPending: false }; }
 function updateSR(qid, grade) { 
   const sr = getSR(qid); 
   const now = Date.now(); 
@@ -1068,6 +1068,7 @@ function updateSR(qid, grade) {
     sr.errors++; 
     sr.interval = 0; 
     sr.due = now + 1 * 60 * 1000; 
+    sr.retryPending = true;
   } else { 
     const hadErrors = sr.errors > 0;
     if (sr.interval === 0) sr.interval = 1;
@@ -1082,6 +1083,7 @@ function updateSR(qid, grade) {
     }
     sr.ef = Math.max(1.3, sr.ef + 0.1 - (4 - grade) * (0.08 + (4 - grade) * 0.02));
     sr.due = now + sr.interval * 24 * 60 * 60 * 1000;
+    sr.retryPending = false;
   }
   state.sr_data[qid] = sr; 
   lsSet('bl_sr_data', state.sr_data); 
@@ -1095,7 +1097,7 @@ function shuffle(arr) { const a = [...arr]; for (let i = a.length - 1; i > 0; i-
 function chapterName(subject, chapterId) { const chs = state.chapters[subject] || []; return chs.find(c => c.id === chapterId)?.name || 'Inconnu'; }
 
 // FONCTIONS POUR LA REVISION CIBLEE
-function getChapterErrorQuestions(chapterId, subjectId) { return state.questions.filter(q => { if (subjectId && q.subject !== subjectId) return false; if (q.chapter !== chapterId) return false; const sr = getSR(q.id); return sr && sr.errors > 0; }); }
+function getChapterErrorQuestions(chapterId, subjectId) { return state.questions.filter(q => { if (subjectId && q.subject !== subjectId) return false; if (q.chapter !== chapterId) return false; const sr = getSR(q.id); return sr && sr.errors > 0 && sr.retryPending; }); }
 function startQuizFromQuestions(questions) {
   if (!questions || questions.length === 0) {
     showToast('Aucune question à réviser pour cette session.', 'info');
@@ -1248,7 +1250,7 @@ function addDashboardStats(container) {
   const now = Date.now();
   const mastered = state.questions.filter(question => {
     const sr = getSR(question.id);
-    return sr.attempts > 0 && sr.interval >= 7 && sr.due > now;
+    return sr.attempts > 0 && sr.errors === 0 && sr.interval >= 7 && sr.due > now && !sr.retryPending;
   }).length;
   const dueSoon = state.questions.filter(question => {
     const sr = getSR(question.id);
@@ -1310,7 +1312,10 @@ function startQuiz() {
   startQuizFromQuestions(dueQuestions);
 }
 function startErrorQuiz() {
-  const errorQuestions = state.questions.filter(question => getSR(question.id).errors > 0);
+  const errorQuestions = state.questions.filter(question => {
+    const sr = getSR(question.id);
+    return sr && sr.errors > 0 && sr.retryPending;
+  });
   if (!errorQuestions.length) {
     showToast('Aucune erreur à réviser pour le moment.', 'info');
     return;
@@ -2172,3 +2177,5 @@ document.addEventListener('click', function(e) {
    
 
 </script>
+
+   
