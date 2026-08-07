@@ -75,11 +75,11 @@
         "attempts": 1
       },
       "imp_1786107270820_kja3": {
-        "interval": 0,
-        "ef": 2.5,
-        "due": 1786107461511,
-        "errors": 1,
-        "attempts": 1
+        "interval": 1,
+        "ef": 2.48,
+        "due": 1786193817742,
+        "errors": 0,
+        "attempts": 2
       }
     }
   }
