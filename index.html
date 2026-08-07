@@ -653,51 +653,95 @@ const GITHUB_CONFIG = {
 // ==========================================
 
 function getGitHubToken() {
-  return localStorage.getItem('gh_admin_token') || null;
+  return localStorage.getItem('gh_admin_token')?.trim() || null;
 }
 
-function persistLocally(path, data) {
+function askForGitHubToken() {
+  const existingToken = getGitHubToken();
+  if (existingToken) return existingToken;
+  const token = prompt('Pour activer l\'enregistrement GitHub, entrez votre token personnel GitHub avec accès au dépôt. Le token sera stocké localement dans ce navigateur.');
+  if (token && token.trim()) {
+    localStorage.setItem('gh_admin_token', token.trim());
+    syncPendingGitHubData();
+    return token.trim();
+  }
+  return null;
+}
+
+function persistLocally(path, data, commitMessage) {
   const localKey = `bl_pending_sync_${path.replace(/[\\/]/g, '_')}`;
-  lsSet(localKey, data);
+  lsSet(localKey, { path, data, commitMessage });
+}
+
+async function pushGitHubFile(path, data, commitMessage, token) {
+  const apiUrl = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${path}`;
+  const currentRes = await fetch(apiUrl, {
+    headers: {
+      'Authorization': `token ${token}`,
+      'Accept': 'application/vnd.github+json'
+    }
+  });
+  const current = await currentRes.json();
+  const payload = {
+    message: commitMessage,
+    branch: GITHUB_CONFIG.branch,
+    content: btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))))
+  };
+  if (current && current.sha) {
+    payload.sha = current.sha;
+  }
+  const res = await fetch(apiUrl, {
+    method: 'PUT',
+    headers: {
+      'Authorization': `token ${token}`,
+      'Accept': 'application/vnd.github+json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(payload)
+  });
+  if (!res.ok) {
+    const errorBody = await res.text();
+    throw new Error(`GitHub write failed (${res.status}) ${errorBody}`);
+  }
+}
+
+async function syncPendingGitHubData() {
+  const token = getGitHubToken();
+  if (!token) return;
+  const keys = Object.keys(localStorage).filter(key => key.startsWith('bl_pending_sync_'));
+  for (const key of keys) {
+    try {
+      const pending = ls(key, null);
+      if (!pending || !pending.path) {
+        localStorage.removeItem(key);
+        continue;
+      }
+      await pushGitHubFile(pending.path, pending.data, pending.commitMessage || `Sync ${pending.path}`, token);
+      localStorage.removeItem(key);
+      console.info(`Synchronisation GitHub réussie pour ${pending.path}`);
+    } catch (error) {
+      console.warn(`Échec de la synchronisation GitHub pour ${key}`, error);
+      return;
+    }
+  }
 }
 
 async function pushToGitHub(path, data, commitMessage) {
-  const token = getGitHubToken();
+  let token = getGitHubToken();
   if (!token) {
-    persistLocally(path, data);
+    token = askForGitHubToken();
+  }
+  if (!token) {
+    persistLocally(path, data, commitMessage);
     return Promise.resolve();
   }
 
   try {
-    const apiUrl = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${path}`;
-    const currentRes = await fetch(apiUrl, {
-      headers: {
-        'Authorization': `token ${token}`,
-        'Accept': 'application/vnd.github+json'
-      }
-    });
-    const current = await currentRes.json();
-    const payload = {
-      message: commitMessage,
-      branch: GITHUB_CONFIG.branch,
-      content: btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2)))),
-      sha: current?.sha
-    };
-    const res = await fetch(apiUrl, {
-      method: 'PUT',
-      headers: {
-        'Authorization': `token ${token}`,
-        'Accept': 'application/vnd.github+json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(payload)
-    });
-    if (!res.ok) {
-      throw new Error('GitHub write failed');
-    }
+    await syncPendingGitHubData();
+    await pushGitHubFile(path, data, commitMessage, token);
     return Promise.resolve();
   } catch (error) {
-    persistLocally(path, data);
+    persistLocally(path, data, commitMessage);
     console.warn(`Sauvegarde GitHub impossible pour ${path}, data enregistrée localement.`, error);
     return Promise.resolve();
   }
@@ -875,6 +919,11 @@ async function initApp() {
   buildSidebarSubjects();
   applyTheme();
   renderView();
+
+  // Synchronisation GitHub locale pendante si un token existe
+  if (getGitHubToken()) {
+    syncPendingGitHubData();
+  }
 
   // Reconnexion automatique ou affichage de l'écran d'accueil
   const savedUser = ls('bl_current_user', null);
