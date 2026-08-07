@@ -59,6 +59,13 @@
         "due": 1786193743518,
         "errors": 0,
         "attempts": 1
+      },
+      "imp_1786107270820_0eqp": {
+        "interval": 0,
+        "ef": 2.5,
+        "due": 1786107419422,
+        "errors": 1,
+        "attempts": 1
       }
     }
   }
