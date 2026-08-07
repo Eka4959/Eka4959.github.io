@@ -45,6 +45,13 @@
         "due": 1786193719728,
         "errors": 0,
         "attempts": 1
+      },
+      "imp_1786107270820_nbnt": {
+        "interval": 1,
+        "ef": 2.6,
+        "due": 1786193732434,
+        "errors": 0,
+        "attempts": 1
       }
     }
   }
