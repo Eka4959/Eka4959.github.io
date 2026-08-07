@@ -1,1 +1,85 @@
-
+{
+  "ses": [
+    {
+      "id": "inegalites",
+      "name": "Inégalités & stratification"
+    },
+    {
+      "id": "marche",
+      "name": "Marché & prix"
+    },
+    {
+      "id": "travail",
+      "name": "Travail & emploi"
+    },
+    {
+      "id": "mondialisation",
+      "name": "Mondialisation"
+    },
+    {
+      "id": "solidarites",
+      "name": "Solidarités & protection"
+    },
+    {
+      "id": "lien_social",
+      "name": "Lien social & déviance"
+    },
+    {
+      "id": "europe",
+      "name": "Construction européenne"
+    },
+    {
+      "id": "croissance",
+      "name": "Croissance & innovation"
+    },
+    {
+      "id": "ses_les_acteurs_de_l__conomie",
+      "name": "Les acteurs de l'économie"
+    },
+    {
+      "id": "ses_les_acteurs_de_l_meconomie",
+      "name": "Les acteurs de l meconomie"
+    }
+  ],
+  "lettres": [],
+  "philo": [
+    {
+      "id": "philo_race_et_culture",
+      "name": "Race et culture"
+    },
+    {
+      "id": "philo_diversit__des_cultures",
+      "name": "Diversité des cultures"
+    },
+    {
+      "id": "philo_ethnocentrisme",
+      "name": "Ethnocentrisme"
+    },
+    {
+      "id": "philo_evolution_sociale",
+      "name": "Evolution sociale"
+    },
+    {
+      "id": "philo_cultures_primitives",
+      "name": "Cultures primitives"
+    },
+    {
+      "id": "philo_id_e_de_progr_s",
+      "name": "Idée de progrès"
+    },
+    {
+      "id": "philo_histoire_cumulative",
+      "name": "Histoire cumulative"
+    },
+    {
+      "id": "philo_collaboration_des_cultures",
+      "name": "Collaboration des cultures"
+    },
+    {
+      "id": "philo_race_et_histoire",
+      "name": "Race et histoire"
+    }
+  ],
+  "histoire": [],
+  "geo": []
+}
