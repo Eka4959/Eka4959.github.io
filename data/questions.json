@@ -227,5 +227,14 @@
     "q": "Au sens de la comptabilité nationale, un ménage est défini comme tout individu ou groupe d'individus vivant sous le même [...], indépendamment de leurs liens de parenté.",
     "expl": "La définition statistique du ménage repose uniquement sur la cohabitation dans un même logement principal et non sur la famille au sens juridique.",
     "correct": "toit"
+  },
+  {
+    "id": "imp_1786121119687_yedl",
+    "subject": "ses",
+    "chapter": "ses_les_acteurs_de_l__conomie",
+    "mode": "complete",
+    "q": "Selon Becker, les différences de salaire selon le niveau de diplôme s'expliquent par des différences de productivité dues à des différences d'investissement en [...].",
+    "expl": "Gary Becker montre que l'individu investit dans sa formation (temps, argent) pour accroître son capital humain, ce qui élève sa productivité et donc son salaire.",
+    "correct": "capital humain"
   }
 ]
