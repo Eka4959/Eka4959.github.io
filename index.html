@@ -673,6 +673,8 @@ function persistLocally(path, data, commitMessage) {
   lsSet(localKey, { path, data, commitMessage });
 }
 
+class GitHubAuthError extends Error {}
+
 async function pushGitHubFile(path, data, commitMessage, token) {
   const apiUrl = `https://api.github.com/repos/${GITHUB_CONFIG.owner}/${GITHUB_CONFIG.repo}/contents/${path}`;
   const currentRes = await fetch(apiUrl, {
@@ -681,6 +683,9 @@ async function pushGitHubFile(path, data, commitMessage, token) {
       'Accept': 'application/vnd.github+json'
     }
   });
+  if (currentRes.status === 401 || currentRes.status === 403) {
+    throw new GitHubAuthError('GitHub auth failed');
+  }
   const current = await currentRes.json();
   const payload = {
     message: commitMessage,
@@ -700,6 +705,9 @@ async function pushGitHubFile(path, data, commitMessage, token) {
     body: JSON.stringify(payload)
   });
   if (!res.ok) {
+    if (res.status === 401 || res.status === 403) {
+      throw new GitHubAuthError('GitHub auth failed');
+    }
     const errorBody = await res.text();
     throw new Error(`GitHub write failed (${res.status}) ${errorBody}`);
   }
@@ -721,6 +729,9 @@ async function syncPendingGitHubData() {
       console.info(`Synchronisation GitHub réussie pour ${pending.path}`);
     } catch (error) {
       console.warn(`Échec de la synchronisation GitHub pour ${key}`, error);
+      if (error instanceof GitHubAuthError) {
+        localStorage.removeItem('gh_admin_token');
+      }
       return;
     }
   }
@@ -741,6 +752,19 @@ async function pushToGitHub(path, data, commitMessage) {
     await pushGitHubFile(path, data, commitMessage, token);
     return Promise.resolve();
   } catch (error) {
+    if (error instanceof GitHubAuthError) {
+      localStorage.removeItem('gh_admin_token');
+      const retryToken = askForGitHubToken();
+      if (retryToken) {
+        try {
+          await syncPendingGitHubData();
+          await pushGitHubFile(path, data, commitMessage, retryToken);
+          return Promise.resolve();
+        } catch (retryError) {
+          console.warn(`Réessai GitHub échoué pour ${path}`, retryError);
+        }
+      }
+    }
     persistLocally(path, data, commitMessage);
     console.warn(`Sauvegarde GitHub impossible pour ${path}, data enregistrée localement.`, error);
     return Promise.resolve();
