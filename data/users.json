@@ -38,6 +38,13 @@
         "due": 1786193710087,
         "errors": 0,
         "attempts": 1
+      },
+      "imp_1786107270820_6jo7": {
+        "interval": 1,
+        "ef": 2.6,
+        "due": 1786193719728,
+        "errors": 0,
+        "attempts": 1
       }
     }
   }
