@@ -28,11 +28,12 @@
         "retryPending": false
       },
       "imp_1786107270820_mlex": {
-        "interval": 1,
-        "ef": 2.6,
-        "due": 1786193710087,
+        "interval": 4,
+        "ef": 2.7,
+        "due": 1786541403636,
         "errors": 0,
-        "attempts": 1
+        "attempts": 2,
+        "retryPending": false
       },
       "imp_1786107270820_6jo7": {
         "interval": 4,
