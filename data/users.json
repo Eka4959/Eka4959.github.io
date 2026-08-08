@@ -34,11 +34,12 @@
         "attempts": 1
       },
       "imp_1786107270820_6jo7": {
-        "interval": 1,
-        "ef": 2.6,
-        "due": 1786193719728,
+        "interval": 4,
+        "ef": 2.7,
+        "due": 1786541352579,
         "errors": 0,
-        "attempts": 1
+        "attempts": 2,
+        "retryPending": false
       },
       "imp_1786107270820_nbnt": {
         "interval": 1,
