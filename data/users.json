@@ -5,11 +5,12 @@
     "lastActivityDate": "2026-08-07",
     "sr_data": {
       "ses_inegalites_qcm_0": {
-        "interval": 1,
-        "ef": 2.6,
-        "due": 1786193138436,
+        "interval": 4,
+        "ef": 2.7,
+        "due": 1786541334221,
         "errors": 0,
-        "attempts": 1
+        "attempts": 2,
+        "retryPending": false
       },
       "imp_1786107270820_h491": {
         "interval": 1,
