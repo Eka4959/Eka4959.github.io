@@ -56,11 +56,12 @@
         "attempts": 1
       },
       "imp_1786107270820_0eqp": {
-        "interval": 1,
-        "ef": 2.48,
-        "due": 1786193846229,
+        "interval": 4,
+        "ef": 2.58,
+        "due": 1786541361120,
         "errors": 0,
-        "attempts": 2
+        "attempts": 3,
+        "retryPending": false
       },
       "imp_1786107270820_yyda": {
         "interval": 8,
