@@ -108,11 +108,11 @@
         "retryPending": false
       },
       "imp_1786120779983_wpye": {
-        "interval": 1,
-        "ef": 2.6,
-        "due": 1786207269797,
+        "interval": 4,
+        "ef": 2.7,
+        "due": 1786623980042,
         "errors": 0,
-        "attempts": 1,
+        "attempts": 2,
         "retryPending": false
       },
       "imp_1786120779983_xdrf": {
@@ -124,19 +124,19 @@
         "retryPending": false
       },
       "imp_1786120779983_g2mt": {
-        "interval": 1,
-        "ef": 2.6,
-        "due": 1786207305365,
+        "interval": 4,
+        "ef": 2.7,
+        "due": 1786623972527,
         "errors": 0,
-        "attempts": 1,
+        "attempts": 2,
         "retryPending": false
       },
       "imp_1786120779983_6j2v": {
-        "interval": 1,
-        "ef": 2.6,
-        "due": 1786207314492,
+        "interval": 4,
+        "ef": 2.7,
+        "due": 1786623994765,
         "errors": 0,
-        "attempts": 1,
+        "attempts": 2,
         "retryPending": false
       },
       "imp_1786120779983_gtyo": {
