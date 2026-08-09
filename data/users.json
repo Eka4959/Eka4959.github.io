@@ -1,8 +1,8 @@
 {
   "lucien": {
-    "xp": 759,
-    "streak": 3,
-    "lastActivityDate": "2026-08-09",
+    "xp": 539,
+    "streak": 2,
+    "lastActivityDate": "2026-08-08",
     "sr_data": {
       "ses_inegalites_qcm_0": {
         "interval": 4,
@@ -92,19 +92,19 @@
         "retryPending": false
       },
       "imp_1786120779983_l28c": {
-        "interval": 4,
-        "ef": 2.7,
-        "due": 1786624016928,
+        "interval": 1,
+        "ef": 2.6,
+        "due": 1786207230808,
         "errors": 0,
-        "attempts": 2,
+        "attempts": 1,
         "retryPending": false
       },
       "imp_1786120779983_pn8x": {
-        "interval": 4,
-        "ef": 2.7,
-        "due": 1786624006913,
+        "interval": 1,
+        "ef": 2.6,
+        "due": 1786207251928,
         "errors": 0,
-        "attempts": 2,
+        "attempts": 1,
         "retryPending": false
       },
       "imp_1786120779983_wpye": {
@@ -116,11 +116,11 @@
         "retryPending": false
       },
       "imp_1786120779983_xdrf": {
-        "interval": 4,
-        "ef": 2.7,
-        "due": 1786624052732,
+        "interval": 1,
+        "ef": 2.6,
+        "due": 1786207286097,
         "errors": 0,
-        "attempts": 2,
+        "attempts": 1,
         "retryPending": false
       },
       "imp_1786120779983_g2mt": {
@@ -148,27 +148,27 @@
         "retryPending": false
       },
       "imp_1786120779983_i9b2": {
-        "interval": 4,
-        "ef": 2.7,
-        "due": 1786624027604,
+        "interval": 1,
+        "ef": 2.6,
+        "due": 1786207352167,
         "errors": 0,
-        "attempts": 2,
+        "attempts": 1,
         "retryPending": false
       },
       "imp_1786120779983_05xn": {
-        "interval": 4,
-        "ef": 2.7,
-        "due": 1786624035547,
+        "interval": 1,
+        "ef": 2.6,
+        "due": 1786207364327,
         "errors": 0,
-        "attempts": 2,
+        "attempts": 1,
         "retryPending": false
       },
       "imp_1786121119687_yedl": {
-        "interval": 4,
-        "ef": 2.7,
-        "due": 1786624045515,
+        "interval": 1,
+        "ef": 2.6,
+        "due": 1786207533450,
         "errors": 0,
-        "attempts": 2,
+        "attempts": 1,
         "retryPending": false
       }
     }
