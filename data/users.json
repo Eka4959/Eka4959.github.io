@@ -116,11 +116,11 @@
         "retryPending": false
       },
       "imp_1786120779983_xdrf": {
-        "interval": 1,
-        "ef": 2.6,
-        "due": 1786207286097,
+        "interval": 4,
+        "ef": 2.7,
+        "due": 1786624167961,
         "errors": 0,
-        "attempts": 1,
+        "attempts": 2,
         "retryPending": false
       },
       "imp_1786120779983_g2mt": {
