@@ -76,11 +76,11 @@
         "attempts": 6
       },
       "imp_1786107270820_kja3": {
-        "interval": 4,
-        "ef": 2.58,
-        "due": 1786541366622,
+        "interval": 13,
+        "ef": 2.68,
+        "due": 1787782554709,
         "errors": 0,
-        "attempts": 3,
+        "attempts": 4,
         "retryPending": false
       },
       "imp_1786120779983_bsz5": {
