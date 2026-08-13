@@ -45,11 +45,11 @@
         "retryPending": false
       },
       "imp_1786107270820_nbnt": {
-        "interval": 4,
-        "ef": 2.7,
-        "due": 1786541376971,
+        "interval": 14,
+        "ef": 2.8000000000000003,
+        "due": 1787868899425,
         "errors": 0,
-        "attempts": 2,
+        "attempts": 3,
         "retryPending": false
       },
       "imp_1786107270820_eglw": {
