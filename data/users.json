@@ -132,11 +132,11 @@
         "retryPending": false
       },
       "imp_1786120779983_6j2v": {
-        "interval": 4,
-        "ef": 2.7,
-        "due": 1786623994765,
+        "interval": 14,
+        "ef": 2.8000000000000003,
+        "due": 1787868812929,
         "errors": 0,
-        "attempts": 2,
+        "attempts": 3,
         "retryPending": false
       },
       "imp_1786120779983_gtyo": {
