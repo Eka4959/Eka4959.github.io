@@ -21,11 +21,11 @@
         "retryPending": false
       },
       "imp_1786107270820_baw8": {
-        "interval": 4,
-        "ef": 2.7,
-        "due": 1786541381069,
+        "interval": 14,
+        "ef": 2.8000000000000003,
+        "due": 1787868891935,
         "errors": 0,
-        "attempts": 2,
+        "attempts": 3,
         "retryPending": false
       },
       "imp_1786107270820_mlex": {
