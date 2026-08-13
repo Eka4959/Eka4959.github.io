@@ -92,11 +92,11 @@
         "retryPending": false
       },
       "imp_1786120779983_l28c": {
-        "interval": 4,
-        "ef": 2.7,
-        "due": 1786624016928,
+        "interval": 14,
+        "ef": 2.8000000000000003,
+        "due": 1787868797262,
         "errors": 0,
-        "attempts": 2,
+        "attempts": 3,
         "retryPending": false
       },
       "imp_1786120779983_pn8x": {
