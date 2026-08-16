@@ -128,6 +128,46 @@ a { color: inherit; text-decoration: none; }
 #content::-webkit-scrollbar { width: 5px; }
 #content::-webkit-scrollbar-thumb { background: var(--bg3); border-radius: 3px; }
 
+.notions-page { display: flex; flex-direction: column; gap: 22px; }
+.notions-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.notions-pill { background: rgba(242,201,76,0.18); color: var(--yellow); border: 1px solid rgba(242,201,76,0.35); padding: 8px 12px; border-radius: 999px; font-weight: 700; }
+.notions-layout { display: grid; grid-template-columns: 360px 1fr; gap: 20px; }
+.notions-panel { background: var(--bg2); border: 1px solid var(--border); border-radius: 14px; padding: 18px; }
+.notions-panel-title { font-family: 'Syne', sans-serif; font-size: 1rem; margin-bottom: 14px; }
+.notion-form { display: flex; flex-direction: column; gap: 14px; }
+.field-label { display: flex; flex-direction: column; gap: 6px; color: var(--text2); font-size: 0.8rem; }
+.form-input, .form-textarea, .form-select { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text); padding: 10px 12px; outline: none; }
+.form-textarea { min-height: 110px; resize: vertical; }
+.form-input:focus, .form-textarea:focus, .form-select:focus { border-color: var(--yellow); }
+.notion-save { width: 100%; }
+.notions-main { display: flex; flex-direction: column; gap: 16px; }
+.notions-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+.notions-tab { border: 1px solid var(--border); background: var(--bg); color: var(--text2); padding: 7px 12px; border-radius: 999px; }
+.notions-tab.active { background: rgba(242,201,76,0.12); color: var(--yellow); border-color: rgba(242,201,76,0.34); }
+.notions-tab-content { display: flex; flex-direction: column; gap: 14px; }
+.notions-subject-block { border: 1px solid var(--border); border-radius: 10px; background: var(--bg); padding: 12px; }
+.notions-subject-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; font-weight: 700; }
+.notions-count { background: var(--bg3); border-radius: 999px; padding: 2px 8px; font-size: 0.72rem; }
+.notion-card { background: var(--bg2); border: 1px solid var(--border); border-radius: 10px; padding: 12px; display: flex; flex-direction: column; gap: 10px; margin-top: 8px; }
+.notion-card-top { display: flex; justify-content: space-between; gap: 10px; align-items: flex-start; }
+.notion-badge { background: rgba(91, 141, 184, 0.12); color: var(--blue); border-radius: 999px; padding: 4px 8px; font-size: 0.7rem; font-weight: 700; }
+.notion-title { font-weight: 700; }
+.notion-meta { font-size: 0.75rem; color: var(--text3); margin-top: 4px; }
+.notion-details { border-top: 1px solid var(--border); padding-top: 8px; }
+.notion-details summary { cursor: pointer; color: var(--text2); }
+.notion-details-body { font-size: 0.82rem; color: var(--text2); padding-top: 8px; white-space: pre-wrap; }
+.notion-ratings { display: flex; gap: 8px; flex-wrap: wrap; }
+.notion-rate { flex: 1; min-width: 70px; border: none; border-radius: 8px; padding: 7px 10px; color: white; font-weight: 700; font-size: 0.74rem; }
+.notion-rate.again { background: #d65858; }
+.notion-rate.hard { background: #d9a72c; }
+.notion-rate.good { background: #42a66c; }
+.notion-rate.easy { background: #4a7bd1; }
+.notion-day-card { border: 1px solid var(--border); border-radius: 10px; background: var(--bg); overflow: hidden; }
+.notion-day-toggle { width: 100%; display: flex; justify-content: space-between; padding: 12px 14px; border: none; background: transparent; color: var(--text); font-weight: 700; text-align: left; }
+.notion-day-detail { padding: 0 12px 12px; }
+.notion-day-detail.empty { color: var(--text3); padding: 10px 14px 14px; }
+.empty-state.small { padding: 18px 12px; }
+
 /* BASE DE DONNÉES / TABLEAUX */
 .db-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; background: var(--bg2); border-radius: 8px; overflow: hidden; margin-top: 8px; }
 .db-table th, .db-table td { padding: 12px 14px; border-bottom: 1px solid var(--border); text-align: left; }
@@ -567,6 +607,7 @@ a { color: inherit; text-decoration: none; }
         <button class="nav-item" onclick="nav('database')" id="nav-database"><span class="nav-icon">🗄️</span><span class="nav-label">Base de données</span></button>
         <button class="nav-item" onclick="nav('add-question')" id="nav-add-question"><span class="nav-icon">＋</span><span class="nav-label">Ajouter des questions</span></button>
         <button class="nav-item" onclick="nav('cours')" id="nav-cours"><span class="nav-icon">📄</span><span class="nav-label">Cours</span></button>
+        <button class="nav-item" onclick="nav('notions')" id="nav-notions"><span class="nav-icon">🧠</span><span class="nav-label">Suivi des notions</span></button>
         <button class="nav-item nav-reset" onclick="confirmResetAll()" id="nav-reset"><span class="nav-icon">🔥</span><span class="nav-label">Réinitialiser</span></button>
       </div>
     </div>
@@ -613,6 +654,18 @@ let dbTab = 'questions';
 let dbSearch = '';
 let coursFocusId = null;
 let addMode = 'qcm';
+let notionView = 'matiere';
+
+const FSRS_RATING_MAP = { again: 1, hard: 2, good: 3, easy: 4 };
+const NOTION_SUBJECTS = [
+  { id: 'ses', label: 'SES' },
+  { id: 'lettres', label: 'Lettres' },
+  { id: 'philo', label: 'Philo' },
+  { id: 'hgg', label: 'Histoire / Géographie' },
+  { id: 'maths', label: 'Maths' },
+  { id: 'lve', label: 'Anglais' }
+];
+const DAY_MS = 24 * 60 * 60 * 1000;
 
 // DONNEES
 const SEED_QUESTIONS = [{"id":"ses_inegalites_qcm_0","subject":"ses","chapter":"inegalites","mode":"qcm","q":"Quel concept correspond a : indicateur synthetique qui mesure l'intensite des inegalites de revenus ou de patrimoine ?","expl":"Le concept vise est coefficient de Gini : indicateur synthetique qui mesure l'intensite des inegalites de revenus ou de patrimoine.","opts":["reproduction sociale","redistribution","impot progressif","coefficient de Gini"],"correct":3}];
@@ -640,6 +693,8 @@ let state = {
   currentChapter: null,
   editingCours: null,
   editingQuestion: null,
+  notions: ls('bl_notions', []),
+  notionsAgendaExpanded: ls('bl_notions_agenda_expanded', {}),
   
   // --- DONNÉES GLOBALES (Vides au départ, seront remplies par GitHub) ---
   questions: [],
@@ -647,6 +702,7 @@ let state = {
   chapters: {}
 };
 if (!state.questions) { state.questions = SEED_QUESTIONS; lsSet('bl_questions', state.questions); }
+if (!Array.isArray(state.notions)) { state.notions = []; lsSet('bl_notions', state.notions); }
 
 
 // --- CONFIGURATION GITHUB AUTOMATIQUE ---
@@ -938,6 +994,11 @@ async function initApp() {
     loadJson('./data/users.json', 'bl_usersDb', {}, value => value && typeof value === 'object' && !Array.isArray(value), value => Object.keys(value).length > 0)
   ]);
 
+  const localNotions = ls('bl_notions', []);
+  if (Array.isArray(localNotions)) {
+    state.notions = localNotions;
+  }
+
   state.questions = questions;
   state.cours = cours;
   state.chapters = chapters;
@@ -952,6 +1013,10 @@ async function initApp() {
     state.questions = SEED_QUESTIONS;
     state.chapters = {ses: SES_CHAPTERS, lettres: [], philo: [], histoire: [], geo: []};
   }
+  if (!Array.isArray(state.notions)) {
+    state.notions = [];
+  }
+  lsSet('bl_notions', state.notions);
   
   buildSidebarSubjects();
   applyTheme();
@@ -1176,6 +1241,8 @@ function resetAllData() {
     currentChapter: null,
     editingCours: null,
     editingQuestion: null,
+    notions: [],
+    notionsAgendaExpanded: {},
     streak: 0,
     lastActivityDate: null
   };
@@ -1188,6 +1255,11 @@ function resetAllData() {
   dbSearch = '';
   coursFocusId = null;
   addMode = 'qcm';
+  notionView = 'matiere';
+  state.notions = [];
+  state.notionsAgendaExpanded = {};
+  lsSet('bl_notions', state.notions);
+  lsSet('bl_notions_agenda_expanded', state.notionsAgendaExpanded);
   
   // Sauvegarder l'état initial
   lsSet('bl_questions', state.questions);
@@ -1226,8 +1298,265 @@ function updateBadges() {
   document.getElementById('streak-pill').textContent = '🔥 ' + state.streak;
 }
 
-function renderView() { const c = document.getElementById('content'); const v = state.currentView; if (v === 'dashboard') renderDashboard(c); else if (v === 'play') renderPlay(c); else if (v === 'bilan') renderBilan(c); else if (v === 'methode') renderMethode(c); else if (v === 'add-question') renderAddQuestion(c); else if (v === 'database') renderDatabase(c); else if (v === 'cours') renderCours(c); else if (v === 'cours-new') renderCoursEditor(c, null); else if (v === 'cours-edit') renderCoursEditor(c, state.editingCours); }
+function renderView() { const c = document.getElementById('content'); const v = state.currentView; if (v === 'dashboard') renderDashboard(c); else if (v === 'play') renderPlay(c); else if (v === 'bilan') renderBilan(c); else if (v === 'methode') renderMethode(c); else if (v === 'add-question') renderAddQuestion(c); else if (v === 'database') renderDatabase(c); else if (v === 'cours') renderCours(c); else if (v === 'cours-new') renderCoursEditor(c, null); else if (v === 'cours-edit') renderCoursEditor(c, state.editingCours); else if (v === 'notions') renderNotionsPage(c); }
 function showToast(msg, type = 'ok') { const t = document.getElementById('toast'); t.textContent = msg; t.className = type; t.classList.add('show'); setTimeout(() => { t.classList.remove('show'); }, 3000); }
+
+function getNotionSubjectMeta(subjectId) {
+  return NOTION_SUBJECTS.find(item => item.id === subjectId) || { id: subjectId, label: subjectId.toUpperCase() };
+}
+function createEmptyFsrsCard() {
+  return {
+    due: Date.now(),
+    stability: 1,
+    difficulty: 5,
+    reps: 0,
+    lapses: 0,
+    state: 'new',
+    last_review: null
+  };
+}
+function clamp(value, min, max) {
+  return Math.min(max, Math.max(min, value));
+}
+function repeat(card, rating) {
+  const normalizedRating = Number(rating || 3);
+  const baseState = card || createEmptyFsrsCard();
+  const now = Date.now();
+  const difficulty = clamp(Number(baseState.difficulty || 5) + (normalizedRating - 3) * 0.3, 1.3, 8.5);
+
+  let nextStability = Number(baseState.stability || 1);
+  let nextDue = now;
+  let nextState = 'review';
+
+  if (!Number(baseState.reps) || Number(baseState.reps) === 0) {
+    const firstMap = { 1: 0, 2: 10 * 60 * 1000, 3: 24 * 60 * 60 * 1000, 4: 3 * 24 * 60 * 60 * 1000 };
+    nextStability = { 1: 0.7, 2: 2.4, 3: 5.8, 4: 12.5 }[normalizedRating] || 1;
+    nextDue = now + (firstMap[normalizedRating] || 0);
+    nextState = normalizedRating === 1 ? 'relearning' : 'review';
+  } else {
+    const ratingFactor = { 1: 0.55, 2: 1.15, 3: 1.9, 4: 3.5 }[normalizedRating] || 1;
+    nextStability = Math.max(0.8, Number(baseState.stability || 1) * ratingFactor);
+    const intervalMultiplier = { 1: 0.15, 2: 0.8, 3: 1.8, 4: 4.5 }[normalizedRating] || 1;
+    nextDue = now + Math.max(12 * 60 * 60 * 1000, nextStability * intervalMultiplier * 24 * 60 * 60 * 1000 * 0.7);
+    if (normalizedRating === 1) {
+      nextState = 'relearning';
+      nextDue = now + 12 * 60 * 60 * 1000;
+    }
+  }
+
+  const updated = {
+    due: nextDue,
+    stability: Number(nextStability.toFixed(3)),
+    difficulty: Number(difficulty.toFixed(3)),
+    reps: Number(baseState.reps || 0) + 1,
+    lapses: normalizedRating === 1 ? Number(baseState.lapses || 0) + 1 : Number(baseState.lapses || 0),
+    state: nextState,
+    last_review: now
+  };
+
+  if (normalizedRating === 1 && Number(baseState.lapses || 0) > 0) {
+    updated.difficulty = clamp(updated.difficulty + 0.25, 1.3, 8.5);
+  }
+
+  return updated;
+}
+window.fsrs = { repeat };
+function toDateKey(timestamp) {
+  const d = new Date(timestamp);
+  d.setHours(0, 0, 0, 0);
+  return d.toISOString();
+}
+function formatDateFR(date) {
+  return new Date(date).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+function formatDueLabel(timestamp) {
+  const diffMs = Date.now() - Number(timestamp);
+  const diffDays = Math.floor(diffMs / DAY_MS);
+  if (diffDays <= -1) {
+    return `dans ${Math.abs(diffDays)} j`;
+  }
+  if (diffDays === 0) return 'aujourd\'hui';
+  return `en retard de ${Math.abs(diffDays)} j`;
+}
+function getNotionsDueToday() {
+  const todayKey = toDateKey(Date.now());
+  return state.notions.filter(notion => {
+    const dueDate = new Date(notion.fsrs?.due || Date.now());
+    return toDateKey(dueDate.getTime()) <= todayKey;
+  });
+}
+function renderNotionsPage(c) {
+  setBreadcrumb(['Suivi des notions']);
+  const totalDue = getNotionsDueToday().length;
+  c.innerHTML = `
+    <div class="notions-page">
+      <div class="notions-bar">
+        <div>
+          <h1 class="page-title">Suivi des notions</h1>
+          <p class="page-sub">Pense-bête de révision espacée piloté par FSRS</p>
+        </div>
+        <div class="notions-pill">${totalDue} à revoir</div>
+      </div>
+
+      <div class="notions-layout">
+        <aside class="notions-panel">
+          <h2 class="notions-panel-title">Ajouter une notion</h2>
+          <form id="notion-form" class="notion-form" onsubmit="saveNotion(event)">
+            <label class="field-label">Matière
+              <select id="notion-matiere" class="form-select">
+                ${NOTION_SUBJECTS.map(subject => `<option value="${subject.id}">${subject.label}</option>`).join('')}
+              </select>
+            </label>
+            <label class="field-label">Notion
+              <input id="notion-title" class="form-input" placeholder="Ex. : Économie de marché" required>
+            </label>
+            <label class="field-label">Détails
+              <textarea id="notion-details" class="form-textarea" placeholder="À retenir, points clés, exemple..."></textarea>
+            </label>
+            <label class="field-label">Note initiale de maîtrise
+              <select id="notion-rating" class="form-select">
+                <option value="1">Again</option>
+                <option value="2">Hard</option>
+                <option value="3" selected>Good</option>
+                <option value="4">Easy</option>
+              </select>
+            </label>
+            <button class="btn-save notion-save" type="submit">Ajouter</button>
+          </form>
+        </aside>
+
+        <section class="notions-panel notions-main">
+          <div class="notions-tabs">
+            <button class="notions-tab ${notionView === 'matiere' ? 'active' : ''}" onclick="notionView='matiere'; renderNotionsPage(document.getElementById('content'))">Par matière</button>
+            <button class="notions-tab ${notionView === 'globale' ? 'active' : ''}" onclick="notionView='globale'; renderNotionsPage(document.getElementById('content'))">Globale</button>
+            <button class="notions-tab ${notionView === 'avenir' ? 'active' : ''}" onclick="notionView='avenir'; renderNotionsPage(document.getElementById('content'))">À venir</button>
+          </div>
+          <div id="notions-tab-content" class="notions-tab-content">
+            ${notionView === 'matiere' ? renderNotionBySubject() : notionView === 'globale' ? renderNotionGlobal() : renderNotionAgenda()}
+          </div>
+        </section>
+      </div>
+    </div>
+  `;
+}
+function renderNotionBySubject() {
+  const dueNotions = NOTION_SUBJECTS.map(subject => {
+    const items = state.notions.filter(notion => notion.matiere === subject.id && new Date(notion.fsrs?.due || Date.now()) <= new Date(Date.now())).sort((a, b) => new Date(a.fsrs?.due || Date.now()) - new Date(b.fsrs?.due || Date.now()));
+    return { subject, items };
+  });
+
+  return dueNotions.map(group => `
+    <div class="notions-subject-block">
+      <div class="notions-subject-header">
+        <span>${group.subject.label}</span>
+        <span class="notions-count">${group.items.length}</span>
+      </div>
+      ${group.items.length === 0 ? '<div class="empty-state small"><div class="empty-state-icon">✅</div><div class="empty-state-title">Tout est à jour</div></div>' : group.items.map(item => renderNotionCard(item)).join('')}
+    </div>
+  `).join('');
+}
+function renderNotionGlobal() {
+  const items = state.notions.filter(notion => new Date(notion.fsrs?.due || Date.now()) <= new Date(Date.now())).sort((a, b) => new Date(a.fsrs?.due || Date.now()) - new Date(b.fsrs?.due || Date.now()));
+  if (!items.length) {
+    return '<div class="empty-state"><div class="empty-state-icon">✅</div><div class="empty-state-title">Aucune notion due</div><div class="empty-state-sub">Le calendrier est vide pour le moment.</div></div>';
+  }
+  return items.map(item => renderNotionCard(item, true)).join('');
+}
+function renderNotionAgenda() {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const days = [];
+  for (let i = 0; i < 7; i++) {
+    const current = new Date(today.getTime() + i * DAY_MS);
+    const key = toDateKey(current.getTime());
+    const items = state.notions.filter(notion => toDateKey(new Date(notion.fsrs?.due || Date.now()).getTime()) === key);
+    days.push({ key, label: current.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' }), items });
+  }
+
+  return days.map(day => `
+    <div class="notion-day-card">
+      <button class="notion-day-toggle" onclick="toggleNotionAgendaDay('${day.key}')">
+        <span>${day.label}</span>
+        <span>${day.items.length} notion${day.items.length > 1 ? 's' : ''}</span>
+      </button>
+      ${state.notionsAgendaExpanded[day.key] ? (day.items.length ? '<div class="notion-day-detail">' + day.items.map(item => renderNotionCard(item)).join('') + '</div>' : '<div class="notion-day-detail empty">Aucune notion prévue.</div>') : ''}
+    </div>
+  `).join('');
+}
+function toggleNotionAgendaDay(key) {
+  state.notionsAgendaExpanded = state.notionsAgendaExpanded || {};
+  state.notionsAgendaExpanded[key] = !state.notionsAgendaExpanded[key];
+  lsSet('bl_notions_agenda_expanded', state.notionsAgendaExpanded);
+  renderNotionsPage(document.getElementById('content'));
+}
+function renderNotionCard(item, global = false) {
+  const meta = getNotionSubjectMeta(item.matiere);
+  return `
+    <article class="notion-card">
+      <div class="notion-card-top">
+        ${global ? `<span class="notion-badge">${meta.label}</span>` : ''}
+        <div>
+          <div class="notion-title">${escapeHtml(item.notion)}</div>
+          <div class="notion-meta">${formatDueLabel(item.fsrs?.due || Date.now())} · créé le ${formatDateFR(item.dateCreation || new Date())}</div>
+        </div>
+      </div>
+      ${item.details ? `
+        <details class="notion-details">
+          <summary>Détails</summary>
+          <div class="notion-details-body">${escapeHtml(item.details)}</div>
+        </details>
+      ` : ''}
+      <div class="notion-ratings">
+        <button class="notion-rate again" onclick="rateNotion('${item.id}', 1)">Again</button>
+        <button class="notion-rate hard" onclick="rateNotion('${item.id}', 2)">Hard</button>
+        <button class="notion-rate good" onclick="rateNotion('${item.id}', 3)">Good</button>
+        <button class="notion-rate easy" onclick="rateNotion('${item.id}', 4)">Easy</button>
+      </div>
+    </article>
+  `;
+}
+function saveNotion(event) {
+  event.preventDefault();
+  const matiere = document.getElementById('notion-matiere')?.value || 'ses';
+  const notionText = document.getElementById('notion-title')?.value.trim();
+  const details = document.getElementById('notion-details')?.value.trim() || '';
+  const rating = Number(document.getElementById('notion-rating')?.value || 3);
+
+  if (!notionText) {
+    showToast('Saisis une notion avant de l\'ajouter.', 'err');
+    return;
+  }
+
+  const card = createEmptyFsrsCard();
+  const nextFsrs = repeat(card, rating);
+  const notion = {
+    id: (typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : 'notion-' + Date.now() + '-' + Math.random().toString(16).slice(2)),
+    matiere,
+    notion: notionText,
+    details,
+    dateCreation: new Date().toISOString(),
+    fsrs: nextFsrs
+  };
+
+  state.notions = [notion, ...state.notions];
+  lsSet('bl_notions', state.notions);
+  document.getElementById('notion-form')?.reset();
+  const selectRating = document.getElementById('notion-rating');
+  if (selectRating) selectRating.value = '3';
+  showToast('Notion ajoutée et planifiée', 'ok');
+  renderNotionsPage(document.getElementById('content'));
+}
+function rateNotion(id, rating) {
+  const notion = state.notions.find(item => item.id === id);
+  if (!notion) return;
+  notion.fsrs = repeat(notion.fsrs || createEmptyFsrsCard(), rating);
+  notion.fsrs.due = Number(notion.fsrs.due || Date.now());
+  notion.fsrs.last_review = Date.now();
+  state.notions = [...state.notions];
+  lsSet('bl_notions', state.notions);
+  showToast('Mise à jour de la notion enregistrée', 'ok');
+  renderNotionsPage(document.getElementById('content'));
+}
 
 // DATABASE
 function renderDatabase(c) { setBreadcrumb(['Base de données']); c.innerHTML = `<h1 class="page-title">Base de données</h1><p class="page-sub">Gère tes questions et tes chapitres</p><div class="bilan-tabs"><button class="bilan-tab ${dbTab === 'questions' ? 'active' : ''}" onclick="switchDbTab('questions')">Questions (${state.questions.length})</button><button class="bilan-tab ${dbTab === 'chapitres' ? 'active' : ''}" onclick="switchDbTab('chapitres')">Chapitres</button></div><div id="db-content"></div>`; renderDbContent(); }
@@ -2177,5 +2506,3 @@ document.addEventListener('click', function(e) {
    
 
 </script>
-
-   
