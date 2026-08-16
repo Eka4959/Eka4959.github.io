@@ -124,6 +124,8 @@ a { color: inherit; text-decoration: none; }
 
 .theme-toggle { background: none; border: 1px solid var(--border); color: var(--text2); width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; transition: all 0.15s; }
 .theme-toggle:hover { color: var(--text); border-color: var(--text2); }
+.github-sync-btn { background: rgba(91, 141, 184, 0.12); border: 1px solid rgba(91, 141, 184, 0.35); color: var(--blue); font-weight: 700; font-size: 0.75rem; padding: 7px 12px; border-radius: 999px; letter-spacing: 0.02em; }
+.github-sync-btn:hover { filter: brightness(1.05); }
 #content { flex: 1; overflow-y: auto; padding: 28px; }
 #content::-webkit-scrollbar { width: 5px; }
 #content::-webkit-scrollbar-thumb { background: var(--bg3); border-radius: 3px; }
@@ -618,6 +620,7 @@ a { color: inherit; text-decoration: none; }
         <button class="user-badge" id="user-badge" onclick="logout()" title="Se déconnecter">👤 Invité</button>
         <div class="xp-pill" id="xp-pill">0 XP</div>
         <div class="streak-pill" id="streak-pill">🔥 0</div>
+        <button class="github-sync-btn" onclick="syncAllGitHubData()" title="Synchroniser toutes les données vers GitHub">⬆️ GitHub</button>
         <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn" title="Thème">🌙</button>
       </div>
     </div>
@@ -735,6 +738,41 @@ function askForGitHubToken() {
 function persistLocally(path, data, commitMessage) {
   const localKey = `bl_pending_sync_${path.replace(/[\\/]/g, '_')}`;
   lsSet(localKey, { path, data, commitMessage });
+}
+
+async function syncNotionsToGitHub() {
+  if (!Array.isArray(state.notions)) return;
+  lsSet('bl_notions', state.notions);
+  await pushToGitHub('data/notions.json', state.notions, 'Sauvegarde automatique des notions');
+}
+
+async function syncAllGitHubData() {
+  const token = getGitHubToken();
+  if (!token) {
+    const requested = askForGitHubToken();
+    if (!requested) {
+      showToast('Un token GitHub est requis pour synchroniser les données.', 'err');
+      return;
+    }
+  }
+
+  const payloads = [
+    { path: 'data/questions.json', data: state.questions, message: 'Synchronisation globale des questions' },
+    { path: 'data/chapters.json', data: state.chapters, message: 'Synchronisation globale des chapitres' },
+    { path: 'data/cours.json', data: state.cours, message: 'Synchronisation globale du cours' },
+    { path: 'data/users.json', data: usersDb, message: 'Synchronisation globale des utilisateurs' },
+    { path: 'data/notions.json', data: Array.isArray(state.notions) ? state.notions : [], message: 'Synchronisation globale des notions' }
+  ];
+
+  try {
+    for (const payload of payloads) {
+      await pushToGitHub(payload.path, payload.data, payload.message);
+    }
+    showToast('Toutes les données ont bien été synchronisées sur GitHub.', 'ok');
+  } catch (error) {
+    console.warn('Erreur lors de la synchronisation globale GitHub', error);
+    showToast('La synchronisation globale a échoué. Les données restent sauvegardées localement.', 'err');
+  }
 }
 
 class GitHubAuthError extends Error {}
@@ -987,16 +1025,17 @@ async function initApp() {
     }
   };
 
-  const [questions, cours, chapters, fetchedUsers] = await Promise.all([
+  const [questions, cours, chapters, fetchedUsers, fetchedNotions] = await Promise.all([
     loadJson('./data/questions.json', 'bl_questions', localQuestions, value => Array.isArray(value), value => value.length > 0),
     loadJson('./data/cours.json', 'bl_cours', localCours, value => Array.isArray(value), value => value.length > 0),
     loadJson('./data/chapters.json', 'bl_chapters', localChapters, value => value && typeof value === 'object' && !Array.isArray(value), value => Object.keys(value).length > 0),
-    loadJson('./data/users.json', 'bl_usersDb', {}, value => value && typeof value === 'object' && !Array.isArray(value), value => Object.keys(value).length > 0)
+    loadJson('./data/users.json', 'bl_usersDb', {}, value => value && typeof value === 'object' && !Array.isArray(value), value => Object.keys(value).length > 0),
+    loadJson('./data/notions.json', 'bl_notions', [], value => Array.isArray(value), value => true)
   ]);
 
   const localNotions = ls('bl_notions', []);
   if (Array.isArray(localNotions)) {
-    state.notions = localNotions;
+    state.notions = Array.isArray(fetchedNotions) && fetchedNotions.length ? fetchedNotions : localNotions;
   }
 
   state.questions = questions;
@@ -1515,7 +1554,7 @@ function renderNotionCard(item, global = false) {
     </article>
   `;
 }
-function saveNotion(event) {
+async function saveNotion(event) {
   event.preventDefault();
   const matiere = document.getElementById('notion-matiere')?.value || 'ses';
   const notionText = document.getElementById('notion-title')?.value.trim();
@@ -1539,21 +1578,21 @@ function saveNotion(event) {
   };
 
   state.notions = [notion, ...state.notions];
-  lsSet('bl_notions', state.notions);
+  await syncNotionsToGitHub();
   document.getElementById('notion-form')?.reset();
   const selectRating = document.getElementById('notion-rating');
   if (selectRating) selectRating.value = '3';
   showToast('Notion ajoutée et planifiée', 'ok');
   renderNotionsPage(document.getElementById('content'));
 }
-function rateNotion(id, rating) {
+async function rateNotion(id, rating) {
   const notion = state.notions.find(item => item.id === id);
   if (!notion) return;
   notion.fsrs = repeat(notion.fsrs || createEmptyFsrsCard(), rating);
   notion.fsrs.due = Number(notion.fsrs.due || Date.now());
   notion.fsrs.last_review = Date.now();
   state.notions = [...state.notions];
-  lsSet('bl_notions', state.notions);
+  await syncNotionsToGitHub();
   showToast('Mise à jour de la notion enregistrée', 'ok');
   renderNotionsPage(document.getElementById('content'));
 }
