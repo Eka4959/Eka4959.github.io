@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Prepa B/L · Revisions</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="icon" type="image/x-icon" href="801A6FB8-0DB8-4B61-8A69-94F71841A506_1_201_a copie.jpeg">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prepa B/L · Revisions</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/x-icon" href="801A6FB8-0DB8-4B61-8A69-94F71841A506_1_201_a copie.jpeg">
 <style>
 /* ===================================================================
    VARIABLES CSS & RESET
@@ -665,7 +665,8 @@ const NOTION_SUBJECTS = [
   { id: 'ses', label: 'SES' },
   { id: 'lettres', label: 'Lettres' },
   { id: 'philo', label: 'Philo' },
-  { id: 'hgg', label: 'Histoire / Géographie' },
+  { id: 'histoire', label: 'Histoire', icon: '🏛️' },
+  { id: 'geo', label: 'Géographie', icon: '🌍' },
   { id: 'maths', label: 'Maths' },
   { id: 'lve', label: 'Anglais' }
 ];
@@ -686,10 +687,10 @@ function lsSet(key, val) { try { localStorage.setItem(key, JSON.stringify(val));
 // --- ÉTAT GLOBAL DE L'APPLICATION ---
 let state = {
   // --- DONNÉES PERSONNELLES (Restent en local) ---
-  xp: ls('bl_xp', 0),
-  sr_data: ls('bl_sr_data', {}),
-  streak: ls('bl_streak', 0),
-  lastActivityDate: ls('bl_last_activity', null),
+  xp: 0,
+  sr_data: {},
+  streak: 0,
+  lastActivityDate: null,
   theme: ls('bl_theme', 'auto'),
   sidebarCollapsed: ls('bl_sidebar', false),
   currentView: 'dashboard',
@@ -697,8 +698,8 @@ let state = {
   currentChapter: null,
   editingCours: null,
   editingQuestion: null,
-  notions: ls('bl_notions', []),
-  notionsAgendaExpanded: ls('bl_notions_agenda_expanded', {}),
+  notions: [],
+  notionsAgendaExpanded: {},
   
   // --- DONNÉES GLOBALES (Vides au départ, seront remplies par GitHub) ---
   questions: [],
@@ -706,7 +707,6 @@ let state = {
   chapters: {}
 };
 if (!state.questions) { state.questions = SEED_QUESTIONS; lsSet('bl_questions', state.questions); }
-if (!Array.isArray(state.notions)) { state.notions = []; lsSet('bl_notions', state.notions); }
 
 
 // --- CONFIGURATION GITHUB AUTOMATIQUE ---
@@ -742,9 +742,8 @@ function persistLocally(path, data, commitMessage) {
 }
 
 async function syncNotionsToGitHub() {
-  if (!Array.isArray(state.notions)) return;
-  lsSet('bl_notions', state.notions);
-  await pushToGitHub('data/notions.json', state.notions, 'Sauvegarde automatique des notions');
+  if (!state.currentUser || !Array.isArray(state.notions)) return;
+  await syncUserStats();
 }
 
 async function syncAllGitHubData() {
@@ -761,8 +760,7 @@ async function syncAllGitHubData() {
     { path: 'data/questions.json', data: state.questions, message: 'Synchronisation globale des questions' },
     { path: 'data/chapters.json', data: state.chapters, message: 'Synchronisation globale des chapitres' },
     { path: 'data/cours.json', data: state.cours, message: 'Synchronisation globale du cours' },
-    { path: 'data/users.json', data: usersDb, message: 'Synchronisation globale des utilisateurs' },
-    { path: 'data/notions.json', data: Array.isArray(state.notions) ? state.notions : [], message: 'Synchronisation globale des notions' }
+    { path: 'data/users.json', data: usersDb, message: 'Synchronisation globale des profils utilisateurs' }
   ];
 
   try {
@@ -824,6 +822,10 @@ async function syncPendingGitHubData() {
     try {
       const pending = ls(key, null);
       if (!pending || !pending.path) {
+        localStorage.removeItem(key);
+        continue;
+      }
+      if (pending.path === 'data/notions.json') {
         localStorage.removeItem(key);
         continue;
       }
@@ -890,6 +892,42 @@ function showAuth() {
   document.getElementById('auth-overlay').classList.add('show');
 }
 
+function emptyPersonalProfile() {
+  return { xp: 0, streak: 0, lastActivityDate: null, sr_data: {}, notions: [], notionsAgendaExpanded: {} };
+}
+
+function loadUserProfile(username) {
+  const profile = { ...emptyPersonalProfile(), ...(usersDb[username] || {}) };
+  const legacyNotions = ls('bl_notions', []);
+  const hasProfileNotions = Array.isArray(usersDb[username]?.notions);
+  if (!hasProfileNotions && Array.isArray(legacyNotions) && legacyNotions.length > 0) {
+    profile.notions = legacyNotions;
+  }
+  state.xp = Number(profile.xp) || 0;
+  state.streak = Number(profile.streak) || 0;
+  state.lastActivityDate = profile.lastActivityDate || null;
+  state.sr_data = profile.sr_data && typeof profile.sr_data === 'object' ? profile.sr_data : {};
+  state.notions = Array.isArray(profile.notions) ? profile.notions : [];
+  state.notionsAgendaExpanded = profile.notionsAgendaExpanded && typeof profile.notionsAgendaExpanded === 'object' ? profile.notionsAgendaExpanded : {};
+  usersDb[username] = profile;
+  lsSet('bl_usersDb', usersDb);
+  localStorage.removeItem('bl_notions');
+  localStorage.removeItem('bl_notions_agenda_expanded');
+  localStorage.removeItem('bl_xp');
+  localStorage.removeItem('bl_sr_data');
+  localStorage.removeItem('bl_streak');
+  localStorage.removeItem('bl_last_activity');
+}
+
+function clearGuestPersonalState() {
+  state.xp = 0;
+  state.streak = 0;
+  state.lastActivityDate = null;
+  state.sr_data = {};
+  state.notions = [];
+  state.notionsAgendaExpanded = {};
+}
+
 function hideAuth() {
   document.getElementById('auth-overlay').classList.remove('show');
   const badge = document.getElementById('user-badge');
@@ -897,13 +935,8 @@ function hideAuth() {
 }
 
 function loginUser(username) {
-  // Charge l'état
   state.currentUser = username;
-  const userStats = usersDb[username] || {};
-  state.xp = userStats.xp ?? state.xp;
-  state.streak = userStats.streak ?? state.streak;
-  state.lastActivityDate = userStats.lastActivityDate ?? null;
-  state.sr_data = userStats.sr_data || state.sr_data || {};
+  loadUserProfile(username);
   
   lsSet('bl_current_user', username);
   updateBadges();
@@ -960,7 +993,7 @@ async function register() {
   }
 
   // Création
-  usersDb[username] = { xp: 0, streak: 0, lastActivityDate: null, sr_data: {} };
+  usersDb[username] = emptyPersonalProfile();
   lsSet('bl_usersDb', usersDb); // Sauvegarde locale en priorité
   
   loginUser(username);
@@ -973,7 +1006,7 @@ async function register() {
 function continueAsGuest() {
   state.currentUser = null;
   localStorage.removeItem('bl_current_user'); 
-  state.xp = 0; state.streak = 0; state.sr_data = {}; // Reset invité
+  clearGuestPersonalState();
   updateBadges();
   hideAuth();
   showToast("Mode Invité : ta progression ne sera pas mémorisée.", "info");
@@ -982,6 +1015,7 @@ function continueAsGuest() {
 function logout() {
   if(confirm("Veux-tu vraiment te déconnecter ?")) {
     state.currentUser = null;
+    clearGuestPersonalState();
     localStorage.removeItem('bl_current_user');
     showAuth();
   }
@@ -994,7 +1028,9 @@ async function syncUserStats() {
     xp: state.xp,
     streak: state.streak,
     lastActivityDate: state.lastActivityDate,
-    sr_data: state.sr_data
+    sr_data: state.sr_data,
+    notions: state.notions,
+    notionsAgendaExpanded: state.notionsAgendaExpanded
   };
   
   lsSet('bl_usersDb', usersDb); // Mise en sécurité locale systématique
@@ -1026,18 +1062,12 @@ async function initApp() {
     }
   };
 
-  const [questions, cours, chapters, fetchedUsers, fetchedNotions] = await Promise.all([
+  const [questions, cours, chapters, fetchedUsers] = await Promise.all([
     loadJson('./data/questions.json', 'bl_questions', localQuestions, value => Array.isArray(value), value => value.length > 0),
     loadJson('./data/cours.json', 'bl_cours', localCours, value => Array.isArray(value), value => value.length > 0),
     loadJson('./data/chapters.json', 'bl_chapters', localChapters, value => value && typeof value === 'object' && !Array.isArray(value), value => Object.keys(value).length > 0),
-    loadJson('./data/users.json', 'bl_usersDb', {}, value => value && typeof value === 'object' && !Array.isArray(value), value => Object.keys(value).length > 0),
-    loadJson('./data/notions.json', 'bl_notions', [], value => Array.isArray(value), value => true)
+    loadJson('./data/users.json', 'bl_usersDb', {}, value => value && typeof value === 'object' && !Array.isArray(value), value => Object.keys(value).length > 0)
   ]);
-
-  const localNotions = ls('bl_notions', []);
-  if (Array.isArray(localNotions)) {
-    state.notions = Array.isArray(fetchedNotions) && fetchedNotions.length ? fetchedNotions : localNotions;
-  }
 
   state.questions = questions;
   state.cours = cours;
@@ -1053,10 +1083,7 @@ async function initApp() {
     state.questions = SEED_QUESTIONS;
     state.chapters = {ses: SES_CHAPTERS, lettres: [], philo: [], histoire: [], geo: []};
   }
-  if (!Array.isArray(state.notions)) {
-    state.notions = [];
-  }
-  lsSet('bl_notions', state.notions);
+  clearGuestPersonalState();
   
   buildSidebarSubjects();
   applyTheme();
@@ -1158,8 +1185,6 @@ function updateStreak() {
     state.streak = 1; 
   } 
   state.lastActivityDate = today; 
-  lsSet('bl_streak', state.streak); 
-  lsSet('bl_last_activity', state.lastActivityDate); 
   if (state.currentUser) syncUserStats();
 }
 
@@ -1191,7 +1216,6 @@ function updateSR(qid, grade) {
     sr.retryPending = false;
   }
   state.sr_data[qid] = sr; 
-  lsSet('bl_sr_data', state.sr_data); 
   if (state.currentUser) syncUserStats();
 }
 function isDue(qid) { const sr = state.sr_data[qid]; if (!sr) return true; if (sr.due === 0) return true; return Date.now() >= sr.due - 5 * 60 * 1000; }
@@ -1230,7 +1254,6 @@ function endQuizSession() {
   if (quiz.completed) return;
   quiz.completed = true;
   state.xp += quiz.xpGained;
-  lsSet('bl_xp', state.xp);
   if (quiz.xpGained > 0) updateStreak();
   updateBadges();
   if (state.currentUser) syncUserStats();
@@ -1298,16 +1321,10 @@ function resetAllData() {
   notionView = 'matiere';
   state.notions = [];
   state.notionsAgendaExpanded = {};
-  lsSet('bl_notions', state.notions);
-  lsSet('bl_notions_agenda_expanded', state.notionsAgendaExpanded);
   
   // Sauvegarder l'état initial
   lsSet('bl_questions', state.questions);
   lsSet('bl_chapters', state.chapters);
-  lsSet('bl_xp', state.xp);
-  lsSet('bl_streak', state.streak);
-  lsSet('bl_last_activity', state.lastActivityDate);
-  lsSet('bl_sr_data', state.sr_data);
   lsSet('bl_cours', state.cours);
   lsSet('bl_theme', state.theme);
   
@@ -1526,7 +1543,7 @@ function renderNotionAgenda() {
 function toggleNotionAgendaDay(key) {
   state.notionsAgendaExpanded = state.notionsAgendaExpanded || {};
   state.notionsAgendaExpanded[key] = !state.notionsAgendaExpanded[key];
-  lsSet('bl_notions_agenda_expanded', state.notionsAgendaExpanded);
+  if (state.currentUser) syncUserStats();
   renderNotionsPage(document.getElementById('content'));
 }
 function renderNotionCard(item, global = false) {
@@ -1557,6 +1574,10 @@ function renderNotionCard(item, global = false) {
 }
 async function saveNotion(event) {
   event.preventDefault();
+  if (!state.currentUser) {
+    showToast('Connecte-toi pour enregistrer tes notions dans ton profil.', 'err');
+    return;
+  }
   const matiere = document.getElementById('notion-matiere')?.value || 'ses';
   const notionText = document.getElementById('notion-title')?.value.trim();
   const details = document.getElementById('notion-details')?.value.trim() || '';
@@ -1587,6 +1608,10 @@ async function saveNotion(event) {
   renderNotionsPage(document.getElementById('content'));
 }
 async function rateNotion(id, rating) {
+  if (!state.currentUser) {
+    showToast('Connecte-toi pour modifier les notions de ton profil.', 'err');
+    return;
+  }
   const notion = state.notions.find(item => item.id === id);
   if (!notion) return;
   notion.fsrs = repeat(notion.fsrs || createEmptyFsrsCard(), rating);
@@ -1602,7 +1627,7 @@ async function rateNotion(id, rating) {
 function renderDatabase(c) { setBreadcrumb(['Base de données']); c.innerHTML = `<h1 class="page-title">Base de données</h1><p class="page-sub">Gère tes questions et tes chapitres</p><div class="bilan-tabs"><button class="bilan-tab ${dbTab === 'questions' ? 'active' : ''}" onclick="switchDbTab('questions')">Questions (${state.questions.length})</button><button class="bilan-tab ${dbTab === 'chapitres' ? 'active' : ''}" onclick="switchDbTab('chapitres')">Chapitres</button></div><div id="db-content"></div>`; renderDbContent(); }
 function switchDbTab(tab) { dbTab = tab; renderDatabase(document.getElementById('content')); }
 function renderDbContent() { const el = document.getElementById('db-content'); if (dbTab === 'questions') { const qs = state.questions.filter(q => q.q.toLowerCase().includes(dbSearch.toLowerCase()) || (q.expl && q.expl.toLowerCase().includes(dbSearch.toLowerCase()))); el.innerHTML = `<input type="text" class="search-bar" placeholder="Rechercher une question ou une explication..." value="${escapeHtml(dbSearch)}" onkeyup="dbSearch = this.value; renderDbContent()"><div style="overflow-x:auto;"><table class="db-table"><thead><tr><th>Matière</th><th>Chapitre</th><th>Type</th><th>Question</th><th style="text-align:right">Actions</th></tr></thead><tbody>${qs.slice(0, 50).map(q => `<tr><td>${SUBJECTS.find(s=>s.id===q.subject)?.icon || ''}</td><td>${escapeHtml(chapterName(q.subject, q.chapter))}</td><td><span class="err-mode">${q.mode.toUpperCase()}</span></td><td style="max-width:300px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(q.q)}</td><td style="text-align:right"><button class="db-action" onclick="editQuestion('${q.id}')" title="Modifier">✏️</button><button class="db-action del" onclick="deleteQuestion('${q.id}')" title="Supprimer">🗑️</button></td></tr>`).join('')}${qs.length === 0 ? '<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--text3)">Aucune question trouvée.</td></tr>' : ''}${qs.length > 50 ? `<tr><td colspan="5" style="text-align:center;color:var(--text3);padding:15px">Et ${qs.length - 50} autres résultats...</td></tr>` : ''}</tbody></table></div>`; } else { let html = `<div style="overflow-x:auto;"><table class="db-table"><thead><tr><th>Matière</th><th>Chapitre</th><th>Questions</th><th style="text-align:right">Actions</th></tr></thead><tbody>`; SUBJECTS.forEach(s => { const chaps = state.chapters[s.id] || []; chaps.forEach(ch => { const qCount = state.questions.filter(q => q.subject === s.id && q.chapter === ch.id).length; html += `<tr><td>${s.icon} ${s.name}</td><td><strong>${escapeHtml(ch.name)}</strong></td><td>${qCount} questions</td><td style="text-align:right"><button class="db-action" onclick="editChapterName('${s.id}', '${ch.id}')" title="Renommer">✏️</button><button class="db-action del" onclick="deleteChapter('${s.id}', '${ch.id}')" title="Supprimer">🗑️</button></td></tr>`; }); }); html += `</tbody></table></div>`; el.innerHTML = html; } }
-function deleteQuestion(id) { if(!confirm('Es-tu sûr de vouloir supprimer cette question définitivement ?')) return; state.questions = state.questions.filter(q => q.id !== id); delete state.sr_data[id]; lsSet('bl_questions', state.questions); pushToGitHub("data/questions.json", state.questions, "Suppression automatique d'une question via l'interface web"); lsSet('bl_sr_data', state.sr_data); showToast('Question supprimée', 'ok'); renderDbContent(); }
+function deleteQuestion(id) { if(!confirm('Es-tu sûr de vouloir supprimer cette question définitivement ?')) return; state.questions = state.questions.filter(q => q.id !== id); delete state.sr_data[id]; lsSet('bl_questions', state.questions); pushToGitHub("data/questions.json", state.questions, "Suppression automatique d'une question via l'interface web"); if (state.currentUser) syncUserStats(); showToast('Question supprimée', 'ok'); renderDbContent(); }
 function editQuestion(id) { state.editingQuestion = id; const eq = state.questions.find(q => q.id === id); if(eq) addMode = eq.mode; nav('add-question'); }
 function editChapterName(subj, chId) { const chList = state.chapters[subj]; const ch = chList.find(c => c.id === chId); const newName = prompt('Renommer le chapitre :', ch.name); if (newName && newName.trim() !== '') { ch.name = newName.trim(); lsSet('bl_chapters', state.chapters); pushToGitHub('data/chapters.json', state.chapters, 'Renommage automatique d\'un chapitre'); buildSidebarSubjects(); showToast('Chapitre renommé', 'ok'); renderDbContent(); } }
 function deleteChapter(subj, chId) { const qCount = state.questions.filter(q => q.subject === subj && q.chapter === chId).length; if(!confirm(`ATTENTION : Supprimer ce chapitre va aussi supprimer ses ${qCount} questions. Continuer ?`)) return; state.chapters[subj] = state.chapters[subj].filter(c => c.id !== chId); state.questions = state.questions.filter(q => !(q.subject === subj && q.chapter === chId)); lsSet('bl_chapters', state.chapters); lsSet('bl_questions', state.questions); pushToGitHub('data/chapters.json', state.chapters, 'Suppression automatique d\'un chapitre'); pushToGitHub('data/questions.json', state.questions, 'Suppression automatique des questions d\'un chapitre'); buildSidebarSubjects(); showToast('Chapitre et questions supprimés', 'ok'); renderDbContent(); }
@@ -1702,7 +1727,6 @@ function closeQuiz(force = false) {
   clearQuizTimer();
   document.getElementById('quiz-overlay').classList.remove('show'); 
   state.xp += quiz.xpGained; 
-  lsSet('bl_xp', state.xp); 
   
   if (quiz.xpGained > 0) { 
     updateStreak(); 
@@ -1786,7 +1810,6 @@ function finishExam() {
   const total = quiz.questions.length;
   const percentage = total ? Math.round(correctCount / total * 100) : 0;
   state.xp += quiz.xpGained;
-  lsSet('bl_xp', state.xp);
   if (quiz.xpGained > 0) updateStreak();
   updateBadges();
   if (state.currentUser) syncUserStats();
