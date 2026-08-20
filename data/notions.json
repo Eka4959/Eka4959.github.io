@@ -6,13 +6,13 @@
     "details": "Fonction de production $Y = f(K, L)$ et substituabilité vs complémentarité.FBCF, investissement net vs amortissement.Les 4 déterminants de la décision d'investir.Modèle de l'accélérateur d'Aftalion ($I_t = \\beta(Y_t - Y_{t-1})$ avec $\\beta = K/Y$).",
     "dateCreation": "2026-08-20T14:13:11.234Z",
     "fsrs": {
-      "due": 1787235791234,
-      "stability": 2.4,
+      "due": 1787731629650,
+      "stability": 4.56,
       "difficulty": 4.7,
-      "reps": 1,
+      "reps": 2,
       "lapses": 0,
       "state": "review",
-      "last_review": 1787235191234
+      "last_review": 1787235209810
     }
   },
   {
