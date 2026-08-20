@@ -1,82 +1,260 @@
-[
-  {
-    "id": "9942a3db-ecd3-4b0c-b181-7c15cd3cae9d",
-    "matiere": "ses",
-    "notion": "Niveau 1 facteurs de production et investissement",
-    "details": "Fonction de production $Y = f(K, L)$ et substituabilité vs complémentarité.FBCF, investissement net vs amortissement.Les 4 déterminants de la décision d'investir.Modèle de l'accélérateur d'Aftalion ($I_t = \\beta(Y_t - Y_{t-1})$ avec $\\beta = K/Y$).",
-    "dateCreation": "2026-08-20T14:13:11.234Z",
-    "fsrs": {
-      "due": 1787731629650,
-      "stability": 4.56,
-      "difficulty": 4.7,
-      "reps": 2,
-      "lapses": 0,
-      "state": "review",
-      "last_review": 1787235209810
-    }
-  },
-  {
-    "id": "f6252038-129a-4bb4-9368-0d9642dc3554",
-    "matiere": "ses",
-    "notion": "Pouvoir de marché des entreprises",
-    "details": "Indice de Lerner : cas général + monopole\nHHI : formule, bornes, évolution (plus la concentration est grande, plus HHI est grand)\nIndice de Lerner en cas d'oligopole",
-    "dateCreation": "2026-08-18T17:16:20.374Z",
-    "fsrs": {
-      "due": 1792699072746,
-      "stability": 20.3,
-      "difficulty": 5.3,
-      "reps": 2,
-      "lapses": 0,
-      "state": "review",
-      "last_review": 1787174224746
-    }
-  },
-  {
-    "id": "653f817d-9dfc-46f2-b65d-41b5f391000e",
-    "matiere": "maths",
-    "notion": "4.3 fiche de calculs",
-    "details": "",
-    "dateCreation": "2026-08-18T13:14:45.184Z",
-    "fsrs": {
-      "due": 1787421919787.6,
-      "stability": 1.759,
-      "difficulty": 3.8,
-      "reps": 4,
-      "lapses": 1,
-      "state": "review",
-      "last_review": 1787230384466
-    }
-  },
-  {
-    "id": "e96364eb-937e-46a9-8b64-c89945bfc962",
-    "matiere": "maths",
-    "notion": "3.6 fiche de calculs",
-    "details": "",
-    "dateCreation": "2026-08-18T10:07:52.931Z",
-    "fsrs": {
-      "due": 1788107211930,
-      "stability": 3.22,
-      "difficulty": 4.05,
-      "reps": 4,
-      "lapses": 2,
-      "state": "review",
-      "last_review": 1787230856730
-    }
-  },
-  {
-    "id": "7d5faac2-0080-483e-a203-14fba66c0611",
-    "matiere": "maths",
-    "notion": "3.5 fiche calcul",
-    "details": "",
-    "dateCreation": "2026-08-18T10:07:32.183Z",
-    "fsrs": {
-      "due": 1787306852183,
-      "stability": 12.5,
-      "difficulty": 5.3,
-      "reps": 1,
-      "lapses": 0,
-      "state": "review",
-      "last_review": 1787047652183
-    }
+{
+  "lucien": {
+    "xp": 1179,
+    "streak": 1,
+    "lastActivityDate": "2026-08-16",
+    "sr_data": {
+      "ses_inegalites_qcm_0": {
+        "interval": 14,
+        "ef": 2.8000000000000003,
+        "due": 1787868847036,
+        "errors": 0,
+        "attempts": 3,
+        "retryPending": false
+      },
+      "imp_1786107270820_h491": {
+        "interval": 14,
+        "ef": 2.8000000000000003,
+        "due": 1787868949566,
+        "errors": 0,
+        "attempts": 3,
+        "retryPending": false
+      },
+      "imp_1786107270820_baw8": {
+        "interval": 14,
+        "ef": 2.8000000000000003,
+        "due": 1787868891935,
+        "errors": 0,
+        "attempts": 3,
+        "retryPending": false
+      },
+      "imp_1786107270820_mlex": {
+        "interval": 14,
+        "ef": 2.8000000000000003,
+        "due": 1787868920145,
+        "errors": 0,
+        "attempts": 3,
+        "retryPending": false
+      },
+      "imp_1786107270820_6jo7": {
+        "interval": 14,
+        "ef": 2.8000000000000003,
+        "due": 1787868958265,
+        "errors": 0,
+        "attempts": 3,
+        "retryPending": false
+      },
+      "imp_1786107270820_nbnt": {
+        "interval": 14,
+        "ef": 2.8000000000000003,
+        "due": 1787868899425,
+        "errors": 0,
+        "attempts": 3,
+        "retryPending": false
+      },
+      "imp_1786107270820_eglw": {
+        "interval": 14,
+        "ef": 2.8000000000000003,
+        "due": 1787868941524,
+        "errors": 0,
+        "attempts": 3,
+        "retryPending": false
+      },
+      "imp_1786107270820_0eqp": {
+        "interval": 13,
+        "ef": 2.68,
+        "due": 1787782566188,
+        "errors": 0,
+        "attempts": 4,
+        "retryPending": false
+      },
+      "imp_1786107270820_yyda": {
+        "interval": 26,
+        "ef": 2.54,
+        "due": 1789141995308,
+        "errors": 0,
+        "attempts": 7,
+        "retryPending": false
+      },
+      "imp_1786107270820_kja3": {
+        "interval": 13,
+        "ef": 2.68,
+        "due": 1787782554709,
+        "errors": 0,
+        "attempts": 4,
+        "retryPending": false
+      },
+      "imp_1786120779983_bsz5": {
+        "interval": 14,
+        "ef": 2.8000000000000003,
+        "due": 1787868830472,
+        "errors": 0,
+        "attempts": 3,
+        "retryPending": false
+      },
+      "imp_1786120779983_l28c": {
+        "interval": 14,
+        "ef": 2.8000000000000003,
+        "due": 1787868797262,
+        "errors": 0,
+        "attempts": 3,
+        "retryPending": false
+      },
+      "imp_1786120779983_pn8x": {
+        "interval": 14,
+        "ef": 2.8000000000000003,
+        "due": 1787868871877,
+        "errors": 0,
+        "attempts": 3,
+        "retryPending": false
+      },
+      "imp_1786120779983_wpye": {
+        "interval": 14,
+        "ef": 2.8000000000000003,
+        "due": 1787868864076,
+        "errors": 0,
+        "attempts": 3,
+        "retryPending": false
+      },
+      "imp_1786120779983_xdrf": {
+        "interval": 14,
+        "ef": 2.8000000000000003,
+        "due": 1787868840470,
+        "errors": 0,
+        "attempts": 3,
+        "retryPending": false
+      },
+      "imp_1786120779983_g2mt": {
+        "interval": 14,
+        "ef": 2.8000000000000003,
+        "due": 1787868824144,
+        "errors": 0,
+        "attempts": 3,
+        "retryPending": false
+      },
+      "imp_1786120779983_6j2v": {
+        "interval": 14,
+        "ef": 2.8000000000000003,
+        "due": 1787868812929,
+        "errors": 0,
+        "attempts": 3,
+        "retryPending": false
+      },
+      "imp_1786120779983_gtyo": {
+        "interval": 14,
+        "ef": 2.8000000000000003,
+        "due": 1787868789021,
+        "errors": 0,
+        "attempts": 3,
+        "retryPending": false
+      },
+      "imp_1786120779983_i9b2": {
+        "interval": 14,
+        "ef": 2.8000000000000003,
+        "due": 1787868858012,
+        "errors": 0,
+        "attempts": 3,
+        "retryPending": false
+      },
+      "imp_1786120779983_05xn": {
+        "interval": 14,
+        "ef": 2.8000000000000003,
+        "due": 1787868853109,
+        "errors": 0,
+        "attempts": 3,
+        "retryPending": false
+      },
+      "imp_1786121119687_yedl": {
+        "interval": 14,
+        "ef": 2.8000000000000003,
+        "due": 1787868807062,
+        "errors": 0,
+        "attempts": 3,
+        "retryPending": false
+      }
+    },
+    "notions": [
+      {
+        "id": "9942a3db-ecd3-4b0c-b181-7c15cd3cae9d",
+        "matiere": "ses",
+        "notion": "Niveau 1 facteurs de production et investissement",
+        "details": "Fonction de production $Y = f(K, L)$ et substituabilité vs complémentarité.FBCF, investissement net vs amortissement.Les 4 déterminants de la décision d'investir.Modèle de l'accélérateur d'Aftalion ($I_t = \\beta(Y_t - Y_{t-1})$ avec $\\beta = K/Y$).",
+        "dateCreation": "2026-08-20T14:13:11.234Z",
+        "fsrs": {
+          "due": 1787731629650,
+          "stability": 4.56,
+          "difficulty": 4.7,
+          "reps": 2,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1787235209810
+        }
+      },
+      {
+        "id": "f6252038-129a-4bb4-9368-0d9642dc3554",
+        "matiere": "ses",
+        "notion": "Pouvoir de marché des entreprises",
+        "details": "Indice de Lerner : cas général + monopole\nHHI : formule, bornes, évolution (plus la concentration est grande, plus HHI est grand)\nIndice de Lerner en cas d'oligopole",
+        "dateCreation": "2026-08-18T17:16:20.374Z",
+        "fsrs": {
+          "due": 1792699072746,
+          "stability": 20.3,
+          "difficulty": 5.3,
+          "reps": 2,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1787174224746
+        }
+      },
+      {
+        "id": "653f817d-9dfc-46f2-b65d-41b5f391000e",
+        "matiere": "maths",
+        "notion": "4.3 fiche de calculs",
+        "details": "",
+        "dateCreation": "2026-08-18T13:14:45.184Z",
+        "fsrs": {
+          "due": 1787421919787.6,
+          "stability": 1.759,
+          "difficulty": 3.8,
+          "reps": 4,
+          "lapses": 1,
+          "state": "review",
+          "last_review": 1787230384466
+        }
+      },
+      {
+        "id": "e96364eb-937e-46a9-8b64-c89945bfc962",
+        "matiere": "maths",
+        "notion": "3.6 fiche de calculs",
+        "details": "",
+        "dateCreation": "2026-08-18T10:07:52.931Z",
+        "fsrs": {
+          "due": 1788107211930,
+          "stability": 3.22,
+          "difficulty": 4.05,
+          "reps": 4,
+          "lapses": 2,
+          "state": "review",
+          "last_review": 1787230856730
+        }
+      },
+      {
+        "id": "7d5faac2-0080-483e-a203-14fba66c0611",
+        "matiere": "maths",
+        "notion": "3.5 fiche calcul",
+        "details": "",
+        "dateCreation": "2026-08-18T10:07:32.183Z",
+        "fsrs": {
+          "due": 1787306852183,
+          "stability": 12.5,
+          "difficulty": 5.3,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1787047652183
+        }
+      }
+    ],
+    "notionsAgendaExpanded": {}
   }
-]
+}
