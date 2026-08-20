@@ -765,7 +765,7 @@ async function syncAllGitHubData() {
 
   try {
     for (const payload of payloads) {
-      await pushToGitHub(payload.path, payload.data, payload.message);
+      await pushToGitHub(payload.path, payload.data, payload.message, { requestToken: true });
     }
     showToast('Toutes les données ont bien été synchronisées sur GitHub.', 'ok');
   } catch (error) {
@@ -842,9 +842,9 @@ async function syncPendingGitHubData() {
   }
 }
 
-async function pushToGitHub(path, data, commitMessage) {
+async function pushToGitHub(path, data, commitMessage, options = {}) {
   let token = getGitHubToken();
-  if (!token) {
+  if (!token && options.requestToken) {
     token = askForGitHubToken();
   }
   if (!token) {
@@ -859,7 +859,7 @@ async function pushToGitHub(path, data, commitMessage) {
   } catch (error) {
     if (error instanceof GitHubAuthError) {
       localStorage.removeItem('gh_admin_token');
-      const retryToken = askForGitHubToken();
+      const retryToken = options.requestToken ? askForGitHubToken() : null;
       if (retryToken) {
         try {
           await syncPendingGitHubData();
@@ -1190,6 +1190,13 @@ function updateStreak() {
 
 // SPACED REPETITION
 function getSR(qid) { return state.sr_data[qid] || { interval: 0, ef: 2.5, due: 0, errors: 0, attempts: 0, retryPending: false }; }
+function isPlayableQuestion(question) {
+  if (!question || !QUESTION_MODES.includes(question.mode) || !question.q) return false;
+  if (question.mode === 'qcm') return Array.isArray(question.opts) && question.opts.length >= 2 && Number.isInteger(question.correct) && question.correct >= 0 && question.correct < question.opts.length;
+  if (question.mode === 'vf') return typeof question.correct === 'boolean';
+  if (question.mode === 'quote') return Boolean(String(question.author || question.correct || '').trim());
+  return Boolean(String(question.correct || question.answer || '').trim());
+}
 function updateSR(qid, grade) { 
   const sr = getSR(qid); 
   const now = Date.now(); 
@@ -1219,8 +1226,8 @@ function updateSR(qid, grade) {
   if (state.currentUser) syncUserStats();
 }
 function isDue(qid) { const sr = state.sr_data[qid]; if (!sr) return true; if (sr.due === 0) return true; return Date.now() >= sr.due - 5 * 60 * 1000; }
-function getDueQuestions(subject, chapters, modes) { return state.questions.filter(q => { if (subject && q.subject !== subject) return false; if (chapters?.length && !chapters.includes(q.chapter)) return false; if (modes?.length && !modes.includes(q.mode)) return false; return isDue(q.id); }); }
-function nextDueTime(subject, chapters, modes) { const upcoming = state.questions.filter(q => { if (subject && q.subject !== subject) return false; if (chapters?.length && !chapters.includes(q.chapter)) return false; if (modes?.length && !modes.includes(q.mode)) return false; const sr = state.sr_data[q.id]; return sr && sr.due > Date.now(); }); if (!upcoming.length) return null; upcoming.sort((a, b) => state.sr_data[a.id].due - state.sr_data[b.id].due); const times = upcoming.map(q => state.sr_data[q.id].due).sort((a, b) => a - b); return times[Math.min(4, times.length - 1)]; }
+function getDueQuestions(subject, chapters, modes) { return state.questions.filter(q => { if (!isPlayableQuestion(q)) return false; if (subject && q.subject !== subject) return false; if (state.currentSubject && state.currentSubject === subject && playConfig.noChapters) return false; if (chapters?.length && !chapters.includes(q.chapter)) return false; if (modes?.length && !modes.includes(q.mode)) return false; return isDue(q.id); }); }
+function nextDueTime(subject, chapters, modes) { const upcoming = state.questions.filter(q => { if (!isPlayableQuestion(q)) return false; if (subject && q.subject !== subject) return false; if (state.currentSubject && state.currentSubject === subject && playConfig.noChapters) return false; if (chapters?.length && !chapters.includes(q.chapter)) return false; if (modes?.length && !modes.includes(q.mode)) return false; const sr = state.sr_data[q.id]; return sr && sr.due > Date.now(); }); if (!upcoming.length) return null; upcoming.sort((a, b) => state.sr_data[a.id].due - state.sr_data[b.id].due); const times = upcoming.map(q => state.sr_data[q.id].due).sort((a, b) => a - b); return times[Math.min(4, times.length - 1)]; }
 function fmtDuration(ms) { const m = Math.round(ms / 60000); if (m < 60) return m + ' min'; const h = Math.floor(m / 60), rm = m % 60; return h + 'h' + (rm ? rm.toString().padStart(2, '0') : ''); }
 function shuffle(arr) { const a = [...arr]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 function chapterName(subject, chapterId) { const chs = state.chapters[subject] || []; return chs.find(c => c.id === chapterId)?.name || 'Inconnu'; }
@@ -1228,11 +1235,12 @@ function chapterName(subject, chapterId) { const chs = state.chapters[subject] |
 // FONCTIONS POUR LA REVISION CIBLEE
 function getChapterErrorQuestions(chapterId, subjectId) { return state.questions.filter(q => { if (subjectId && q.subject !== subjectId) return false; if (q.chapter !== chapterId) return false; const sr = getSR(q.id); return sr && sr.errors > 0 && sr.retryPending; }); }
 function startQuizFromQuestions(questions) {
-  if (!questions || questions.length === 0) {
+  const playableQuestions = Array.isArray(questions) ? questions.filter(isPlayableQuestion) : [];
+  if (playableQuestions.length === 0) {
     showToast('Aucune question à réviser pour cette session.', 'info');
     return;
   }
-  quiz.questions = shuffle(questions);
+  quiz.questions = shuffle(playableQuestions);
   if (playConfig.questionsPerSession !== 'all') {
     quiz.questions = quiz.questions.slice(0, Number(playConfig.questionsPerSession));
   }
@@ -1687,9 +1695,9 @@ function addSessionSizeControl(container) {
 }
 const originalRenderPlay = renderPlay;
 renderPlay = function(container) { originalRenderPlay(container); addSessionSizeControl(container); };
-function toggleChapter(chId) { if (!state.currentSubject) return; if (!playConfig.chapters) playConfig.chapters = []; const idx = playConfig.chapters.indexOf(chId); if (idx === -1) { playConfig.chapters.push(chId); } else { playConfig.chapters.splice(idx, 1); } renderPlay(document.getElementById('content')); }
-function selectAllChapters() { if (!state.currentSubject) return; const allChapters = (state.chapters[state.currentSubject] || []).map(ch => ch.id); playConfig.chapters = [...allChapters]; renderPlay(document.getElementById('content')); }
-function deselectAllChapters() { playConfig.chapters = []; renderPlay(document.getElementById('content')); }
+function toggleChapter(chId) { if (!state.currentSubject) return; playConfig.noChapters = false; if (!playConfig.chapters) playConfig.chapters = []; const idx = playConfig.chapters.indexOf(chId); if (idx === -1) { playConfig.chapters.push(chId); } else { playConfig.chapters.splice(idx, 1); } renderPlay(document.getElementById('content')); }
+function selectAllChapters() { if (!state.currentSubject) return; playConfig.noChapters = false; const allChapters = (state.chapters[state.currentSubject] || []).map(ch => ch.id); playConfig.chapters = [...allChapters]; renderPlay(document.getElementById('content')); }
+function deselectAllChapters() { playConfig.noChapters = true; playConfig.chapters = []; renderPlay(document.getElementById('content')); }
 function toggleMode(mode) { const idx = playConfig.modes.indexOf(mode); if (idx === -1) { playConfig.modes.push(mode); } else { playConfig.modes.splice(idx, 1); } renderPlay(document.getElementById('content')); }
 function toggleTimedMode() { playConfig.timed = !playConfig.timed; renderPlay(document.getElementById('content')); }
 function toggleExamMode() { playConfig.exam = !playConfig.exam; renderPlay(document.getElementById('content')); }
@@ -1717,16 +1725,18 @@ function startErrorQuiz() {
   playConfig.exam = false;
   startQuizFromQuestions(errorQuestions);
 }
-function clearQuizTimer() { if (quiz.timerId) { clearInterval(quiz.timerId); quiz.timerId = null; } }
+function clearQuizTimer() { if (quiz.timerId) { clearInterval(quiz.timerId); quiz.timerId = null; } const timerEl = document.getElementById('qtimer'); if (timerEl) timerEl.style.display = 'none'; }
 function updateTimerDisplay() { const timerEl = document.getElementById('qtimer'); if (!timerEl) return; if (playConfig.timed && quiz.remainingTime !== null && quiz.remainingTime !== undefined) { timerEl.style.display = 'inline-block'; timerEl.textContent = quiz.remainingTime + 's'; } else { timerEl.style.display = 'none'; } }
 function startQuizTimer() { clearQuizTimer(); if (!playConfig.timed) return; quiz.remainingTime = 15; updateTimerDisplay(); quiz.timerId = setInterval(() => { quiz.remainingTime--; if (quiz.remainingTime <= 0) { clearQuizTimer(); autoFailQuestion(); } else { updateTimerDisplay(); } }, 1000); }
-function autoFailQuestion() { if (quiz.answered) return; quiz.answered = true; const q = quiz.questions[quiz.index]; const grade = 1; if (quiz.exam) { document.querySelectorAll('.opt, .vf-btn').forEach(el => { el.disabled = true; }); const input = document.getElementById(q.mode === 'quote' ? 'quote-answer-input' : 'complete-answer-input'); if (input) input.disabled = true; recordExamAnswer(q, false, null); return; } const fbEl = document.getElementById('q-feedback'); fbEl.className = 'feedback ko'; fbEl.style.display = 'block'; document.getElementById('q-fb-title').textContent = 'Temps écoulé !'; const expected = q.correct || q.author || q.answer || ''; const expectedText = expected ? `Réponse attendue : ${expected}` : ''; document.getElementById('q-fb-text').textContent = `${q.expl ? q.expl + ' ' : ''}${expectedText}`.trim() || 'Réponse manquée.'; document.getElementById('qxp').textContent = '+ ' + quiz.xpGained + ' XP'; document.getElementById('next-btn').style.display = 'block'; if (q.mode === 'qcm') { document.querySelectorAll('.opt').forEach((el, i) => { el.disabled = true; if (i === q.correct) el.classList.add('correct'); }); } else if (q.mode === 'vf') { document.querySelectorAll('.vf-btn').forEach(el => el.disabled = true); const qid = q.correct ? 'vf-true' : 'vf-false'; document.getElementById(qid).classList.add('correct'); } else if (q.mode === 'quote' || q.mode === 'complete') { const input = document.getElementById(q.mode === 'quote' ? 'quote-answer-input' : 'complete-answer-input'); if (input) input.disabled = true; } const xpGain = getXpForGrade(grade); recordQuizHistory(q, false, '', grade, xpGain); updateSR(q.id, grade); const dots = document.querySelectorAll('.streak-dot'); if (dots[quiz.index]) { dots[quiz.index].className = 'streak-dot ko'; } }
+function autoFailQuestion() { if (quiz.answered) return; clearQuizTimer(); quiz.answered = true; const q = quiz.questions[quiz.index]; const grade = 1; if (quiz.exam) { document.querySelectorAll('.opt, .vf-btn').forEach(el => { el.disabled = true; }); const input = document.getElementById(q.mode === 'quote' ? 'quote-answer-input' : 'complete-answer-input'); if (input) input.disabled = true; recordExamAnswer(q, false, null); return; } const fbEl = document.getElementById('q-feedback'); fbEl.className = 'feedback ko'; fbEl.style.display = 'block'; document.getElementById('q-fb-title').textContent = 'Temps écoulé !'; const expected = q.correct || q.author || q.answer || ''; const expectedText = expected ? `Réponse attendue : ${expected}` : ''; document.getElementById('q-fb-text').textContent = `${q.expl ? q.expl + ' ' : ''}${expectedText}`.trim() || 'Réponse manquée.'; document.getElementById('qxp').textContent = '+ ' + quiz.xpGained + ' XP'; document.getElementById('next-btn').style.display = 'block'; if (q.mode === 'qcm') { document.querySelectorAll('.opt').forEach((el, i) => { el.disabled = true; if (i === q.correct) el.classList.add('correct'); }); } else if (q.mode === 'vf') { document.querySelectorAll('.vf-btn').forEach(el => el.disabled = true); const qid = q.correct ? 'vf-true' : 'vf-false'; document.getElementById(qid).classList.add('correct'); } else if (q.mode === 'quote' || q.mode === 'complete') { const input = document.getElementById(q.mode === 'quote' ? 'quote-answer-input' : 'complete-answer-input'); if (input) input.disabled = true; } const xpGain = getXpForGrade(grade); recordQuizHistory(q, false, '', grade, xpGain); updateSR(q.id, grade); const dots = document.querySelectorAll('.streak-dot'); if (dots[quiz.index]) { dots[quiz.index].className = 'streak-dot ko'; } }
 function showQuiz() { document.getElementById('quiz-overlay').classList.add('show'); loadQuestion(quiz.questions[quiz.index]); }
 function closeQuiz(force = false) { 
   if (!force && !quiz.answered && quiz.questions.length > 0 && !confirm('Quitter cette session ? La question en cours ne sera pas comptabilisée.')) return;
   clearQuizTimer();
   document.getElementById('quiz-overlay').classList.remove('show'); 
-  state.xp += quiz.xpGained; 
+  if (!quiz.completed) {
+    state.xp += quiz.xpGained;
+  }
   
   if (quiz.xpGained > 0) { 
     updateStreak(); 
@@ -1753,13 +1763,15 @@ function loadQuestion(q) {
   quiz.answered = false;
   document.getElementById('next-btn').style.display = 'none';
   document.getElementById('q-feedback').style.display = 'none';
-  document.getElementById('q-mode-label').textContent = MODE_LABELS[q.mode].split(' ').slice(1).join(' ');
+  const modeLabel = MODE_LABELS[q.mode] || '❓ Question';
+  document.getElementById('q-mode-label').textContent = modeLabel.split(' ').slice(1).join(' ') || modeLabel;
   document.getElementById('q-chapter-tag').textContent = chapterName(q.subject, q.chapter);
   document.getElementById('q-text').innerHTML = escapeHtml(q.q);
   const optsEl = document.getElementById('q-options');
   
   if (q.mode === 'qcm') {
-    optsEl.innerHTML = `<div class="opts">${q.opts.map((opt, i) => `<button class="opt" onclick="selectOpt(${i})" id="opt-${i}"><span class="opt-letter">${String.fromCharCode(65 + i)}</span><span>${escapeHtml(opt)}</span></button>`).join('')}</div>`;
+    const options = Array.isArray(q.opts) ? q.opts : [];
+    optsEl.innerHTML = options.length ? `<div class="opts">${options.map((opt, i) => `<button class="opt" onclick="selectOpt(${i})" id="opt-${i}"><span class="opt-letter">${String.fromCharCode(65 + i)}</span><span>${escapeHtml(opt)}</span></button>`).join('')}</div>` : '<div style="color:var(--text2);font-size:0.85rem">Cette question ne contient pas de réponses valides.</div>';
   } else if (q.mode === 'vf') {
     optsEl.innerHTML = `<div class="vf-row"><button class="vf-btn" onclick="selectVF(true)" id="vf-true">✓ Vrai</button><button class="vf-btn" onclick="selectVF(false)" id="vf-false">✗ Faux</button></div>`;
   } else if (q.mode === 'quote') {
@@ -1822,8 +1834,8 @@ function finishExam() {
   document.getElementById('q-feedback').style.display = 'none';
   document.getElementById('next-btn').style.display = 'none';
 }
-function selectOpt(idx) { if (quiz.answered) return; clearQuizTimer(); quiz.answered = true; const q = quiz.questions[quiz.index]; const isCorrect = idx === q.correct; const grade = isCorrect ? 4 : 1; if (quiz.exam) { document.querySelectorAll('.opt').forEach(el => { el.disabled = true; }); recordExamAnswer(q, isCorrect, idx); return; } document.querySelectorAll('.opt').forEach((el, i) => { el.disabled = true; if (i === q.correct) el.classList.add('correct'); else if (i === idx) el.classList.add('wrong'); }); const xpGain = getXpForGrade(grade); quiz.xpGained += xpGain; quiz.currentGrade = grade; const fbEl = document.getElementById('q-feedback'); fbEl.className = 'feedback ' + (isCorrect ? 'ok' : 'ko'); fbEl.style.display = 'block'; document.getElementById('q-fb-title').textContent = isCorrect ? 'Bonne réponse !' : 'Faux'; document.getElementById('q-fb-text').textContent = q.expl; document.getElementById('qxp').textContent = '+ ' + quiz.xpGained + ' XP'; recordQuizHistory(q, isCorrect, q.opts[idx], grade, xpGain); updateSR(q.id, grade); document.getElementById('next-btn').style.display = 'block'; const dots = document.querySelectorAll('.streak-dot'); if (dots[quiz.index]) { dots[quiz.index].className = 'streak-dot ' + (isCorrect ? 'ok' : 'ko'); } }
-function selectVF(isTrue) { if (quiz.answered) return; clearQuizTimer(); quiz.answered = true; const q = quiz.questions[quiz.index]; const isCorrect = isTrue === q.correct; const grade = isCorrect ? 4 : 1; document.querySelectorAll('.vf-btn').forEach(el => { el.disabled = true; }); if (quiz.exam) { recordExamAnswer(q, isCorrect, isTrue); return; } const btnId = isTrue ? 'vf-true' : 'vf-false'; document.getElementById(btnId).classList.add(isCorrect ? 'correct' : 'wrong'); const xpGain = getXpForGrade(grade); quiz.xpGained += xpGain; quiz.currentGrade = grade; const fbEl = document.getElementById('q-feedback'); fbEl.className = 'feedback ' + (isCorrect ? 'ok' : 'ko'); fbEl.style.display = 'block'; document.getElementById('q-fb-title').textContent = isCorrect ? 'Bonne réponse !' : 'Faux'; document.getElementById('q-fb-text').textContent = q.expl; document.getElementById('qxp').textContent = '+ ' + quiz.xpGained + ' XP'; recordQuizHistory(q, isCorrect, isTrue, grade, xpGain); updateSR(q.id, grade); document.getElementById('next-btn').style.display = 'block'; const dots = document.querySelectorAll('.streak-dot'); if (dots[quiz.index]) { dots[quiz.index].className = 'streak-dot ' + (isCorrect ? 'ok' : 'ko'); } }
+function selectOpt(idx) { if (quiz.answered) return; const q = quiz.questions[quiz.index]; if (!q || !Array.isArray(q.opts) || idx < 0 || idx >= q.opts.length) return; clearQuizTimer(); quiz.answered = true; const isCorrect = idx === q.correct; const grade = isCorrect ? 4 : 1; if (quiz.exam) { document.querySelectorAll('.opt').forEach(el => { el.disabled = true; }); recordExamAnswer(q, isCorrect, idx); return; } document.querySelectorAll('.opt').forEach((el, i) => { el.disabled = true; if (i === q.correct) el.classList.add('correct'); else if (i === idx) el.classList.add('wrong'); }); const xpGain = getXpForGrade(grade); quiz.xpGained += xpGain; quiz.currentGrade = grade; const fbEl = document.getElementById('q-feedback'); fbEl.className = 'feedback ' + (isCorrect ? 'ok' : 'ko'); fbEl.style.display = 'block'; document.getElementById('q-fb-title').textContent = isCorrect ? 'Bonne réponse !' : 'Faux'; document.getElementById('q-fb-text').textContent = q.expl || `Réponse attendue : ${q.opts[q.correct] || 'réponse non renseignée'}`; document.getElementById('qxp').textContent = '+ ' + quiz.xpGained + ' XP'; recordQuizHistory(q, isCorrect, q.opts[idx], grade, xpGain); updateSR(q.id, grade); document.getElementById('next-btn').style.display = 'block'; const dots = document.querySelectorAll('.streak-dot'); if (dots[quiz.index]) { dots[quiz.index].className = 'streak-dot ' + (isCorrect ? 'ok' : 'ko'); } }
+function selectVF(isTrue) { if (quiz.answered) return; clearQuizTimer(); quiz.answered = true; const q = quiz.questions[quiz.index]; const isCorrect = isTrue === q.correct; const grade = isCorrect ? 4 : 1; document.querySelectorAll('.vf-btn').forEach(el => { el.disabled = true; }); if (quiz.exam) { recordExamAnswer(q, isCorrect, isTrue); return; } const btnId = isTrue ? 'vf-true' : 'vf-false'; document.getElementById(btnId).classList.add(isCorrect ? 'correct' : 'wrong'); if (!isCorrect) document.getElementById(q.correct ? 'vf-true' : 'vf-false').classList.add('correct'); const xpGain = getXpForGrade(grade); quiz.xpGained += xpGain; quiz.currentGrade = grade; const fbEl = document.getElementById('q-feedback'); fbEl.className = 'feedback ' + (isCorrect ? 'ok' : 'ko'); fbEl.style.display = 'block'; document.getElementById('q-fb-title').textContent = isCorrect ? 'Bonne réponse !' : 'Faux'; document.getElementById('q-fb-text').textContent = q.expl || `Réponse attendue : ${q.correct ? 'Vrai' : 'Faux'}`; document.getElementById('qxp').textContent = '+ ' + quiz.xpGained + ' XP'; recordQuizHistory(q, isCorrect, isTrue, grade, xpGain); updateSR(q.id, grade); document.getElementById('next-btn').style.display = 'block'; const dots = document.querySelectorAll('.streak-dot'); if (dots[quiz.index]) { dots[quiz.index].className = 'streak-dot ' + (isCorrect ? 'ok' : 'ko'); } }
 function submitTextAnswer(answer) { if (quiz.answered) return; clearQuizTimer(); const q = quiz.questions[quiz.index]; const expected = q.correct || q.author || q.answer || ''; const isCorrect = matchesTextAnswer(answer, expected); const grade = isCorrect ? 4 : 1; quiz.answered = true; const inputId = q.mode === 'quote' ? 'quote-answer-input' : 'complete-answer-input'; const input = document.getElementById(inputId); if (input) input.disabled = true; if (quiz.exam) { recordExamAnswer(q, isCorrect, answer); return; } const fbEl = document.getElementById('q-feedback'); fbEl.className = 'feedback ' + (isCorrect ? 'ok' : 'ko'); fbEl.style.display = 'block'; document.getElementById('q-fb-title').textContent = isCorrect ? 'Bonne réponse !' : 'Faux'; const feedbackText = isCorrect ? (q.expl ? q.expl : `Réponse attendue : ${expected}`) : `${q.expl ? q.expl + ' ' : ''}Réponse attendue : ${expected}`; document.getElementById('q-fb-text').textContent = feedbackText; const xpGain = getXpForGrade(grade); quiz.xpGained += xpGain; quiz.currentGrade = grade; document.getElementById('qxp').textContent = '+ ' + quiz.xpGained + ' XP'; recordQuizHistory(q, isCorrect, answer, grade, xpGain); updateSR(q.id, grade); document.getElementById('next-btn').style.display = 'block'; const dots = document.querySelectorAll('.streak-dot'); if (dots[quiz.index]) { dots[quiz.index].className = 'streak-dot ' + (isCorrect ? 'ok' : 'ko'); } }
 function submitQuoteAnswer() { const input = document.getElementById('quote-answer-input'); if (!input) return; const answer = input.value.trim(); if (!answer) return showToast('Saisis une réponse', 'err'); submitTextAnswer(answer); }
 function submitCompleteAnswer() { const input = document.getElementById('complete-answer-input'); if (!input) return; const answer = input.value.trim(); if (!answer) return showToast('Saisis la partie manquante', 'err'); submitTextAnswer(answer); }
