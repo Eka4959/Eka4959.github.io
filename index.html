@@ -1509,7 +1509,7 @@ function renderNotionsPage(c) {
 }
 function renderNotionBySubject() {
   const dueNotions = NOTION_SUBJECTS.map(subject => {
-    const items = state.notions.filter(notion => notion.matiere === subject.id && new Date(notion.fsrs?.due || Date.now()) <= new Date(Date.now())).sort((a, b) => new Date(a.fsrs?.due || Date.now()) - new Date(b.fsrs?.due || Date.now()));
+    const items = state.notions.filter(notion => notion.matiere === subject.id && isNotionDue(notion.fsrs?.due || Date.now())).sort((a, b) => new Date(a.fsrs?.due || Date.now()) - new Date(b.fsrs?.due || Date.now()));
     return { subject, items };
   });
 
@@ -1524,7 +1524,7 @@ function renderNotionBySubject() {
   `).join('');
 }
 function renderNotionGlobal() {
-  const items = state.notions.filter(notion => new Date(notion.fsrs?.due || Date.now()) <= new Date(Date.now())).sort((a, b) => new Date(a.fsrs?.due || Date.now()) - new Date(b.fsrs?.due || Date.now()));
+  const items = state.notions.filter(notion => isNotionDue(notion.fsrs?.due || Date.now())).sort((a, b) => new Date(a.fsrs?.due || Date.now()) - new Date(b.fsrs?.due || Date.now()));
   if (!items.length) {
     return '<div class="empty-state"><div class="empty-state-icon">✅</div><div class="empty-state-title">Aucune notion due</div><div class="empty-state-sub">Le calendrier est vide pour le moment.</div></div>';
   }
