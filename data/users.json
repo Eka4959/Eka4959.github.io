@@ -175,6 +175,22 @@
     },
     "notions": [
       {
+        "id": "f52f6423-a4e5-4ae4-a783-fd53e0b12dde",
+        "matiere": "maths",
+        "notion": "7.3 fiche de calculs",
+        "details": "",
+        "dateCreation": "2026-08-22T10:49:11.160Z",
+        "fsrs": {
+          "due": 1787654951159,
+          "stability": 12.5,
+          "difficulty": 5.3,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1787395751159
+        }
+      },
+      {
         "id": "1b0972bd-3ef8-4f71-b2ba-54cbf1647723",
         "matiere": "ses",
         "notion": "Budget de l'État niveau 1",
