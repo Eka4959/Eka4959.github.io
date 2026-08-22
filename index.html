@@ -1428,20 +1428,23 @@ function repeat(card, rating) {
 window.fsrs = { repeat };
 function toDateKey(timestamp) {
   const d = new Date(timestamp);
-  d.setHours(0, 0, 0, 0);
-  return d.toISOString();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 function formatDateFR(date) {
   return new Date(date).toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' });
 }
 function formatDueLabel(timestamp) {
-  const diffMs = Date.now() - Number(timestamp);
-  const diffDays = Math.floor(diffMs / DAY_MS);
-  if (diffDays <= -1) {
-    return `dans ${Math.abs(diffDays)} j`;
-  }
+  const dueKey = toDateKey(Number(timestamp));
+  const todayKey = toDateKey(Date.now());
+  const [dueYear, dueMonth, dueDay] = dueKey.split('-').map(Number);
+  const [todayYear, todayMonth, todayDay] = todayKey.split('-').map(Number);
+  const diffDays = Math.round((Date.UTC(dueYear, dueMonth - 1, dueDay) - Date.UTC(todayYear, todayMonth - 1, todayDay)) / DAY_MS);
+  if (diffDays > 0) return `dans ${diffDays} j`;
   if (diffDays === 0) return 'aujourd\'hui';
   return `en retard de ${Math.abs(diffDays)} j`;
+}
+function isNotionDue(timestamp) {
+  return toDateKey(Number(timestamp)) <= toDateKey(Date.now());
 }
 function getNotionsDueToday() {
   const todayKey = toDateKey(Date.now());
@@ -1532,7 +1535,8 @@ function renderNotionAgenda() {
   today.setHours(0, 0, 0, 0);
   const days = [];
   for (let i = 0; i < 7; i++) {
-    const current = new Date(today.getTime() + i * DAY_MS);
+    const current = new Date(today);
+    current.setDate(today.getDate() + i);
     const key = toDateKey(current.getTime());
     const items = state.notions.filter(notion => toDateKey(new Date(notion.fsrs?.due || Date.now()).getTime()) === key);
     days.push({ key, label: current.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' }), items });
@@ -1571,12 +1575,12 @@ function renderNotionCard(item, global = false) {
           <div class="notion-details-body">${escapeHtml(item.details)}</div>
         </details>
       ` : ''}
-      <div class="notion-ratings">
+      ${isNotionDue(item.fsrs?.due || Date.now()) ? `<div class="notion-ratings">
         <button class="notion-rate again" onclick="rateNotion('${item.id}', 1)">Again</button>
         <button class="notion-rate hard" onclick="rateNotion('${item.id}', 2)">Hard</button>
         <button class="notion-rate good" onclick="rateNotion('${item.id}', 3)">Good</button>
         <button class="notion-rate easy" onclick="rateNotion('${item.id}', 4)">Easy</button>
-      </div>
+      </div>` : ''}
     </article>
   `;
 }
