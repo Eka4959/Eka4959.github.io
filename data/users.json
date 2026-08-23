@@ -213,13 +213,13 @@
         "details": "Rôle microéconomique : Offreurs sur le marché des B&S, demandeurs sur le marché du travail.Fonction de demande de travail : $P = a - bQ \\iff Q = \\frac{a - P}{b}$ (décroissante par rapport au salaire réel $P$, avec $a$ le salaire plafond).Fonction d'offre de B&S : $P = c + dQ$ (croissante par rapport au prix $P$, avec $c$ les coûts les plus faibles).",
         "dateCreation": "2026-08-22T09:30:18.709Z",
         "fsrs": {
-          "due": 1787477418709,
-          "stability": 5.8,
+          "due": 1788678337216,
+          "stability": 11.02,
           "difficulty": 5,
-          "reps": 1,
+          "reps": 2,
           "lapses": 0,
           "state": "review",
-          "last_review": 1787391018709
+          "last_review": 1787478655936
         }
       },
       {
