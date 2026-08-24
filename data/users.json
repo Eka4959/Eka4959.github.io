@@ -175,6 +175,22 @@
     },
     "notions": [
       {
+        "id": "6c40d6e0-afb8-437f-8730-471d5ea36c0c",
+        "matiere": "maths",
+        "notion": "7.4 fiche de calculs",
+        "details": "",
+        "dateCreation": "2026-08-24T09:08:01.190Z",
+        "fsrs": {
+          "due": 1787562481190,
+          "stability": 0.7,
+          "difficulty": 4.4,
+          "reps": 1,
+          "lapses": 1,
+          "state": "relearning",
+          "last_review": 1787562481190
+        }
+      },
+      {
         "id": "f52f6423-a4e5-4ae4-a783-fd53e0b12dde",
         "matiere": "maths",
         "notion": "7.3 fiche de calculs",
