@@ -213,13 +213,13 @@
         "details": "Le carré magique de Kaldor : les 4 objectifs (croissance, emploi, stabilité des prix, équilibre extérieur) et la nature structurellement conflictuelle de leur poursuite simultanée.\n\nLes 3 fonctions de Musgrave : Affectation (biens collectifs, dépenses), Redistribution (réduction des inégalités), Régulation/Stabilisation (conjoncturelle et des marchés).\n\nL'arbitrage néoclassique vs. keynésien : priorité absolue au contrôle de l'inflation (néoclassique) contre régulation de la conjoncture et relance (keynésien).\n\nInstruments budgétaires et monétaires centraux : dépenses publiques, fiscalité, taux directeurs, intervention sur le marché interbancaire, réserves obligatoires.",
         "dateCreation": "2026-08-24T15:16:58.163Z",
         "fsrs": {
-          "due": 1787671018163,
-          "stability": 5.8,
+          "due": 1788882172094,
+          "stability": 11.02,
           "difficulty": 5,
-          "reps": 1,
+          "reps": 2,
           "lapses": 0,
           "state": "review",
-          "last_review": 1787584618163
+          "last_review": 1787682490814
         }
       },
       {
