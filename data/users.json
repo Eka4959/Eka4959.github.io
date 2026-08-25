@@ -197,13 +197,13 @@
         "details": "Le problème central du système financier : comment mettre en relation les agents en capacité de financement (offreurs) et en besoin de financement (demandeurs).\n\nLes deux canaux de financement externe :\n\nFinancement direct (via les marchés de capitaux).\n\nFinancement indirect (via les intermédiaires bancaires / intermédiation).\n\nLes 4 rôles fondamentaux de l'intermédiaire financier : réduction des coûts de prospection, collecte/octroi de montants différents, transformation d'échéances (court terme vers long terme), réduction et mutualisation des risques (évaluation du risque de défaut, compensation, diversification).\n\nCréation monétaire : la création de monnaie scripturale par les banques commerciales lorsque les besoins dépassent les capacités (\"les crédits font les dépôts\").\n\nDécomposition du marché financier : marché primaire (émission de titres neufs) vs marché secondaire (Bourse / revente).\n\nLes deux titres majeurs et leurs risques associés :\n\nActions (titre de propriété) : risque de marché vs risque spécifique (diminué par la diversification).\n\nObligations (titre de créance à long terme) : risques d'inflation, de taux d'intérêt, de défaut et de liquidité.\n\nFaiblesse sur les obligations",
         "dateCreation": "2026-08-24T16:05:47.185Z",
         "fsrs": {
-          "due": 1787673947185,
-          "stability": 5.8,
+          "due": 1788882910959,
+          "stability": 11.02,
           "difficulty": 5,
-          "reps": 1,
+          "reps": 2,
           "lapses": 0,
           "state": "review",
-          "last_review": 1787587547185
+          "last_review": 1787683229679
         }
       },
       {
