@@ -1,8 +1,8 @@
 {
   "lucien": {
-    "xp": 1179,
+    "xp": 1199,
     "streak": 1,
-    "lastActivityDate": "2026-08-16",
+    "lastActivityDate": "2026-08-27",
     "sr_data": {
       "ses_inegalites_qcm_0": {
         "interval": 14,
@@ -61,11 +61,11 @@
         "retryPending": false
       },
       "imp_1786107270820_0eqp": {
-        "interval": 13,
-        "ef": 2.68,
-        "due": 1787782566188,
+        "interval": 46,
+        "ef": 2.7800000000000002,
+        "due": 1791798022693,
         "errors": 0,
-        "attempts": 4,
+        "attempts": 5,
         "retryPending": false
       },
       "imp_1786107270820_yyda": {
