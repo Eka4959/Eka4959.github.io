@@ -175,6 +175,22 @@
     },
     "notions": [
       {
+        "id": "30cdfdca-92ea-4e7a-a544-212c5d903f37",
+        "matiere": "maths",
+        "notion": "8.3 fiche de calculs",
+        "details": "",
+        "dateCreation": "2026-08-27T14:32:13.301Z",
+        "fsrs": {
+          "due": 1787841133301,
+          "stability": 0.7,
+          "difficulty": 4.4,
+          "reps": 1,
+          "lapses": 1,
+          "state": "relearning",
+          "last_review": 1787841133301
+        }
+      },
+      {
         "id": "9d7776a2-be07-4ecb-aaeb-1549e39d98ee",
         "matiere": "maths",
         "notion": "8.2",
