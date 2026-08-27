@@ -181,13 +181,13 @@
         "details": "Statut de l'œuvre vs Objet d'usage / Objet technique :\n\nArendt : distinction Objets d'usage / Belles-lettres et d'art (durabilité, retrait du cycle de consommation vital, appartenance au « monde »).\n\nAlain : distinction Artisanat / Art (l'idée vient en faisant, l'artiste est spectateur de sa création, non-reproductibilité).\n\nLa question de l'imitation (Mimèsis) :\n\nHegel : l'imitation est inutile, futile et produit une « caricature de la vie ».\n\nPlaton : l'art comme simulacre, éloignement de la vérité (double imitation : copie d'une copie), absence de réflexion dialectique.\n\nLe jugement de goût et sa valeur :\n\nKant : distinction entre discuter (possible sans concepts objectifs) et disputer (impossible car pas de preuve conceptuelle) + Antinomie du goût.\n\nLa nature du génie :\n\nKant : le génie comme don inné (« la nature donne ses règles à l'art »), originalité et création de modèles.",
         "dateCreation": "2026-08-26T16:30:48.570Z",
         "fsrs": {
-          "due": 1787848248569,
-          "stability": 5.8,
+          "due": 1789024561629,
+          "stability": 11.02,
           "difficulty": 5,
-          "reps": 1,
+          "reps": 2,
           "lapses": 0,
           "state": "review",
-          "last_review": 1787761848569
+          "last_review": 1787824880349
         }
       },
       {
