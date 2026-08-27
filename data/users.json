@@ -175,9 +175,25 @@
     },
     "notions": [
       {
+        "id": "d3560dbd-8506-46f8-885b-ec41cc5b9bcb",
+        "matiere": "ses",
+        "notion": "Niveau 1 Acteurs économiques sur un marché",
+        "details": "Définition du marché (physique ou abstrait) et principe de formation de l'équilibre ($O = D$).Effets des déplacements des courbes d'offre et de demande sur le prix et les quantités d'équilibre.Définition, logique et formules mathématiques des surplus (consommateur, producteur, surplus total).",
+        "dateCreation": "2026-08-27T10:18:14.018Z",
+        "fsrs": {
+          "due": 1787826494018,
+          "stability": 2.4,
+          "difficulty": 4.7,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1787825894018
+        }
+      },
+      {
         "id": "eddb4c1d-1a51-4fde-9a5e-4133f68d6f70",
         "matiere": "philo",
-        "notion": "Art Niveau 1",
+        "notion": "Art",
         "details": "Statut de l'œuvre vs Objet d'usage / Objet technique :\n\nArendt : distinction Objets d'usage / Belles-lettres et d'art (durabilité, retrait du cycle de consommation vital, appartenance au « monde »).\n\nAlain : distinction Artisanat / Art (l'idée vient en faisant, l'artiste est spectateur de sa création, non-reproductibilité).\n\nLa question de l'imitation (Mimèsis) :\n\nHegel : l'imitation est inutile, futile et produit une « caricature de la vie ».\n\nPlaton : l'art comme simulacre, éloignement de la vérité (double imitation : copie d'une copie), absence de réflexion dialectique.\n\nLe jugement de goût et sa valeur :\n\nKant : distinction entre discuter (possible sans concepts objectifs) et disputer (impossible car pas de preuve conceptuelle) + Antinomie du goût.\n\nLa nature du génie :\n\nKant : le génie comme don inné (« la nature donne ses règles à l'art »), originalité et création de modèles.",
         "dateCreation": "2026-08-26T16:30:48.570Z",
         "fsrs": {
