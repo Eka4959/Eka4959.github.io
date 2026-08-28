@@ -175,6 +175,22 @@
     },
     "notions": [
       {
+        "id": "d302f33d-0f60-4bfd-9a30-5e76348e8ffe",
+        "matiere": "ses",
+        "notion": "Institution enveloppante Niveau 1 - Muriel Darmon",
+        "details": "",
+        "dateCreation": "2026-08-28T12:56:33.271Z",
+        "fsrs": {
+          "due": 1788008193271,
+          "stability": 5.8,
+          "difficulty": 5,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1787921793271
+        }
+      },
+      {
         "id": "30cdfdca-92ea-4e7a-a544-212c5d903f37",
         "matiere": "maths",
         "notion": "8.3 fiche de calculs",
