@@ -1,8 +1,8 @@
 {
   "lucien": {
-    "xp": 1209,
-    "streak": 3,
-    "lastActivityDate": "2026-08-29",
+    "xp": 1199,
+    "streak": 1,
+    "lastActivityDate": "2026-08-27",
     "sr_data": {
       "ses_inegalites_qcm_0": {
         "interval": 14,
@@ -181,13 +181,13 @@
         "details": "",
         "dateCreation": "2026-08-28T12:56:33.271Z",
         "fsrs": {
-          "due": 1788008193271,
-          "stability": 5.8,
+          "due": 1789201993115,
+          "stability": 11.02,
           "difficulty": 5,
-          "reps": 1,
+          "reps": 2,
           "lapses": 0,
           "state": "review",
-          "last_review": 1787921793271
+          "last_review": 1788002311835
         }
       },
       {
