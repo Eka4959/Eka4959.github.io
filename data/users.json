@@ -229,13 +229,13 @@
         "details": "Définition du marché (physique ou abstrait) et principe de formation de l'équilibre ($O = D$).Effets des déplacements des courbes d'offre et de demande sur le prix et les quantités d'équilibre.Définition, logique et formules mathématiques des surplus (consommateur, producteur, surplus total).",
         "dateCreation": "2026-08-27T10:18:14.018Z",
         "fsrs": {
-          "due": 1787976601996,
-          "stability": 2.76,
-          "difficulty": 4.4,
-          "reps": 2,
+          "due": 1788150766098,
+          "stability": 3.174,
+          "difficulty": 4.1,
+          "reps": 3,
           "lapses": 0,
           "state": "review",
-          "last_review": 1787843062156
+          "last_review": 1787997195282
         }
       },
       {
