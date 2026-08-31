@@ -261,13 +261,13 @@
         "details": "",
         "dateCreation": "2026-08-24T17:19:58.596Z",
         "fsrs": {
-          "due": 1788144325340,
-          "stability": 2.508,
+          "due": 1788711744330.8,
+          "stability": 4.765,
           "difficulty": 4.1,
-          "reps": 3,
+          "reps": 4,
           "lapses": 1,
-          "state": "relearning",
-          "last_review": 1788101125340
+          "state": "review",
+          "last_review": 1788192985598
         }
       },
       {
