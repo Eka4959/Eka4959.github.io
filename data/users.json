@@ -175,6 +175,22 @@
     },
     "notions": [
       {
+        "id": "64642948-e9c8-47a2-9c44-6ae2d951cdfd",
+        "matiere": "lettres",
+        "notion": "Jakobson + Barthes",
+        "details": "Jakobson :\n\nLes 6 facteurs de la communication et la définition de la fonction poétique (l'accent mis sur le message pour son propre compte).\n\nLa non-réduction de la fonction poétique à la seule poésie.\n\nLe mécanisme fondamental : sélection (axe paradigmatique) et combinaison (axe syntagmatique).\n\nBarthes :\n\nLe signe linguistique appliqué à la littérature : signifiant (mots, phrases, langage consommé) / signifié (la littérature, l'être du texte).\n\nLe rôle du lecteur comme producteur du texte (révélation des fonctions par le langage).\n\nLa littérature comme parasite : la primauté du signifié sur le signifiant (les mots seuls sont banals, c'est la « littérature » qu'on cherche à travers eux).",
+        "dateCreation": "2026-09-01T19:29:40.089Z",
+        "fsrs": {
+          "due": 1788377380089,
+          "stability": 5.8,
+          "difficulty": 5,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1788290980089
+        }
+      },
+      {
         "id": "d302f33d-0f60-4bfd-9a30-5e76348e8ffe",
         "matiere": "ses",
         "notion": "Institution enveloppante Niveau 1 - Muriel Darmon",
