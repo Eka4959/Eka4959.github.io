@@ -175,6 +175,22 @@
     },
     "notions": [
       {
+        "id": "a72ce2a2-7110-4939-9f25-fcbf21eddbb9",
+        "matiere": "maths",
+        "notion": "TD G1 Ex 4 à 9",
+        "details": "",
+        "dateCreation": "2026-09-05T17:43:09.794Z",
+        "fsrs": {
+          "due": 1788630789794,
+          "stability": 2.4,
+          "difficulty": 4.7,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1788630189794
+        }
+      },
+      {
         "id": "856bdda3-67a0-4f2e-92be-030af69443e5",
         "matiere": "ses",
         "notion": "Chapitre 1 Séance 1 Niveau 1",
