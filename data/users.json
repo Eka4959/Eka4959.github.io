@@ -175,6 +175,22 @@
     },
     "notions": [
       {
+        "id": "856bdda3-67a0-4f2e-92be-030af69443e5",
+        "matiere": "ses",
+        "notion": "Chapitre 1 Séance 1 Niveau 1",
+        "details": "La sociologie, \"fille de deux révolutions\" :\n\nRévolution industrielle (1769 / 1870) : émergence de la classe ouvrière, urbanisation, nouveaux défis (hygiène, promiscuité), délitement des liens sociaux, essor de l'individualisation, recul de la religion.\n\nRévolution démocratique (1789) : individualisation (loi Le Chapelier, divorce, héritage, DDHC), rupture avec le corps social traditionnel et l'Église.\n\nAlexis de Tocqueville (De la démocratie en Amérique, 1835-1840) :\n\nProcessus d'égalisation des conditions.\n\nParadoxe de Tocqueville (plus la société est égalitaire, plus le désir d'égalité est vif).\n\nTyrannie de la majorité (pression au conformisme, marginalisation des minorités).\n\nNorbert Elias (Sur le processus de civilisation, 1939 / La société des individus, 1987) :\n\nRefus de l' homo clausus.\n\nGlissement de l'équilibre « nous-je ».\n\nPsychogenèse et sociogenèse : auto-régulation, maîtrise des émotions, intériorisation du contrôle social (honte/malaise).",
+        "dateCreation": "2026-09-05T16:31:18.752Z",
+        "fsrs": {
+          "due": 1788712278752,
+          "stability": 5.8,
+          "difficulty": 5,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1788625878752
+        }
+      },
+      {
         "id": "64642948-e9c8-47a2-9c44-6ae2d951cdfd",
         "matiere": "lettres",
         "notion": "Jakobson + Barthes",
