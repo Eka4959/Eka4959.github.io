@@ -197,13 +197,13 @@
         "details": "La sociologie, \"fille de deux révolutions\" :\n\nRévolution industrielle (1769 / 1870) : émergence de la classe ouvrière, urbanisation, nouveaux défis (hygiène, promiscuité), délitement des liens sociaux, essor de l'individualisation, recul de la religion.\n\nRévolution démocratique (1789) : individualisation (loi Le Chapelier, divorce, héritage, DDHC), rupture avec le corps social traditionnel et l'Église.\n\nAlexis de Tocqueville (De la démocratie en Amérique, 1835-1840) :\n\nProcessus d'égalisation des conditions.\n\nParadoxe de Tocqueville (plus la société est égalitaire, plus le désir d'égalité est vif).\n\nTyrannie de la majorité (pression au conformisme, marginalisation des minorités).\n\nNorbert Elias (Sur le processus de civilisation, 1939 / La société des individus, 1987) :\n\nRefus de l' homo clausus.\n\nGlissement de l'équilibre « nous-je ».\n\nPsychogenèse et sociogenèse : auto-régulation, maîtrise des émotions, intériorisation du contrôle social (honte/malaise).",
         "dateCreation": "2026-09-05T16:31:18.752Z",
         "fsrs": {
-          "due": 1788712278752,
-          "stability": 5.8,
+          "due": 1789897740896,
+          "stability": 11.02,
           "difficulty": 5,
-          "reps": 1,
+          "reps": 2,
           "lapses": 0,
           "state": "review",
-          "last_review": 1788625878752
+          "last_review": 1788698059616
         }
       },
       {
