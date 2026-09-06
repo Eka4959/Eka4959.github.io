@@ -6,7 +6,7 @@
   <title>Prepa B/L · Revisions</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="icon" type="image/x-icon" href="801A6FB8-0DB8-4B61-8A69-94F71841A506_1_201_a copie.jpeg">
+  <link rel="icon" type="image/jpeg" href="801A6FB8-0DB8-4B61-8A69-94F71841A506_1_201_a.jpeg">
 <style>
 /* ===================================================================
    VARIABLES CSS & RESET
@@ -862,11 +862,42 @@ button.editorial-item:hover { background: var(--bg2); padding-left: 10px; paddin
 .editorial-quote { border-left: 2px solid var(--yellow); padding: 5px 0 5px 20px; align-self: start; }
 .editorial-quote p { font-family: Newsreader, Georgia, serif; font-size: 1.6rem; line-height: 1.12; margin: 0 0 12px; }
 .editorial-quote small { color: var(--text3); font-size: .68rem; }
+.notions-page { max-width: 1080px; margin: 0 auto; gap: 36px; }
+.notions-bar { align-items: flex-end; border-bottom: 1px solid var(--border); padding-bottom: 22px; }
+.notions-bar .page-title { margin-bottom: 10px; }
+.notions-bar-actions { align-items: center; }
+.notions-pill { background: transparent; border: 0; border-left: 1px solid var(--border); border-radius: 0; color: var(--yellow); padding: 4px 0 4px 14px; font-family: Newsreader, Georgia, serif; font-size: 1.15rem; font-weight: 400; }
+.notions-layout { grid-template-columns: minmax(260px, 300px) minmax(0, 1fr); gap: 32px; align-items: start; }
+.notions-panel { border-radius: 12px; padding: 22px; box-shadow: none; }
+.notions-panel-title { font-family: Newsreader, Georgia, serif; font-size: 1.45rem; font-weight: 400; letter-spacing: -.03em; }
+.notions-main { gap: 24px; }
+.notions-tabs { gap: 18px; border-bottom: 1px solid var(--border); }
+.notions-tab { border: 0; border-radius: 0; padding: 0 0 11px; background: transparent; color: var(--text3); font-size: .75rem; }
+.notions-tab.active { background: transparent; border: 0; border-bottom: 2px solid var(--yellow); color: var(--text); }
+.notions-tab-content { gap: 12px; }
+.notions-subject-block { border: 0; border-top: 1px solid var(--border); border-radius: 0; background: transparent; padding: 16px 0 0; }
+.notions-subject-header { margin-bottom: 4px; font-size: .78rem; font-weight: 600; }
+.notions-count { background: var(--bg3); border-radius: 99px; color: var(--text2); padding: 3px 8px; font-size: .68rem; font-weight: 500; }
+.notion-card { background: transparent; border: 0; border-bottom: 1px solid var(--border); border-radius: 0; padding: 15px 0; margin-top: 0; gap: 12px; }
+.notion-title { font-family: Newsreader, Georgia, serif; font-size: 1.15rem; font-weight: 400; }
+.notion-meta { color: var(--text3); font-size: .7rem; }
+.notion-details { border-top-color: var(--border); }
+.notion-details summary { font-size: .75rem; }
+.notion-delete { width: 28px; height: 28px; border-radius: 50%; font-size: 1rem; }
+.notion-delete:hover { border-color: var(--border); background: var(--bg3); color: var(--red); }
+.notion-ratings { padding-top: 2px; }
+.notion-rate { border-radius: 6px; padding: 7px 10px; font-size: .68rem; font-weight: 600; }
+.empty-state.small { padding: 22px 8px; }
+.empty-state-icon { color: var(--yellow); font-family: Newsreader, Georgia, serif; font-size: 1.7rem; }
 @media (max-width: 768px) {
   .editorial-topline { margin-bottom: 48px; }
   .editorial-hero h1 { font-size: 3rem; }
   .editorial-focus, .editorial-columns { grid-template-columns: 1fr; }
   .editorial-focus-aside { border-left: 0; border-top: 1px solid var(--border); }
+  .notions-page { gap: 24px; }
+  .notions-bar { align-items: flex-start; flex-direction: column; }
+  .notions-layout { grid-template-columns: 1fr; gap: 18px; }
+  .notions-panel { padding: 18px; }
 }
 
 body.dark-theme {
@@ -932,11 +963,11 @@ body.dark-theme {
   <div id="main">
     <div id="topbar"><div class="topbar-breadcrumb" id="breadcrumb"><span>Tableau de bord</span></div>
       <div class="topbar-right">
-        <button class="user-badge" id="user-badge" onclick="logout()" title="Se déconnecter">👤 Invité</button>
+        <button class="user-badge" id="user-badge" onclick="logout()" title="Se déconnecter">○ Invité</button>
         <div class="xp-pill" id="xp-pill">0 XP</div>
-        <div class="streak-pill" id="streak-pill">🔥 0</div>
-        <button class="github-sync-btn" onclick="syncAllGitHubData()" title="Synchroniser toutes les données vers GitHub">⬆️ GitHub</button>
-        <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn" title="Thème">🌙</button>
+        <div class="streak-pill" id="streak-pill">Série 0</div>
+        <button class="github-sync-btn" onclick="syncAllGitHubData()" title="Synchroniser toutes les données vers GitHub">↗ GitHub</button>
+        <button class="theme-toggle" onclick="toggleTheme()" id="theme-btn" title="Thème">◐</button>
       </div>
     </div>
     <div id="content"></div>
@@ -982,8 +1013,8 @@ const NOTION_SUBJECTS = [
   { id: 'ses', label: 'SES' },
   { id: 'lettres', label: 'Lettres' },
   { id: 'philo', label: 'Philo' },
-  { id: 'histoire', label: 'Histoire', icon: '🏛️' },
-  { id: 'geo', label: 'Géographie', icon: '🌍' },
+  { id: 'histoire', label: 'Histoire', icon: '⌂' },
+  { id: 'geo', label: 'Géographie', icon: '◎' },
   { id: 'maths', label: 'Maths' },
   { id: 'lve', label: 'Anglais' }
 ];
@@ -991,9 +1022,9 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 
 // DONNEES
 const SEED_QUESTIONS = [{"id":"ses_inegalites_qcm_0","subject":"ses","chapter":"inegalites","mode":"qcm","q":"Quel concept correspond a : indicateur synthetique qui mesure l'intensite des inegalites de revenus ou de patrimoine ?","expl":"Le concept vise est coefficient de Gini : indicateur synthetique qui mesure l'intensite des inegalites de revenus ou de patrimoine.","opts":["reproduction sociale","redistribution","impot progressif","coefficient de Gini"],"correct":3}];
-const SUBJECTS = [{id:'ses',name:'Sciences Eco. & So.',icon:'📊',color:'#F2C94C',hours:'6h/sem',colorClass:'sc-ses'},{id:'lettres',name:'Lettres',icon:'📖',color:'#9B72CF',hours:'4h/sem',colorClass:'sc-lettres'},{id:'philo',name:'Philosophie',icon:'🧠',color:'#E05C5C',hours:'4h/sem',colorClass:'sc-philo'},{id:'histoire',name:'Histoire',icon:'🏛️',color:'#5B8DB8',hours:'4h/sem',colorClass:'sc-histoire'},{id:'geo',name:'Géographie',icon:'🌍',color:'#4CAF7C',hours:'3h/sem',colorClass:'sc-geo'}];
+const SUBJECTS = [{id:'ses',name:'Sciences Eco. & So.',icon:'◐',color:'#F2C94C',hours:'6h/sem',colorClass:'sc-ses'},{id:'lettres',name:'Lettres',icon:'▱',color:'#9B72CF',hours:'4h/sem',colorClass:'sc-lettres'},{id:'philo',name:'Philosophie',icon:'∴',color:'#E05C5C',hours:'4h/sem',colorClass:'sc-philo'},{id:'histoire',name:'Histoire',icon:'⌂',color:'#5B8DB8',hours:'4h/sem',colorClass:'sc-histoire'},{id:'geo',name:'Géographie',icon:'◎',color:'#4CAF7C',hours:'3h/sem',colorClass:'sc-geo'}];
 const SES_CHAPTERS = [{id:'inegalites',name:'Inégalités & stratification'},{id:'marche',name:'Marché & prix'},{id:'travail',name:'Travail & emploi'},{id:'mondialisation',name:'Mondialisation'},{id:'solidarites',name:'Solidarités & protection'},{id:'lien_social',name:'Lien social & déviance'},{id:'europe',name:'Construction européenne'},{id:'croissance',name:'Croissance & innovation'}];
-const MODE_LABELS = {qcm:'🎯 QCM',vf:'⚖️ Vrai / Faux',quote:'💬 Qui a dit ça ?',complete:'✏️ Compléter la phrase'};
+const MODE_LABELS = {qcm:'◈ QCM',vf:'↔ Vrai / Faux',quote:'“” Qui a dit ça ?',complete:'✎ Compléter la phrase'};
 const QUESTION_MODES = ['qcm','vf','quote','complete'];
 
 // STORAGE
@@ -1248,7 +1279,7 @@ function clearGuestPersonalState() {
 function hideAuth() {
   document.getElementById('auth-overlay').classList.remove('show');
   const badge = document.getElementById('user-badge');
-  if (badge) badge.innerHTML = `👤 ${state.currentUser ? escapeHtml(state.currentUser) : 'Invité'}`;
+  if (badge) badge.innerHTML = `○ ${state.currentUser ? escapeHtml(state.currentUser) : 'Invité'}`;
 }
 
 function loginUser(username) {
@@ -1598,7 +1629,7 @@ function reviewChapter(chapterId, subjectId) { const questions = getChapterError
 // THEME
 let sunriseH = 6, sunsetH = 20;
 async function fetchSun() { try { const r = await fetch('https://api.sunrise-sunset.org/json?lat=45.19&lng=5.72&formatted=0'); const d = await r.json(); sunriseH = new Date(d.results.sunrise).getHours() + new Date(d.results.sunrise).getMinutes() / 60; sunsetH = new Date(d.results.sunset).getHours() + new Date(d.results.sunset).getMinutes() / 60; } catch {} applyTheme(); }
-function applyTheme() { const body = document.body; const btn = document.getElementById('theme-btn'); let dark; if (state.theme === 'dark') dark = true; else if (state.theme === 'light') dark = false; else { const h = new Date().getHours() + new Date().getMinutes() / 60; dark = h < sunriseH || h >= sunsetH; } body.classList.toggle('light', !dark); if (btn) btn.textContent = dark ? '🌙' : '☀️'; }
+function applyTheme() { const body = document.body; const btn = document.getElementById('theme-btn'); let dark; if (state.theme === 'dark') dark = true; else if (state.theme === 'light') dark = false; else { const h = new Date().getHours() + new Date().getMinutes() / 60; dark = h < sunriseH || h >= sunsetH; } body.classList.toggle('light', !dark); if (btn) btn.textContent = dark ? '◐' : '○'; }
 function toggleTheme() { const modes = ['auto', 'light', 'dark']; state.theme = modes[(modes.indexOf(state.theme) + 1) % 3]; lsSet('bl_theme', state.theme); applyTheme(); }
 setInterval(applyTheme, 60000); fetchSun();
 
@@ -1686,11 +1717,23 @@ function updateBadges() {
   const badge = document.getElementById('badge-errors'); 
   if (badge) { badge.textContent = errors; badge.style.display = errors ? '' : 'none'; } 
   document.getElementById('xp-pill').textContent = state.xp.toLocaleString() + ' XP';
-  document.getElementById('streak-pill').textContent = '🔥 ' + state.streak;
+  document.getElementById('streak-pill').textContent = 'Série ' + state.streak;
 }
 
 function renderView() { const c = document.getElementById('content'); const v = state.currentView; if (v === 'dashboard') renderDashboard(c); else if (v === 'play') renderPlay(c); else if (v === 'bilan') renderBilan(c); else if (v === 'methode') renderMethode(c); else if (v === 'add-question') renderAddQuestion(c); else if (v === 'database') renderDatabase(c); else if (v === 'cours') renderCours(c); else if (v === 'cours-new') renderCoursEditor(c, null); else if (v === 'cours-edit') renderCoursEditor(c, state.editingCours); else if (v === 'notions') renderNotionsPage(c); else if (v === 'notions-database') renderNotionsDatabase(c); }
 function showToast(msg, type = 'ok') { const t = document.getElementById('toast'); t.textContent = msg; t.className = type; t.classList.add('show'); setTimeout(() => { t.classList.remove('show'); }, 3000); }
+function normalizeInterfaceIcons(root = document.body) {
+  const replacements = { '✏️': '✎', '🗑️': '×', '🎮': '→', '📝': '▣', '🎯': '◈', '📊': '◐', '📋': '≡', '🔥': 'Série', '📄': '□', '📖': '▱', '✅': '○', '👤': '○', '⬆️': '↗' };
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  const textNodes = [];
+  let node;
+  while ((node = walker.nextNode())) textNodes.push(node);
+  textNodes.forEach(textNode => {
+    textNode.nodeValue = Object.entries(replacements).reduce((text, [emoji, icon]) => text.replaceAll(emoji, icon), textNode.nodeValue);
+  });
+}
+const originalRenderView = renderView;
+renderView = function() { originalRenderView(); normalizeInterfaceIcons(); };
 
 function getNotionSubjectMeta(subjectId) {
   return NOTION_SUBJECTS.find(item => item.id === subjectId) || { id: subjectId, label: subjectId.toUpperCase() };
@@ -1871,7 +1914,7 @@ function renderNotionsDatabaseResults() {
         ${item.details ? `<div class="notion-db-details">${escapeHtml(item.details)}</div>` : '<div class="notion-db-details">Aucun détail renseigné</div>'}
         <div class="notion-db-meta"><span>${isNotionDue(item.fsrs?.due || Date.now()) ? 'À revoir ' + formatDueLabel(item.fsrs?.due || Date.now()) : 'Prévue ' + formatDueLabel(item.fsrs?.due || Date.now())}</span><span>${Number(item.fsrs?.reps || 0)} révision${Number(item.fsrs?.reps || 0) > 1 ? 's' : ''}</span><span>Créée le ${formatDateFR(item.dateCreation || new Date())}</span></div>
       </div>
-      <button class="notion-db-row-delete" type="button" onclick="deleteNotion('${item.id}', true)" title="Supprimer cette notion" aria-label="Supprimer ${escapeHtml(item.notion)}">🗑️</button>
+      <button class="notion-db-row-delete" type="button" onclick="deleteNotion('${item.id}', true)" title="Supprimer cette notion" aria-label="Supprimer ${escapeHtml(item.notion)}">×</button>
     </article>`;
   }).join('');
   container.innerHTML = `
@@ -1923,7 +1966,7 @@ function renderNotionsPage(c) {
         </div>
         <div class="notions-bar-actions">
           <div class="notions-pill">${totalDue} à revoir</div>
-          <button class="notion-db-action" type="button" onclick="nav('notions-database')">🗂️ Toutes les notions</button>
+          <button class="notion-db-action" type="button" onclick="nav('notions-database')">≡ Toutes les notions</button>
         </div>
       </div>
 
@@ -1980,14 +2023,14 @@ function renderNotionBySubject() {
         <span>${group.subject.label}</span>
         <span class="notions-count">${group.items.length}</span>
       </div>
-      ${group.items.length === 0 ? '<div class="empty-state small"><div class="empty-state-icon">✅</div><div class="empty-state-title">Tout est à jour</div></div>' : group.items.map(item => renderNotionCard(item)).join('')}
+      ${group.items.length === 0 ? '<div class="empty-state small"><div class="empty-state-icon">○</div><div class="empty-state-title">Tout est à jour</div></div>' : group.items.map(item => renderNotionCard(item)).join('')}
     </div>
   `).join('');
 }
 function renderNotionGlobal() {
   const items = state.notions.filter(notion => isNotionDue(notion.fsrs?.due || Date.now())).sort((a, b) => new Date(a.fsrs?.due || Date.now()) - new Date(b.fsrs?.due || Date.now()));
   if (!items.length) {
-    return '<div class="empty-state"><div class="empty-state-icon">✅</div><div class="empty-state-title">Aucune notion due</div><div class="empty-state-sub">Le calendrier est vide pour le moment.</div></div>';
+    return '<div class="empty-state"><div class="empty-state-icon">○</div><div class="empty-state-title">Aucune notion due</div><div class="empty-state-sub">Le calendrier est vide pour le moment.</div></div>';
   }
   return items.map(item => renderNotionCard(item, true)).join('');
 }
@@ -2032,7 +2075,7 @@ function renderNotionCard(item, global = false) {
           </div>
         </div>
         <div class="notion-card-actions">
-          <button class="notion-delete" type="button" onclick="deleteNotion('${item.id}')" aria-label="Supprimer la notion ${escapeHtml(item.notion)}" title="Supprimer cette notion">🗑️</button>
+          <button class="notion-delete" type="button" onclick="deleteNotion('${item.id}')" aria-label="Supprimer la notion ${escapeHtml(item.notion)}" title="Supprimer cette notion">×</button>
         </div>
       </div>
       ${item.details ? `
