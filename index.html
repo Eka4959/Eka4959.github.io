@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Prepa B/L · Revisions</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="icon" type="image/x-icon" href="801A6FB8-0DB8-4B61-8A69-94F71841A506_1_201_a copie.jpeg">
 <style>
 /* ===================================================================
@@ -669,8 +669,225 @@ a { color: inherit; text-decoration: none; }
 .auth-btn-alt:hover { border-color: var(--text); color: var(--text); }
 .user-badge { display: flex; align-items: center; gap: 8px; font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.85rem; padding: 6px 12px; background: var(--bg3); border-radius: 8px; cursor: pointer; transition: background 0.2s; }
 .user-badge:hover { background: rgba(224,92,92,0.15); color: var(--red); }
-   
-   
+/* ===================================================================
+   NOUVELLE DIRECTION VISUELLE
+   =================================================================== */
+:root {
+  --bg: #f5f1eb;
+  --bg2: #fbf9f6;
+  --bg3: #ebe5dc;
+  --border: #dedbd4;
+  --text: #202522;
+  --text2: #6f7772;
+  --text3: #989d98;
+  --yellow: #b85c3f;
+  --red: #b85c3f;
+  --green: #657b6b;
+  --blue: #657b6b;
+  --purple: #8d7080;
+  --sidebar-w: 224px;
+  --header-h: 64px;
+}
+
+body { background: var(--bg); color: var(--text); font-family: "DM Sans", sans-serif; font-size: 14px; letter-spacing: 0; }
+button, input, textarea, select { font-family: inherit; }
+button { transition: background .18s ease, border-color .18s ease, color .18s ease, transform .18s ease; }
+#sidebar { background: var(--bg); border-right: 1px solid var(--border); }
+.sidebar-logo { height: var(--header-h); padding: 0 18px; border-bottom: 1px solid var(--border); }
+.sidebar-logo-text { font-family: Newsreader, Georgia, serif; font-size: 1.55rem; font-weight: 500; letter-spacing: -.04em; }
+.sidebar-logo-text span { color: var(--yellow); }
+.sidebar-toggle { font-size: 1rem; }
+.sidebar-scroll { padding: 24px 10px; }
+.nav-section { margin-bottom: 25px; }
+.nav-section-header { padding: 0 12px 9px; font-size: .62rem; letter-spacing: .14em; color: var(--text3); }
+.nav-section-header span:first-child { display: none; }
+.nav-item { padding: 10px 12px; border-radius: 8px; margin: 2px 0; width: 100%; color: var(--text2); font-size: .82rem; }
+.nav-item:hover { background: var(--bg2); color: var(--text); }
+.nav-item.active { background: var(--bg2); color: var(--yellow); box-shadow: inset 3px 0 var(--yellow); }
+.nav-item .nav-icon { width: 17px; font-size: .8rem; filter: grayscale(1); opacity: .7; }
+.subject-tree { border-left-color: var(--border); margin-left: 15px; }
+.subject-chapter { color: var(--text2); }
+.subject-chapter.active { color: var(--yellow); }
+#topbar { height: var(--header-h); padding: 0 30px; background: var(--bg); border-bottom-color: var(--border); }
+.topbar-breadcrumb { color: var(--text3); font-size: .78rem; }
+.topbar-breadcrumb span { color: var(--text); }
+.topbar-right { gap: 9px; }
+.user-badge { background: transparent; border: 1px solid var(--border); border-radius: 99px; color: var(--text); font-family: inherit; font-size: .78rem; font-weight: 600; padding: 7px 12px; }
+.user-badge:hover { background: var(--bg2); color: var(--yellow); }
+.xp-pill, .streak-pill { background: transparent; border: 0; color: var(--text2); font-family: inherit; font-size: .75rem; font-weight: 600; padding: 5px 7px; border-radius: 0; }
+.streak-pill { color: var(--yellow); }
+.github-sync-btn { background: var(--text); border: 1px solid var(--text); color: var(--bg); font-size: .73rem; padding: 8px 13px; border-radius: 7px; }
+.github-sync-btn:hover { background: var(--yellow); border-color: var(--yellow); }
+.theme-toggle { border-color: var(--border); background: transparent; color: var(--text2); }
+#content { padding: 42px clamp(24px, 5vw, 72px) 64px; }
+.page-title { font-family: Newsreader, Georgia, serif; font-size: clamp(2rem, 4vw, 3.2rem); font-weight: 400; letter-spacing: -.045em; margin-bottom: 8px; }
+.page-sub { color: var(--text2); line-height: 1.6; margin-bottom: 32px; }
+.notions-page, .notions-database-page { gap: 28px; }
+.notions-database-head { align-items: flex-end; }
+.notions-database-stats { gap: 12px; }
+.notion-db-stat { background: transparent; border: 0; border-left: 1px solid var(--border); border-radius: 0; padding: 3px 0 3px 14px; min-width: 90px; }
+.notion-db-stat strong { font-family: Newsreader, Georgia, serif; font-size: 1.8rem; font-weight: 400; }
+.notion-db-stat span { color: var(--text3); font-size: .68rem; }
+.notions-database-panel, .notions-panel, .subject-card, .stat-card, .play-config, .methode-card, .cours-list, .cours-viewer { background: var(--bg2); border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 12px 30px rgba(46, 37, 28, .035); }
+.notions-database-panel { overflow: hidden; }
+.notions-database-tools { padding: 16px; background: transparent; border-bottom-color: var(--border); }
+.form-input, .form-textarea, .form-select, .search-bar, .notion-db-select { background: var(--bg); border-color: var(--border); border-radius: 7px; color: var(--text); }
+.form-input:focus, .form-textarea:focus, .form-select:focus, .search-bar:focus { border-color: var(--yellow); box-shadow: 0 0 0 3px rgba(184,92,63,.1); }
+.notion-selection-bar { background: var(--accent-soft, #f1ddd5); border-bottom-color: #e9c8bc; }
+.notion-db-action { background: transparent; border-color: var(--border); color: var(--text2); border-radius: 7px; }
+.notion-db-action:hover { border-color: var(--text); color: var(--text); background: var(--bg2); }
+.notion-db-row { padding: 18px 16px; border-bottom-color: var(--border); }
+.notion-db-row:hover, .notion-db-row.selected { background: #f7f2ec; }
+.notion-db-title { font-weight: 600; }
+.notion-db-details { color: var(--text2); }
+.notion-db-meta { color: var(--text3); }
+.notion-badge { background: #e5eee7; color: var(--green); border-radius: 99px; padding: 4px 9px; }
+.notion-db-check { accent-color: var(--yellow); }
+.notions-pill, .notions-tab.active { background: #f1ddd5; color: var(--yellow); border-color: #e9c8bc; }
+.notions-tab { background: transparent; border-color: var(--border); border-radius: 7px; }
+.dashboard-grid { gap: 16px; }
+.subject-card { padding: 20px; }
+.sc-icon { background: var(--bg3); border-radius: 8px; }
+.sc-name, .stat-card-num { font-family: Newsreader, Georgia, serif; font-weight: 400; letter-spacing: -.025em; }
+.sc-name { font-size: 1.3rem; }
+.sc-hours, .sc-stat-label, .stat-card-label { color: var(--text3); }
+.sc-stat-num { color: var(--text); }
+.sc-progress { background: var(--bg3); }
+.sc-progress-bar { background: var(--yellow) !important; }
+.due-badge { background: #f1ddd5; color: var(--yellow); border-color: #e9c8bc; }
+.stats-row { gap: 12px; }
+.stat-card { border-radius: 10px; padding: 18px; }
+.stat-card-num { font-size: 2rem; }
+.stat-xp .stat-card-num { color: var(--yellow); }
+.stat-ok .stat-card-num { color: var(--green); }
+.stat-err .stat-card-num { color: var(--red); }
+.stat-due .stat-card-num { color: var(--purple); }
+.play-config { padding: 24px; }
+.config-title { font-family: Newsreader, Georgia, serif; font-weight: 400; font-size: 1.65rem; }
+.chapter-pill, .pill-action { background: transparent; border-color: var(--border); border-radius: 7px; color: var(--text2); }
+.chapter-pill.selected { background: #f1ddd5; border-color: #e9c8bc; color: var(--yellow); }
+.mode-cards { gap: 12px; }
+.mode-card { background: var(--bg); border-color: var(--border); border-radius: 10px; }
+.mode-card.selected { background: #f7eee9; border-color: var(--yellow); box-shadow: 0 0 0 2px rgba(184,92,63,.08); }
+.mode-card-name { font-weight: 600; }
+.start-big, .form-submit, .btn-save { background: var(--text); color: var(--bg); border: 0; border-radius: 7px; }
+.start-big:hover, .form-submit:hover, .btn-save:hover { background: var(--yellow); color: white; }
+.all-done-box { background: #e5eee7; border-color: #cbdccd; color: var(--green); }
+.quiz-topbar { background: var(--text); }
+#quiz-overlay { background: var(--bg); }
+.quiz-body { background: var(--bg); }
+.q-card, .quiz-summary-panel { background: var(--bg2); border-color: var(--border); border-radius: 12px; box-shadow: 0 15px 35px rgba(46,37,28,.06); }
+.q-text { font-family: Newsreader, Georgia, serif; font-weight: 400; letter-spacing: -.025em; }
+.q-badge { color: var(--yellow); }
+.opt, .vf-btn { background: var(--bg2); border-color: var(--border); border-radius: 8px; }
+.opt:hover, .vf-btn:hover { border-color: var(--yellow); background: #f7eee9; }
+.opt.correct, .vf-btn.correct { background: #e5eee7; border-color: var(--green); }
+.opt-letter { background: var(--bg3); color: var(--text2); }
+.feedback { border-radius: 8px; }
+.next-btn { background: var(--text); border-radius: 7px; }
+.next-btn:hover { background: var(--yellow); }
+.bilan-tab { background: transparent; border-color: var(--border); border-radius: 7px; }
+.bilan-tab.active { background: #f1ddd5; border-color: #e9c8bc; color: var(--yellow); }
+.chapter-bilan-item, .error-item { background: var(--bg2); border-color: var(--border); border-radius: 10px; }
+.btn-review { background: var(--text); border-radius: 7px; }
+.cours-layout { gap: 16px; }
+.cours-list { padding: 10px; }
+.cours-item { border-radius: 7px; }
+.cours-item.active, .cours-item:hover { background: #f1ddd5; color: var(--yellow); }
+.cours-viewer { padding: 28px; }
+.cours-viewer-inner { line-height: 1.75; }
+.editor-toolbar { background: var(--bg); border-color: var(--border); }
+.toolbar-btn { background: transparent; border-color: var(--border); border-radius: 5px; }
+.methode-grid { gap: 16px; }
+.methode-card { padding: 22px; }
+.methode-card-title { font-family: Newsreader, Georgia, serif; font-weight: 500; font-size: 1.25rem; }
+.methode-card-body { color: var(--text2); }
+.add-q-form { background: var(--bg2); border-color: var(--border); border-radius: 12px; }
+.form-label { color: var(--text2); }
+.form-divider { background: var(--border); }
+#toast { background: var(--bg2); border-color: var(--border); border-radius: 8px; box-shadow: 0 10px 25px rgba(46,37,28,.08); }
+.empty-state { color: var(--text2); }
+.empty-state-title { font-family: Newsreader, Georgia, serif; font-weight: 500; font-size: 1.35rem; }
+#auth-overlay { background: var(--bg); }
+.auth-box { background: var(--bg2); border-color: var(--border); border-radius: 12px; box-shadow: 0 18px 45px rgba(46,37,28,.08); }
+.auth-title { font-family: Newsreader, Georgia, serif; font-weight: 400; font-size: 2rem; }
+.auth-input { background: var(--bg); border-color: var(--border); border-radius: 7px; }
+.auth-input:focus { border-color: var(--yellow); }
+.auth-btn { background: var(--text); color: var(--bg); border-radius: 7px; }
+.auth-btn:hover { background: var(--yellow); }
+.auth-btn-alt { border-color: var(--border); border-radius: 7px; }
+.nav-section-header.nav-section-toggle { width: 100%; border: 0; background: transparent; color: var(--text3); cursor: pointer; display: flex; align-items: center; justify-content: space-between; text-align: left; }
+.nav-section-header.nav-section-toggle:hover { color: var(--text); }
+.nav-section-chevron { font-size: .95rem; transition: transform .18s ease; }
+.nav-section-library.is-collapsed .nav-section-chevron { transform: rotate(-90deg); }
+.nav-section-library.is-collapsed #library-nav-items { display: none; }
+.nav-section-settings { margin-top: auto; padding-top: 14px; border-top: 1px solid var(--border); }
+.nav-section-settings .nav-item { color: var(--text3); }
+.nav-section-settings .nav-item:hover { color: var(--red); }
+#sidebar.collapsed .nav-section-header.nav-section-toggle { justify-content: center; }
+#sidebar.collapsed .nav-section-chevron { display: none; }
+.editorial-dashboard { max-width: 1080px; margin: 0 auto; }
+.editorial-topline { display: flex; justify-content: space-between; align-items: center; color: var(--text3); font-size: .75rem; margin-bottom: 64px; }
+.editorial-profile { display: flex; align-items: center; gap: 12px; color: var(--text); font-weight: 600; }
+.editorial-avatar { width: 30px; height: 30px; border-radius: 50%; background: #d9c6b4; color: #684e3b; display: grid; place-items: center; font-size: .72rem; font-weight: 700; }
+.editorial-hero { max-width: 720px; margin-bottom: 46px; }
+.editorial-hero h1 { font-family: Newsreader, Georgia, serif; font-size: clamp(3rem, 6vw, 5rem); font-weight: 400; letter-spacing: -.06em; line-height: .94; margin: 0 0 22px; }
+.editorial-hero h1 em { color: var(--yellow); font-style: normal; }
+.editorial-hero p { max-width: 530px; color: var(--text2); font-size: .95rem; line-height: 1.65; margin: 0; }
+.editorial-label { display: flex; align-items: center; gap: 14px; color: var(--text3); font-size: .65rem; text-transform: uppercase; letter-spacing: .14em; font-weight: 700; margin-bottom: 16px; }
+.editorial-label::after { content: ""; height: 1px; flex: 1; background: var(--border); }
+.editorial-focus { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(220px, .65fr); border: 1px solid var(--border); background: var(--bg2); border-radius: 12px; overflow: hidden; margin-bottom: 42px; box-shadow: 0 12px 30px rgba(46, 37, 28, .035); }
+.editorial-focus-main { padding: 26px 28px 29px; }
+.editorial-focus-main h2 { font-family: Newsreader, Georgia, serif; font-size: 2rem; font-weight: 400; margin: 18px 0 12px; letter-spacing: -.04em; }
+.editorial-tag { display: inline-block; color: var(--yellow); background: #f1ddd5; border-radius: 99px; padding: 5px 9px; font-size: .68rem; font-weight: 700; }
+.editorial-focus-main p { color: var(--text2); font-size: .8rem; margin: 0 0 24px; }
+.editorial-start { border: 0; border-radius: 7px; background: var(--text); color: var(--bg); padding: 11px 17px; font-size: .75rem; font-weight: 600; }
+.editorial-start:hover { background: var(--yellow); color: white; }
+.editorial-focus-aside { border-left: 1px solid var(--border); padding: 26px 24px; background: #f7f4ef; }
+.editorial-focus-aside .editorial-label { margin-bottom: 0; }
+.editorial-focus-aside strong { display: block; font-family: Newsreader, Georgia, serif; font-size: 3rem; font-weight: 400; line-height: 1; margin: 16px 0 8px; }
+.editorial-focus-aside p { color: var(--text2); font-size: .75rem; margin: 0; }
+.editorial-columns { display: grid; grid-template-columns: 1.1fr .9fr; gap: 42px; }
+.editorial-list { border-top: 1px solid var(--border); }
+.editorial-item { display: flex; justify-content: space-between; gap: 20px; padding: 17px 0; border-bottom: 1px solid var(--border); text-align: left; }
+button.editorial-item { width: 100%; border-left: 0; border-right: 0; border-top: 0; background: transparent; color: inherit; cursor: pointer; }
+button.editorial-item:hover { background: var(--bg2); padding-left: 10px; padding-right: 10px; }
+.editorial-item h3 { font-size: .82rem; font-weight: 600; margin: 0 0 5px; text-align: left; }
+.editorial-item p { color: var(--text2); font-size: .7rem; margin: 0; text-align: left; }
+.editorial-item time { color: var(--green); font-size: .68rem; white-space: nowrap; padding-top: 2px; }
+.editorial-quote { border-left: 2px solid var(--yellow); padding: 5px 0 5px 20px; align-self: start; }
+.editorial-quote p { font-family: Newsreader, Georgia, serif; font-size: 1.6rem; line-height: 1.12; margin: 0 0 12px; }
+.editorial-quote small { color: var(--text3); font-size: .68rem; }
+@media (max-width: 768px) {
+  .editorial-topline { margin-bottom: 48px; }
+  .editorial-hero h1 { font-size: 3rem; }
+  .editorial-focus, .editorial-columns { grid-template-columns: 1fr; }
+  .editorial-focus-aside { border-left: 0; border-top: 1px solid var(--border); }
+}
+
+body.dark-theme {
+  --bg: #202522;
+  --bg2: #292e2a;
+  --bg3: #39413b;
+  --border: rgba(245,241,235,.14);
+  --text: #f5f1eb;
+  --text2: #b2b8b2;
+  --text3: #7d877f;
+  --yellow: #d88465;
+  --red: #d88465;
+  --green: #9ab49f;
+}
+
+@media (max-width: 768px) {
+  #topbar { padding: 12px 14px 12px 62px; }
+  #content { padding: 30px 18px 48px; }
+  .page-title { font-size: 2.35rem; }
+  .topbar-right { gap: 4px; }
+  .user-badge { padding: 6px 8px; }
+  .github-sync-btn { display: none; }
+  .notions-database-panel, .notions-panel, .subject-card, .stat-card, .play-config, .methode-card, .cours-list, .cours-viewer { border-radius: 10px; }
+}
+
 </style>
 </head>
 <body>
@@ -679,20 +896,32 @@ a { color: inherit; text-decoration: none; }
   <nav id="sidebar">
     <div class="sidebar-logo"><div class="sidebar-logo-text">B<span>/</span>L</div><button class="sidebar-toggle" onclick="toggleSidebar()" title="Réduire">⇄</button></div>
     <div class="sidebar-scroll">
-      <div class="nav-section"><div class="nav-section-header"><span>🏠</span><span>Général</span></div>
-        <button class="nav-item active" onclick="nav('dashboard')" id="nav-dashboard"><span class="nav-icon">◈</span><span class="nav-label">Tableau de bord</span></button>
-        <button class="nav-item" onclick="nav('bilan')" id="nav-bilan"><span class="nav-icon">📊</span><span class="nav-label">Bilan & erreurs</span><span class="nav-badge" id="badge-errors" style="display:none">0</span></button>
-        <button class="nav-item" onclick="startErrorQuiz()" id="nav-error-quiz"><span class="nav-icon">↻</span><span class="nav-label">Réviser mes erreurs</span></button>
-        <button class="nav-item" onclick="nav('methode')" id="nav-methode"><span class="nav-icon">📐</span><span class="nav-label">Méthode</span></button>
+      <div class="nav-section nav-section-primary">
+        <div class="nav-section-header"><span>Votre espace</span></div>
+        <button class="nav-item active" onclick="nav('dashboard')" id="nav-dashboard"><span class="nav-icon">⌂</span><span class="nav-label">Aujourd'hui</span></button>
       </div>
-      <div class="nav-section"><div class="nav-section-header"><span>📚</span><span>Matières</span></div><div id="subjects-nav"></div></div>
-      <div class="nav-section"><div class="nav-section-header"><span>⚙️</span><span>Outils</span></div>
-        <button class="nav-item" onclick="nav('database')" id="nav-database"><span class="nav-icon">🗄️</span><span class="nav-label">Base de données</span></button>
-        <button class="nav-item" onclick="nav('add-question')" id="nav-add-question"><span class="nav-icon">＋</span><span class="nav-label">Ajouter des questions</span></button>
-        <button class="nav-item" onclick="nav('cours')" id="nav-cours"><span class="nav-icon">📄</span><span class="nav-label">Cours</span></button>
-        <button class="nav-item" onclick="nav('notions')" id="nav-notions"><span class="nav-icon">🧠</span><span class="nav-label">Suivi des notions</span></button>
-        <button class="nav-item" onclick="nav('notions-database')" id="nav-notions-database"><span class="nav-icon">🗂️</span><span class="nav-label">Toutes les notions</span></button>
-        <button class="nav-item nav-reset" onclick="confirmResetAll()" id="nav-reset"><span class="nav-icon">🔥</span><span class="nav-label">Réinitialiser</span></button>
+      <div class="nav-section nav-section-subjects">
+        <div class="nav-section-header"><span>Mes matières</span></div>
+        <div id="subjects-nav"></div>
+      </div>
+      <div class="nav-section nav-section-errors">
+        <div class="nav-section-header"><span>Révisions</span></div>
+        <button class="nav-item" onclick="nav('bilan')" id="nav-bilan"><span class="nav-icon">↗</span><span class="nav-label">Mes erreurs</span><span class="nav-badge" id="badge-errors" style="display:none">0</span></button>
+        <button class="nav-item" onclick="startErrorQuiz()" id="nav-error-quiz"><span class="nav-icon">↻</span><span class="nav-label">Réviser mes erreurs</span></button>
+      </div>
+      <div class="nav-section nav-section-library" id="nav-library-section">
+        <button class="nav-section-header nav-section-toggle" onclick="toggleNavSection('library')" aria-expanded="true"><span>Bibliothèque</span><span class="nav-section-chevron">⌄</span></button>
+        <div id="library-nav-items">
+          <button class="nav-item" onclick="nav('cours')" id="nav-cours"><span class="nav-icon">□</span><span class="nav-label">Cours</span></button>
+          <button class="nav-item" onclick="nav('notions')" id="nav-notions"><span class="nav-icon">·</span><span class="nav-label">Suivi des notions</span></button>
+          <button class="nav-item" onclick="nav('notions-database')" id="nav-notions-database"><span class="nav-icon">≡</span><span class="nav-label">Toutes les notions</span></button>
+          <button class="nav-item" onclick="nav('database')" id="nav-database"><span class="nav-icon">#</span><span class="nav-label">Base de questions</span></button>
+          <button class="nav-item" onclick="nav('add-question')" id="nav-add-question"><span class="nav-icon">＋</span><span class="nav-label">Ajouter une question</span></button>
+          <button class="nav-item" onclick="nav('methode')" id="nav-methode"><span class="nav-icon">↗</span><span class="nav-label">Méthode</span></button>
+        </div>
+      </div>
+      <div class="nav-section nav-section-settings">
+        <button class="nav-item nav-reset" onclick="confirmResetAll()" id="nav-reset"><span class="nav-icon">↺</span><span class="nav-label">Réinitialiser</span></button>
       </div>
     </div>
   </nav>
@@ -1432,6 +1661,14 @@ function resetAllData() {
 
 // NAV
 function toggleSidebar() { state.sidebarCollapsed = !state.sidebarCollapsed; lsSet('bl_sidebar', state.sidebarCollapsed); document.getElementById('sidebar').classList.toggle('collapsed', state.sidebarCollapsed); }
+function toggleNavSection(section) {
+  if (section !== 'library') return;
+  const group = document.getElementById('nav-library-section');
+  const toggle = group?.querySelector('.nav-section-toggle');
+  if (!group || !toggle) return;
+  const collapsed = group.classList.toggle('is-collapsed');
+  toggle.setAttribute('aria-expanded', String(!collapsed));
+}
 function buildSidebarSubjects() { const el = document.getElementById('subjects-nav'); el.innerHTML = ''; SUBJECTS.forEach(s => { const btn = document.createElement('button'); btn.className = 'nav-item'; btn.id = 'nav-subj-' + s.id; btn.innerHTML = `<span class="nav-icon">${s.icon}</span><span class="nav-label">${s.name}</span>`; btn.onclick = () => { state.currentSubject = s.id; state.currentChapter = null; nav('play'); toggleSubjectTree(s.id); }; el.appendChild(btn); const tree = document.createElement('div'); tree.className = 'subject-tree'; tree.id = 'tree-' + s.id; tree.style.display = 'none'; (state.chapters[s.id] || []).forEach(ch => { const cb = document.createElement('button'); cb.className = 'subject-chapter'; cb.innerHTML = '<span>·</span> ' + escapeHtml(ch.name); cb.onclick = (e) => { e.stopPropagation(); state.currentSubject = s.id; state.currentChapter = ch.id; nav('play'); }; tree.appendChild(cb); }); el.appendChild(tree); }); }
 function toggleSubjectTree(sid) { SUBJECTS.forEach(s => { const t = document.getElementById('tree-' + s.id); if (t) t.style.display = s.id === sid ? (t.style.display === 'none' ? 'block' : 'none') : 'none'; }); }
 if (state.sidebarCollapsed) document.getElementById('sidebar').classList.add('collapsed'); buildSidebarSubjects();
@@ -1922,6 +2159,58 @@ function addDashboardStats(container) {
 }
 const originalRenderDashboard = renderDashboard;
 renderDashboard = function(container) { originalRenderDashboard(container); addDashboardStats(container); };
+
+function renderEditorialDashboard(c) {
+  const now = Date.now();
+  const allQuestions = [...state.questions];
+  const dueQuestions = allQuestions.filter(question => getSR(question.id).due <= now).sort((a, b) => getSR(a.id).due - getSR(b.id).due);
+  const upcoming = allQuestions.filter(question => !dueQuestions.includes(question)).sort((a, b) => getSR(a.id).due - getSR(b.id).due).slice(0, 3);
+  const focus = dueQuestions[0] || upcoming[0] || allQuestions[0];
+  const focusSubject = focus ? SUBJECTS.find(subject => subject.id === focus.subject) : null;
+  const attempts = Object.values(state.sr_data).reduce((total, sr) => total + (sr.attempts || 0), 0);
+  const errors = Object.values(state.sr_data).reduce((total, sr) => total + (sr.errors || 0), 0);
+  const progress = attempts ? Math.round(((attempts - errors) / attempts) * 100) : 0;
+  const displayQuestions = upcoming.length ? upcoming : allQuestions.filter(question => question !== focus).slice(0, 3);
+  const dateLabel = window.innerWidth <= 768 ? "Aujourd'hui" : new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+  const userName = state.currentUser || ls('bl_current_user', null) || 'Invité';
+  setBreadcrumb([dateLabel.charAt(0).toUpperCase() + dateLabel.slice(1)]);
+  c.innerHTML = `
+    <div class="editorial-dashboard">
+      <section class="editorial-hero">
+        <h1>Bonjour ${escapeHtml(userName)},<br><em>on reprend le fil.</em></h1>
+        <p>Voici une vue simple de ce qui mérite ton attention aujourd'hui. Pas de bruit, juste le prochain bon geste.</p>
+      </section>
+      <div class="editorial-label">À faire maintenant</div>
+      <section class="editorial-focus">
+        <div class="editorial-focus-main">
+          <span class="editorial-tag">${focusSubject ? escapeHtml(focusSubject.name) : 'Révisions'}</span>
+          <h2>${focus ? escapeHtml(chapterName(focus.subject, focus.chapter)) : 'Tout est à jour'}</h2>
+          <p>${focus ? escapeHtml(focus.q) : 'Aucune question ne demande ton attention pour le moment.'}</p>
+          ${focus ? `<button class="editorial-start" onclick="state.currentSubject='${focus.subject}'; state.currentChapter='${focus.chapter}'; nav('play')">Commencer la révision&nbsp; →</button>` : ''}
+        </div>
+        <div class="editorial-focus-aside">
+          <div class="editorial-label">Progression</div>
+          <strong>${progress}%</strong>
+          <p>de tes réponses sont correctes</p>
+        </div>
+      </section>
+      <div class="editorial-columns">
+        <section>
+          <div class="editorial-label">Prochaines révisions</div>
+          <div class="editorial-list">
+            ${displayQuestions.length ? displayQuestions.map(question => {
+              const subject = SUBJECTS.find(item => item.id === question.subject);
+              const due = getSR(question.id).due;
+              return `<button class="editorial-item" onclick="state.currentSubject='${question.subject}'; state.currentChapter='${question.chapter}'; nav('play')"><div><h3>${escapeHtml(chapterName(question.subject, question.chapter))}</h3><p>${subject ? escapeHtml(subject.name) : 'Révision'} · ${escapeHtml(question.mode.toUpperCase())}</p></div><time>${escapeHtml(formatDueLabel(due))}</time></button>`;
+            }).join('') : '<div class="editorial-item"><div><h3>Le calendrier est vide</h3><p>Ajoute une question pour commencer.</p></div></div>'}
+          </div>
+        </section>
+        <aside class="editorial-quote"><p>“La clarté est la politesse de l'esprit.”</p><small>— Jules Renard</small></aside>
+      </div>
+    </div>`;
+  c.parentElement.scrollTop = 0;
+}
+renderDashboard = renderEditorialDashboard;
 
 // PLAY
 function renderPlay(c) { setBreadcrumb([SUBJECTS.find(s => s.id === state.currentSubject)?.name || 'Toutes matières', state.currentChapter ? chapterName(state.currentSubject, state.currentChapter) : 'Tous chapitres']); const subject = state.currentSubject; const allChapters = subject ? (state.chapters[subject] || []).map(ch => ch.id) : []; const selectedChapters = subject ? (state.currentChapter ? [state.currentChapter] : (playConfig.chapters?.length ? playConfig.chapters.filter(chId => allChapters.includes(chId)) : allChapters)) : []; const availableChapters = allChapters.filter(chId => state.questions.some(q => q.subject === subject && q.chapter === chId)); const dueQuestions = getDueQuestions(subject, selectedChapters.length > 0 ? selectedChapters : null, playConfig.modes); const nextDue = nextDueTime(subject, selectedChapters.length > 0 ? selectedChapters : null, playConfig.modes); c.innerHTML = `<h1 class="page-title">Session de révision</h1><p class="page-sub">${subject ? SUBJECTS.find(s => s.id === subject)?.name : 'Toutes les matières'}${state.currentChapter ? ' · ' + chapterName(subject, state.currentChapter) : ''}</p><div class="play-config"><div class="config-section"><div class="config-title">Chapitres à réviser</div><div class="chapter-pills" id="chapter-pills">${availableChapters.map(chId => { const isActive = selectedChapters.length === 0 || selectedChapters.includes(chId); return `<button class="chapter-pill ${isActive ? 'active' : ''}" onclick="toggleChapter('${chId}')">${escapeHtml(chapterName(subject, chId))}</button>`; }).join('')}</div><div class="pill-actions"><button class="pill-action" onclick="selectAllChapters()">Tout sélectionner</button><button class="pill-action" onclick="deselectAllChapters()">Tout désélectionner</button></div></div><div class="config-section"><div class="config-title">Mode de questions</div><div class="mode-cards">${QUESTION_MODES.map(mode => { const isActive = playConfig.modes.includes(mode); const count = getDueQuestions(subject, selectedChapters.length > 0 ? selectedChapters : null, [mode]).length; const dueCount = count > 0 ? count : 0; return `<button class="mode-card ${isActive ? 'active' : ''}" onclick="toggleMode('${mode}')"><span class="mode-card-icon">${MODE_LABELS[mode].split(' ')[0]}</span><span class="mode-card-name">${MODE_LABELS[mode].split(' ').slice(1).join(' ')}</span><span class="mode-card-count ${dueCount > 0 ? 'due' : ''}">${dueCount} à réviser</span></button>`; }).join('')}</div></div><div class="config-section"><div class="config-title">Mode chronométré</div><div class="mode-cards"><button class="mode-card ${playConfig.timed ? 'active' : ''}" onclick="toggleTimedMode()"><span class="mode-card-icon">⏱️</span><span class="mode-card-name">Mode chronométré</span><span class="mode-card-count ${playConfig.timed ? 'due' : ''}">${playConfig.timed ? 'Activé' : 'Désactivé'}</span></button></div></div><div style="display:flex;align-items:center;gap:12px;margin-bottom:16px"><span style="color:var(--text2);font-size:0.85rem">Questions disponibles :</span><strong style="font-family:'Syne',sans-serif;font-size:0.95rem">${dueQuestions.length}</strong>${nextDue ? `<span style="color:var(--text3);font-size:0.8rem">Prochaine révision dans ${fmtDuration(nextDue - Date.now())}</span>` : ''}</div>${dueQuestions.length > 0 ? `<button class="start-big" onclick="startQuiz()"><span>🎮</span> Commencer la session (${dueQuestions.length} questions)</button>` : `<div class="all-done-box"><div class="all-done-icon">✅</div><div class="all-done-title">Tout est à jour !</div><div class="all-done-sub">Aucune question n'est due pour la révision.</div></div>`}</div>`; }
