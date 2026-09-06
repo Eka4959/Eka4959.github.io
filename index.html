@@ -2169,8 +2169,8 @@ function renderEditorialDashboard(c) {
   const allQuestions = [...state.questions];
   const dueQuestions = allQuestions.filter(question => getSR(question.id).due <= now).sort((a, b) => getSR(a.id).due - getSR(b.id).due);
   const upcoming = allQuestions.filter(question => !dueQuestions.includes(question)).sort((a, b) => getSR(a.id).due - getSR(b.id).due).slice(0, 3);
-  const focus = dueQuestions[0] || upcoming[0] || allQuestions[0];
-  const focusSubject = focus ? SUBJECTS.find(subject => subject.id === focus.subject) : null;
+  const dueNotions = (state.notions || []).filter(notion => isNotionDue(notion.fsrs?.due || now)).sort((a, b) => Number(a.fsrs?.due || now) - Number(b.fsrs?.due || now));
+  const focusNotion = dueNotions[0] || (state.notions || [])[0];
   const attempts = Object.values(state.sr_data).reduce((total, sr) => total + (sr.attempts || 0), 0);
   const errors = Object.values(state.sr_data).reduce((total, sr) => total + (sr.errors || 0), 0);
   const progress = attempts ? Math.round(((attempts - errors) / attempts) * 100) : 0;
@@ -2187,15 +2187,15 @@ function renderEditorialDashboard(c) {
       <div class="editorial-label">À faire maintenant</div>
       <section class="editorial-focus">
         <div class="editorial-focus-main">
-          <span class="editorial-tag">${focusSubject ? escapeHtml(focusSubject.name) : 'Révisions'}</span>
-          <h2>${focus ? escapeHtml(chapterName(focus.subject, focus.chapter)) : 'Tout est à jour'}</h2>
-          <p>${focus ? escapeHtml(focus.q) : 'Aucune question ne demande ton attention pour le moment.'}</p>
-          ${focus ? `<button class="editorial-start" onclick="state.currentSubject='${focus.subject}'; state.currentChapter='${focus.chapter}'; nav('play')">Commencer la révision&nbsp; →</button>` : ''}
+          <span class="editorial-tag">Suivi des notions</span>
+          <h2>${focusNotion ? escapeHtml(focusNotion.notion) : 'Commence ton suivi'}</h2>
+          <p>${dueNotions.length ? `${dueNotions.length} notion${dueNotions.length > 1 ? 's' : ''} à revoir aujourd'hui.` : focusNotion ? 'Ton suivi est à jour pour le moment.' : 'Ajoute une notion pour construire ton fil de révision.'}</p>
+          <button class="editorial-start" onclick="nav('notions')">${dueNotions.length ? 'Revoir mes notions' : 'Ouvrir le suivi'}&nbsp; →</button>
         </div>
         <div class="editorial-focus-aside">
           <div class="editorial-label">Progression</div>
-          <strong>${progress}%</strong>
-          <p>de tes réponses sont correctes</p>
+          <strong>${dueNotions.length}</strong>
+          <p>notion${dueNotions.length > 1 ? 's' : ''} à revoir aujourd'hui</p>
         </div>
       </section>
       <div class="editorial-columns">
@@ -2207,7 +2207,7 @@ function renderEditorialDashboard(c) {
           <div class="editorial-list">
             ${displayQuestions.length ? displayQuestions.map(question => {
               const subject = SUBJECTS.find(item => item.id === question.subject);
-              const due = getSR(question.id).due;
+              const due = getSR(question.id).due || now;
               return `<button class="editorial-item" onclick="state.currentSubject='${question.subject}'; state.currentChapter='${question.chapter}'; nav('play')"><div><h3>${escapeHtml(chapterName(question.subject, question.chapter))}</h3><p>${subject ? escapeHtml(subject.name) : 'Révision'} · ${escapeHtml(question.mode.toUpperCase())}</p></div><time>${escapeHtml(formatDueLabel(due))}</time></button>`;
             }).join('') : '<div class="editorial-item"><div><h3>Le calendrier est vide</h3><p>Ajoute une question pour commencer.</p></div></div>'}
           </div>
