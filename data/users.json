@@ -175,6 +175,22 @@
     },
     "notions": [
       {
+        "id": "aeed0925-f02e-4247-b617-ac7f28d34787",
+        "matiere": "maths",
+        "notion": "TD G1 Ex 14",
+        "details": "",
+        "dateCreation": "2026-09-11T16:02:54.923Z",
+        "fsrs": {
+          "due": 1789228974923,
+          "stability": 5.8,
+          "difficulty": 5,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1789142574923
+        }
+      },
+      {
         "id": "0a740c3a-73e0-4002-8e9c-7344e5cb01df",
         "matiere": "maths",
         "notion": "TD G1 Ex 13",
