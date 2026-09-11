@@ -175,6 +175,22 @@
     },
     "notions": [
       {
+        "id": "bad86c38-d05e-4019-8eea-ab0bf6cd30b7",
+        "matiere": "maths",
+        "notion": "TD G1 Ex 12",
+        "details": "",
+        "dateCreation": "2026-09-11T15:25:16.996Z",
+        "fsrs": {
+          "due": 1789226716996,
+          "stability": 5.8,
+          "difficulty": 5,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1789140316996
+        }
+      },
+      {
         "id": "5f98f623-b236-455b-aeda-b5a8c40f7f55",
         "matiere": "histoire",
         "notion": "Chapitre 1 I) Niveau 1",
