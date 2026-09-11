@@ -175,6 +175,22 @@
     },
     "notions": [
       {
+        "id": "5f98f623-b236-455b-aeda-b5a8c40f7f55",
+        "matiere": "histoire",
+        "notion": "Chapitre 1 I) Niveau 1",
+        "details": "Le concept de Césarisme démocratique et la stratégie de libéralisation (pourquoi et comment l'Empire se libéralise).\n\nLa dynamique de reprise/préexistence de l'idée républicaine avant 1870 (Journaux, Ligue de l'enseignement de Jean Macé, élections de 1869).\n\nLa bascule de 1870 : Gouvernement Émile Ollivier, le Sénatus-consulte et le Plébiscite/Référendum du printemps 1870 (et le constat de Gambetta).\n\nLa chute : Abdication à Sedan (2 septembre 1870).",
+        "dateCreation": "2026-09-11T14:09:22.298Z",
+        "fsrs": {
+          "due": 1789222162298,
+          "stability": 5.8,
+          "difficulty": 5,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1789135762298
+        }
+      },
+      {
         "id": "4409a1fc-88f0-4275-922a-8d64799e99d7",
         "matiere": "ses",
         "notion": "Séance 3 Niveau 1",
