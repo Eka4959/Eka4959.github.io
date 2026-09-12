@@ -175,6 +175,22 @@
     },
     "notions": [
       {
+        "id": "a6bdfd72-cc05-4f86-9c1c-eed03f4436fe",
+        "matiere": "philo",
+        "notion": "Bonheur Def + I)",
+        "details": "",
+        "dateCreation": "2026-09-12T12:28:50.514Z",
+        "fsrs": {
+          "due": 1789302530514,
+          "stability": 5.8,
+          "difficulty": 5,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1789216130514
+        }
+      },
+      {
         "id": "ba9df8ef-28b5-4634-aa48-c78c00d4ed05",
         "matiere": "maths",
         "notion": "TD G1 Ex 17",
