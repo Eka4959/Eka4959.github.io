@@ -343,6 +343,22 @@
     },
     "notions": [
       {
+        "id": "77edd0d5-2e15-4533-8780-6e4f16cca9fb",
+        "matiere": "ses",
+        "notion": "Monographie",
+        "details": "",
+        "dateCreation": "2026-09-13T14:34:06.159Z",
+        "fsrs": {
+          "due": 1789396446159,
+          "stability": 5.8,
+          "difficulty": 5,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1789310046159
+        }
+      },
+      {
         "id": "8cb94fa6-695b-482b-9e23-a594e10145d2",
         "matiere": "philo",
         "notion": "II) Bonheur",
