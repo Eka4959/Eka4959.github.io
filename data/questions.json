@@ -236,5 +236,185 @@
     "q": "Selon Becker, les différences de salaire selon le niveau de diplôme s'expliquent par des différences de productivité dues à des différences d'investissement en [...].",
     "expl": "Gary Becker montre que l'individu investit dans sa formation (temps, argent) pour accroître son capital humain, ce qui élève sa productivité et donc son salaire.",
     "correct": "capital humain"
+  },
+  {
+    "id": "imp_1789308059865_29ve",
+    "subject": "espagnol",
+    "chapter": "espagnol_vocabulaire",
+    "mode": "qcm",
+    "q": "una chispa",
+    "expl": "",
+    "opts": [
+      "Falta prolongada de lluvia",
+      "Perjuicio o mal causado",
+      "Superficie sobre la que caminamos",
+      "Partícula de fuego que salta"
+    ],
+    "correct": 3
+  },
+  {
+    "id": "imp_1789308059866_ya90",
+    "subject": "espagnol",
+    "chapter": "espagnol_vocabulaire",
+    "mode": "qcm",
+    "q": "el suelo",
+    "expl": "",
+    "opts": [
+      "Partícula de fuego que salta",
+      "Superficie sobre la que caminamos",
+      "Lo que rodea a algo",
+      "Paso de mar entre dos tierras"
+    ],
+    "correct": 1
+  },
+  {
+    "id": "imp_1789308059866_v028",
+    "subject": "espagnol",
+    "chapter": "espagnol_vocabulaire",
+    "mode": "qcm",
+    "q": "la sequía",
+    "expl": "",
+    "opts": [
+      "Acción de escapar de un peligro",
+      "Falta prolongada de lluvia",
+      "Vehículo que navega por el agua",
+      "Conjunto de condiciones naturales del planeta"
+    ],
+    "correct": 1
+  },
+  {
+    "id": "imp_1789308059866_copv",
+    "subject": "espagnol",
+    "chapter": "espagnol_vocabulaire",
+    "mode": "qcm",
+    "q": "huir",
+    "expl": "",
+    "opts": [
+      "Escribir su nombre para identificarse",
+      "Escapar de un peligro",
+      "Causar un perjuicio",
+      "Retener a alguien en un lugar cerrado"
+    ],
+    "correct": 1
+  },
+  {
+    "id": "imp_1789308059866_p4qo",
+    "subject": "espagnol",
+    "chapter": "espagnol_vocabulaire",
+    "mode": "qcm",
+    "q": "la huida",
+    "expl": "",
+    "opts": [
+      "Partícula de fuego que salta",
+      "Nombre escrito que identifica a una persona",
+      "Paso de mar entre dos tierras",
+      "Acción de escapar de un peligro"
+    ],
+    "correct": 3
+  },
+  {
+    "id": "imp_1789308059866_qpwh",
+    "subject": "espagnol",
+    "chapter": "espagnol_vocabulaire",
+    "mode": "qcm",
+    "q": "el entorno",
+    "expl": "",
+    "opts": [
+      "Lo que rodea a algo o a alguien",
+      "Falta prolongada de lluvia",
+      "Vehículo que navega por el agua",
+      "Perjuicio o mal causado"
+    ],
+    "correct": 0
+  },
+  {
+    "id": "imp_1789308059866_hjj5",
+    "subject": "espagnol",
+    "chapter": "espagnol_vocabulaire",
+    "mode": "qcm",
+    "q": "el medio ambiente",
+    "expl": "",
+    "opts": [
+      "Acción de escapar de un peligro",
+      "Superficie sobre la que caminamos",
+      "Lugar cerrado donde se retiene a alguien",
+      "Conjunto de condiciones naturales del planeta"
+    ],
+    "correct": 3
+  },
+  {
+    "id": "imp_1789308059866_veqi",
+    "subject": "espagnol",
+    "chapter": "espagnol_vocabulaire",
+    "mode": "qcm",
+    "q": "un daño",
+    "expl": "",
+    "opts": [
+      "Paso de mar entre dos tierras",
+      "Nombre escrito que identifica a una persona",
+      "Partícula de fuego que salta",
+      "Perjuicio o mal causado"
+    ],
+    "correct": 3
+  },
+  {
+    "id": "imp_1789308059866_mbqt",
+    "subject": "espagnol",
+    "chapter": "espagnol_vocabulaire",
+    "mode": "qcm",
+    "q": "un encierro",
+    "expl": "",
+    "opts": [
+      "Lugar cerrado donde se retiene a alguien o algo",
+      "Vehículo que navega por el agua",
+      "Conjunto de condiciones naturales del planeta",
+      "Escapar de un peligro"
+    ],
+    "correct": 0
+  },
+  {
+    "id": "imp_1789308059866_3r1q",
+    "subject": "espagnol",
+    "chapter": "espagnol_vocabulaire",
+    "mode": "qcm",
+    "q": "la firma",
+    "expl": "",
+    "opts": [
+      "Nombre escrito que identifica a una persona",
+      "Perjuicio o mal causado",
+      "Falta prolongada de lluvia",
+      "Lo que rodea a algo"
+    ],
+    "correct": 0
+  },
+  {
+    "id": "imp_1789308059866_zxr8",
+    "subject": "espagnol",
+    "chapter": "espagnol_vocabulaire",
+    "mode": "qcm",
+    "q": "un estrecho",
+    "expl": "",
+    "opts": [
+      "Acción de escapar de un peligro",
+      "Lugar cerrado donde se retiene a alguien",
+      "Paso de mar entre dos tierras",
+      "Superficie sobre la que caminamos"
+    ],
+    "correct": 2
+  },
+  {
+    "id": "imp_1789308059866_1xpy",
+    "subject": "espagnol",
+    "chapter": "espagnol_vocabulaire",
+    "mode": "qcm",
+    "q": "un barco",
+    "expl": "",
+    "opts": [
+      "Partícula de fuego que salta",
+      "Conjunto de condiciones naturales del planeta",
+      "Vehículo que navega por el agua",
+      "Nombre escrito que identifica a una persona"
+    ],
+    "correct": 2
   }
 ]
