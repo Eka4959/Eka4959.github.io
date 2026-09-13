@@ -283,6 +283,20 @@
         "retryPending": false,
         "interval": 12.5,
         "ef": 2.8
+      },
+      "imp_1789308059866_3r1q": {
+        "due": 1789308277550,
+        "stability": 0.7,
+        "difficulty": 1.9,
+        "reps": 1,
+        "lapses": 1,
+        "state": "relearning",
+        "last_review": 1789308277550,
+        "attempts": 1,
+        "errors": 1,
+        "retryPending": true,
+        "interval": 0.7,
+        "ef": 1.9
       }
     },
     "notions": [
