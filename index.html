@@ -235,6 +235,8 @@ a { color: inherit; text-decoration: none; }
 .sc-philo::before { background: #E05C5C; }
 .sc-histoire::before { background: #5B8DB8; }
 .sc-geo::before { background: #4CAF7C; }
+.sc-anglais::before { background: #D88465; }
+.sc-espagnol::before { background: #C85A72; }
 .sc-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
 .sc-icon { font-size: 1.6rem; }
 .sc-name { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 1rem; }
@@ -327,6 +329,14 @@ a { color: inherit; text-decoration: none; }
 .feedback strong { display: block; font-family: 'Syne', sans-serif; font-size: 0.88rem; margin-bottom: 3px; }
 .next-btn { background: var(--text); color: var(--bg); font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.88rem; padding: 10px 22px; border: none; border-radius: 8px; cursor: pointer; display: none; transition: all 0.15s; }
 .next-btn:hover { background: var(--yellow); color: var(--bg); }
+.quiz-ratings { display: none; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+.quiz-ratings.show { display: flex; }
+.quiz-rate { flex: 1; min-width: 96px; border: none; border-radius: 8px; padding: 10px 12px; color: white; font-weight: 700; font-size: 0.78rem; }
+.quiz-rate kbd { margin-left: 4px; opacity: .78; font: inherit; }
+.quiz-rate.again { background: #d65858; }
+.quiz-rate.hard { background: #d9a72c; }
+.quiz-rate.good { background: #42a66c; }
+.quiz-rate.easy { background: #4a7bd1; }
 .quiz-summary-btn { background: var(--blue); color: var(--bg); font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.88rem; padding: 10px 18px; border: none; border-radius: 8px; cursor: pointer; transition: all 0.15s; }
 .quiz-summary-btn:hover { background: #4a7da9; }
 .quiz-summary-panel { display: none; margin-top: 14px; border: 1px solid var(--border); border-radius: 14px; background: var(--bg3); padding: 16px; }
@@ -975,7 +985,7 @@ body.dark-theme {
 </div>
 <div id="quiz-overlay">
   <div class="quiz-topbar"><button class="quiz-close" onclick="closeQuiz()">✕</button><button class="quiz-summary-btn" id="quiz-summary-btn" onclick="toggleSessionSummary()">📋 Récap</button><div class="quiz-prog-wrap"><div class="quiz-prog-bar" id="qpb" style="width:0%"></div></div><span class="quiz-counter" id="qcounter">1 / 10</span><span class="quiz-xp-live" id="qxp">+0 XP</span><span class="quiz-timer" id="qtimer" style="display:none">15s</span></div>
-  <div class="quiz-body"><div class="quiz-inner"><div class="streak-dots" id="streak-dots"></div><div class="q-card"><div class="q-badge"><span id="q-mode-label">QCM</span><span class="q-chapter-tag" id="q-chapter-tag"></span></div><div class="q-text" id="q-text"></div></div><div id="q-options"></div><div class="quiz-summary-panel" id="quiz-summary-panel"></div><div class="feedback" id="q-feedback"><strong id="q-fb-title"></strong><span id="q-fb-text"></span></div><button class="next-btn" id="next-btn" onclick="nextQ()">Question suivante →</button></div></div>
+  <div class="quiz-body"><div class="quiz-inner"><div class="streak-dots" id="streak-dots"></div><div class="q-card"><div class="q-badge"><span id="q-mode-label">QCM</span><span class="q-chapter-tag" id="q-chapter-tag"></span></div><div class="q-text" id="q-text"></div></div><div id="q-options"></div><div class="quiz-summary-panel" id="quiz-summary-panel"></div><div class="feedback" id="q-feedback"><strong id="q-fb-title"></strong><span id="q-fb-text"></span></div><div class="quiz-ratings" id="quiz-ratings"><button class="quiz-rate again" onclick="rateQuestion(1)">Again <kbd>&amp;</kbd></button><button class="quiz-rate hard" onclick="rateQuestion(2)">Hard <kbd>é</kbd></button><button class="quiz-rate good" onclick="rateQuestion(3)">Good <kbd>&quot;</kbd></button><button class="quiz-rate easy" onclick="rateQuestion(4)">Easy <kbd>'</kbd></button></div><button class="next-btn" id="next-btn" onclick="nextQ()">Question suivante →</button></div></div>
 </div>
 <div id="toast"></div>
 
@@ -1016,13 +1026,14 @@ const NOTION_SUBJECTS = [
   { id: 'histoire', label: 'Histoire', icon: '⌂' },
   { id: 'geo', label: 'Géographie', icon: '◎' },
   { id: 'maths', label: 'Maths' },
-  { id: 'lve', label: 'Anglais' }
+  { id: 'lve', label: 'Anglais' },
+  { id: 'espagnol', label: 'Espagnol' }
 ];
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 // DONNEES
 const SEED_QUESTIONS = [{"id":"ses_inegalites_qcm_0","subject":"ses","chapter":"inegalites","mode":"qcm","q":"Quel concept correspond a : indicateur synthetique qui mesure l'intensite des inegalites de revenus ou de patrimoine ?","expl":"Le concept vise est coefficient de Gini : indicateur synthetique qui mesure l'intensite des inegalites de revenus ou de patrimoine.","opts":["reproduction sociale","redistribution","impot progressif","coefficient de Gini"],"correct":3}];
-const SUBJECTS = [{id:'ses',name:'Sciences Eco. & So.',icon:'◐',color:'#F2C94C',hours:'6h/sem',colorClass:'sc-ses'},{id:'lettres',name:'Lettres',icon:'▱',color:'#9B72CF',hours:'4h/sem',colorClass:'sc-lettres'},{id:'philo',name:'Philosophie',icon:'∴',color:'#E05C5C',hours:'4h/sem',colorClass:'sc-philo'},{id:'histoire',name:'Histoire',icon:'⌂',color:'#5B8DB8',hours:'4h/sem',colorClass:'sc-histoire'},{id:'geo',name:'Géographie',icon:'◎',color:'#4CAF7C',hours:'3h/sem',colorClass:'sc-geo'}];
+const SUBJECTS = [{id:'ses',name:'Sciences Eco. & So.',icon:'◐',color:'#F2C94C',hours:'6h/sem',colorClass:'sc-ses'},{id:'lettres',name:'Lettres',icon:'▱',color:'#9B72CF',hours:'4h/sem',colorClass:'sc-lettres'},{id:'philo',name:'Philosophie',icon:'∴',color:'#E05C5C',hours:'4h/sem',colorClass:'sc-philo'},{id:'histoire',name:'Histoire',icon:'⌂',color:'#5B8DB8',hours:'4h/sem',colorClass:'sc-histoire'},{id:'geo',name:'Géographie',icon:'◎',color:'#4CAF7C',hours:'3h/sem',colorClass:'sc-geo'},{id:'anglais',name:'Anglais',icon:'A',color:'#D88465',hours:'3h/sem',colorClass:'sc-anglais'},{id:'espagnol',name:'Espagnol',icon:'Ñ',color:'#C85A72',hours:'3h/sem',colorClass:'sc-espagnol'}];
 const SES_CHAPTERS = [{id:'inegalites',name:'Inégalités & stratification'},{id:'marche',name:'Marché & prix'},{id:'travail',name:'Travail & emploi'},{id:'mondialisation',name:'Mondialisation'},{id:'solidarites',name:'Solidarités & protection'},{id:'lien_social',name:'Lien social & déviance'},{id:'europe',name:'Construction européenne'},{id:'croissance',name:'Croissance & innovation'}];
 const MODE_LABELS = {qcm:'◈ QCM',vf:'↔ Vrai / Faux',quote:'“” Qui a dit ça ?',complete:'✎ Compléter la phrase'};
 const QUESTION_MODES = ['qcm','vf','quote','complete'];
@@ -1546,33 +1557,18 @@ function isPlayableQuestion(question) {
   if (question.mode === 'quote') return Boolean(String(question.author || question.correct || '').trim());
   return Boolean(String(question.correct || question.answer || '').trim());
 }
-function updateSR(qid, grade) { 
-  const sr = getSR(qid); 
-  const now = Date.now(); 
-  sr.attempts++;
-  if (grade === 1) { 
-    sr.errors++; 
-    sr.interval = 0; 
-    sr.due = now + 1 * 60 * 1000; 
-    sr.retryPending = true;
-  } else { 
-    const hadErrors = sr.errors > 0;
-    if (sr.interval === 0) sr.interval = 1;
-    else if (sr.interval === 1) sr.interval = 3;
-    else sr.interval = Math.round(sr.interval * sr.ef);
-    if (grade === 2) sr.interval = Math.max(1, Math.round(sr.interval * 0.6));
-    if (grade === 4) sr.interval = Math.round(sr.interval * 1.3);
-    if (hadErrors) {
-      sr.errors = Math.max(0, sr.errors - 1);
-      sr.ef = Math.max(1.3, sr.ef - 0.12);
-      sr.interval = Math.max(1, Math.round(sr.interval * 0.85));
-    }
-    sr.ef = Math.max(1.3, sr.ef + 0.1 - (4 - grade) * (0.08 + (4 - grade) * 0.02));
-    sr.due = now + sr.interval * 24 * 60 * 60 * 1000;
-    sr.retryPending = false;
-  }
-  state.sr_data[qid] = sr; 
+function updateSR(qid, grade) {
+  const previous = getSR(qid);
+  const card = { ...previous, reps: previous.reps || previous.attempts || 0, stability: previous.stability || Math.max(1, previous.interval || 1), difficulty: previous.difficulty || previous.ef || 5 };
+  const next = repeat(card, grade);
+  next.attempts = (previous.attempts || 0) + 1;
+  next.errors = grade === 1 ? (previous.errors || 0) + 1 : Math.max(0, (previous.errors || 0) - 1);
+  next.retryPending = grade === 1;
+  next.interval = next.stability;
+  next.ef = next.difficulty;
+  state.sr_data[qid] = next;
   if (state.currentUser) syncUserStats();
+  if (quiz.questions?.length && !quiz.exam && quiz.answered) showQuizRatings();
 }
 function isDue(qid) { const sr = state.sr_data[qid]; if (!sr) return true; if (sr.due === 0) return true; return Date.now() >= sr.due - 5 * 60 * 1000; }
 function getDueQuestions(subject, chapters, modes) { return state.questions.filter(q => { if (!isPlayableQuestion(q)) return false; if (subject && q.subject !== subject) return false; if (state.currentSubject && state.currentSubject === subject && playConfig.noChapters) return false; if (chapters?.length && !chapters.includes(q.chapter)) return false; if (modes?.length && !modes.includes(q.mode)) return false; return isDue(q.id); }); }
@@ -1596,6 +1592,7 @@ function startQuizFromQuestions(questions) {
   quiz.index = 0;
   quiz.xpGained = 0;
   quiz.answered = false;
+  quiz.rated = false;
   quiz.currentGrade = null;
   quiz.timerId = null;
   quiz.remainingTime = playConfig.timed ? 15 : null;
@@ -1653,7 +1650,7 @@ function resetAllData() {
     questions: SEED_QUESTIONS,
     sr_data: {},
     cours: [],
-    chapters: {ses: SES_CHAPTERS, lettres: [], philo: [], histoire: [], geo: []},
+    chapters: {ses: SES_CHAPTERS, lettres: [], philo: [], histoire: [], geo: [], anglais: [], espagnol: []},
     theme: 'auto',
     sidebarCollapsed: false,
     currentView: 'dashboard',
@@ -2348,9 +2345,11 @@ function loadQuestion(q) {
     };
     quiz.questions[quiz.index] = q;
   }
+  quiz.reviewBase = JSON.parse(JSON.stringify(getSR(q.id)));
   quiz.answered = false;
   document.getElementById('next-btn').style.display = 'none';
   document.getElementById('q-feedback').style.display = 'none';
+  document.getElementById('quiz-ratings').classList.remove('show');
   const modeLabel = MODE_LABELS[q.mode] || '❓ Question';
   document.getElementById('q-mode-label').textContent = modeLabel.split(' ').slice(1).join(' ') || modeLabel;
   document.getElementById('q-chapter-tag').textContent = chapterName(q.subject, q.chapter);
@@ -2395,6 +2394,29 @@ function loadQuestion(q) {
     startQuizTimer();
   }
 }
+function showQuizRatings() {
+  const ratings = document.getElementById('quiz-ratings');
+  if (!ratings) return;
+  ratings.classList.add('show');
+  document.getElementById('next-btn').style.display = 'none';
+}
+function rateQuestion(rating) {
+  if (!quiz.answered || quiz.exam || !FSRS_RATING_MAP[rating]) return;
+  const q = quiz.questions[quiz.index];
+  if (!q) return;
+  const previousGrade = quiz.currentGrade || 1;
+  quiz.xpGained += getXpForGrade(Number(rating)) - getXpForGrade(previousGrade);
+  state.sr_data[q.id] = quiz.reviewBase ? JSON.parse(JSON.stringify(quiz.reviewBase)) : getSR(q.id);
+  updateSR(q.id, Number(rating));
+  quiz.rated = true;
+  const historyItem = quiz.history?.[quiz.history.length - 1];
+  if (historyItem && historyItem.id === q.id) {
+    historyItem.grade = Number(rating);
+    historyItem.xp = getXpForGrade(Number(rating));
+  }
+  document.getElementById('quiz-ratings').classList.remove('show');
+  document.getElementById('next-btn').style.display = 'block';
+}
 function recordExamAnswer(q, isCorrect, answer) {
   quiz.examResults[quiz.index] = { id: q.id, question: q.q, correct: isCorrect, answer: answer };
   const grade = isCorrect ? 4 : 1;
@@ -2437,12 +2459,18 @@ document.addEventListener('keydown', function(event) {
     closeQuiz();
     return;
   }
-  if (event.key === 'Enter' && quiz.answered) {
+  if (event.key === 'Enter' && quiz.answered && (quiz.exam || quiz.rated)) {
     event.preventDefault();
     nextQ();
     return;
   }
   const question = quiz.questions[quiz.index];
+  const ratingKeys = { '&': 1, 'é': 2, '"': 3, "'": 4, '1': 1, '2': 2, '3': 3, '4': 4 };
+  if (quiz.answered && !quiz.exam && ratingKeys[event.key]) {
+    event.preventDefault();
+    rateQuestion(ratingKeys[event.key]);
+    return;
+  }
   if (!quiz.answered && question?.mode === 'qcm' && /^[a-d]$/i.test(event.key)) {
     event.preventDefault();
     selectOpt(event.key.toUpperCase().charCodeAt(0) - 65);
@@ -2618,7 +2646,7 @@ function renderAddQuestion(c) {
    <div class="form-divider" style="margin:32px 0"></div>
     <h2 style="font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;margin-bottom:8px">⚡ Import rapide (Excel / Sheets)</h2>
     <p class="form-hint" style="margin-bottom:16px">Colle directement les lignes de ton tableur ici. Les colonnes attendues (séparées par des tabulations) :<br>
-    <strong>Matière (ses, lettres, philo, histoire, geo) | Chapitre | Mode (qcm, vf, quote, complete) | Question | Bonne Rép | Mauvaise 1 | Mauvaise 2 | Mauvaise 3 | Explication</strong></p>
+    <strong>Matière (ses, lettres, philo, histoire, geo, anglais, espagnol) | Chapitre | Mode (qcm, vf, quote, complete) | Question | Bonne Rép | Mauvaise 1 | Mauvaise 2 | Mauvaise 3 | Explication</strong></p>
     <div class="add-q-form">
       <textarea class="form-textarea" id="import-tsv" style="min-height:120px;font-family:'JetBrains Mono',monospace;white-space:pre;font-size:0.8rem;" placeholder="ses&#9;Inégalités&#9;qcm&#9;Qui a écrit Le Capital ?&#9;Marx&#9;Bourdieu&#9;Keynes&#9;Smith&#9;Livre majeur..."></textarea>
       <button class="form-submit" onclick="importTSV()" style="background:var(--blue)">📥 Importer les questions</button>
