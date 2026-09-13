@@ -285,18 +285,18 @@
         "ef": 2.8
       },
       "imp_1789308059866_3r1q": {
-        "due": 1789308277550,
-        "stability": 0.7,
-        "difficulty": 1.9,
-        "reps": 1,
+        "due": 1789975117736,
+        "stability": 2.45,
+        "difficulty": 2.2,
+        "reps": 2,
         "lapses": 1,
-        "state": "relearning",
-        "last_review": 1789308277550,
-        "attempts": 1,
-        "errors": 1,
-        "retryPending": true,
-        "interval": 0.7,
-        "ef": 1.9
+        "state": "review",
+        "last_review": 1789308325736,
+        "attempts": 2,
+        "errors": 0,
+        "retryPending": false,
+        "interval": 2.45,
+        "ef": 2.2
       },
       "imp_1789308059866_1xpy": {
         "due": 1789567485302,
