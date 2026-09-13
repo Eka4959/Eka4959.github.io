@@ -175,6 +175,22 @@
     },
     "notions": [
       {
+        "id": "8cb94fa6-695b-482b-9e23-a594e10145d2",
+        "matiere": "philo",
+        "notion": "II) Bonheur",
+        "details": "",
+        "dateCreation": "2026-09-13T07:31:39.886Z",
+        "fsrs": {
+          "due": 1789371099886,
+          "stability": 5.8,
+          "difficulty": 5,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1789284699886
+        }
+      },
+      {
         "id": "a6bdfd72-cc05-4f86-9c1c-eed03f4436fe",
         "matiere": "philo",
         "notion": "Bonheur Def + I)",
