@@ -343,6 +343,22 @@
     },
     "notions": [
       {
+        "id": "fac02709-bf00-4b5b-8520-eb18e6e36888",
+        "matiere": "ses",
+        "notion": "Théorique",
+        "details": "",
+        "dateCreation": "2026-09-13T14:41:08.041Z",
+        "fsrs": {
+          "due": 1789396868041,
+          "stability": 5.8,
+          "difficulty": 5,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1789310468041
+        }
+      },
+      {
         "id": "bbd1540d-ee35-4bbd-8f00-7064b643aa20",
         "matiere": "ses",
         "notion": "Empirique",
