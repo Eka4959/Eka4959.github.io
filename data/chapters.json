@@ -81,5 +81,11 @@
     }
   ],
   "histoire": [],
-  "geo": []
+  "geo": [],
+  "espagnol": [
+    {
+      "id": "espagnol_vocabulaire",
+      "name": "Vocabulaire"
+    }
+  ]
 }
