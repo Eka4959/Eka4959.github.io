@@ -329,10 +329,12 @@ a { color: inherit; text-decoration: none; }
 .feedback strong { display: block; font-family: 'Syne', sans-serif; font-size: 0.88rem; margin-bottom: 3px; }
 .next-btn { background: var(--text); color: var(--bg); font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.88rem; padding: 10px 22px; border: none; border-radius: 8px; cursor: pointer; display: none; transition: all 0.15s; }
 .next-btn:hover { background: var(--yellow); color: var(--bg); }
-.quiz-ratings { display: none; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+.quiz-ratings { display: none; gap: 8px; flex-wrap: wrap; margin: 12px 0 14px; }
 .quiz-ratings.show { display: flex; }
+.quiz-ratings.show ~ .next-btn { display: none !important; }
 .quiz-rate { flex: 1; min-width: 96px; border: none; border-radius: 8px; padding: 10px 12px; color: white; font-weight: 700; font-size: 0.78rem; }
 .quiz-rate kbd { margin-left: 4px; opacity: .78; font: inherit; }
+.quiz-rate:focus-visible { outline: 3px solid var(--yellow); outline-offset: 2px; }
 .quiz-rate.again { background: #d65858; }
 .quiz-rate.hard { background: #d9a72c; }
 .quiz-rate.good { background: #42a66c; }
@@ -2466,9 +2468,11 @@ document.addEventListener('keydown', function(event) {
   }
   const question = quiz.questions[quiz.index];
   const ratingKeys = { '&': 1, 'é': 2, '"': 3, "'": 4, '1': 1, '2': 2, '3': 3, '4': 4 };
-  if (quiz.answered && !quiz.exam && ratingKeys[event.key]) {
+  const ratingByCode = { Digit1: 1, Digit2: 2, Digit3: 3, Digit4: 4 };
+  const rating = ratingByCode[event.code] || ratingKeys[event.key];
+  if (quiz.answered && !quiz.exam && rating) {
     event.preventDefault();
-    rateQuestion(ratingKeys[event.key]);
+    rateQuestion(rating);
     return;
   }
   if (!quiz.answered && question?.mode === 'qcm' && /^[a-d]$/i.test(event.key)) {
