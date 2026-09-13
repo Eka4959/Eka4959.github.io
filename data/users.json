@@ -255,6 +255,20 @@
         "retryPending": false,
         "interval": 12.5,
         "ef": 2.8
+      },
+      "imp_1789308059866_mbqt": {
+        "due": 1789567430315,
+        "stability": 12.5,
+        "difficulty": 2.8,
+        "reps": 1,
+        "lapses": 0,
+        "state": "review",
+        "last_review": 1789308230315,
+        "attempts": 1,
+        "errors": 0,
+        "retryPending": false,
+        "interval": 12.5,
+        "ef": 2.8
       }
     },
     "notions": [
