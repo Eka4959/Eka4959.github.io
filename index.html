@@ -347,6 +347,15 @@ a { color: inherit; text-decoration: none; }
 .quiz-summary-card { flex: 1 1 140px; min-width: 140px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg2); padding: 12px 14px; }
 .quiz-summary-card strong { display: block; font-size: 1.2rem; margin-bottom: 4px; }
 .quiz-summary-card span { color: var(--text3); font-size: 0.85rem; }
+.flashcard { display: flex; flex-direction: column; gap: 18px; }
+.flashcard-face { min-height: 170px; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 12px; padding: 24px; text-align: center; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; }
+.flashcard-face.back { background: #e5eee7; border-color: #cbdccd; color: var(--green); }
+.flashcard-label { color: var(--text3); font-size: 0.66rem; letter-spacing: 0.13em; text-transform: uppercase; }
+.flashcard-answer { color: var(--text); font-family: Newsreader, Georgia, serif; font-size: 1.65rem; line-height: 1.2; }
+.flashcard-face.back .flashcard-answer { color: var(--text); }
+.flashcard-explanation { color: var(--text2); font-size: 0.85rem; line-height: 1.55; max-width: 560px; }
+.flashcard-reveal { align-self: center; background: var(--text); color: var(--bg); border: 0; border-radius: 7px; padding: 10px 20px; font-weight: 700; }
+.flashcard-reveal:hover { background: var(--yellow); color: white; }
 
 /* BILAN */
 .bilan-tabs { display: flex; gap: 4px; margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 0; }
@@ -1037,8 +1046,8 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 const SEED_QUESTIONS = [{"id":"ses_inegalites_qcm_0","subject":"ses","chapter":"inegalites","mode":"qcm","q":"Quel concept correspond a : indicateur synthetique qui mesure l'intensite des inegalites de revenus ou de patrimoine ?","expl":"Le concept vise est coefficient de Gini : indicateur synthetique qui mesure l'intensite des inegalites de revenus ou de patrimoine.","opts":["reproduction sociale","redistribution","impot progressif","coefficient de Gini"],"correct":3}];
 const SUBJECTS = [{id:'ses',name:'Sciences Eco. & So.',icon:'◐',color:'#F2C94C',hours:'6h/sem',colorClass:'sc-ses'},{id:'lettres',name:'Lettres',icon:'▱',color:'#9B72CF',hours:'4h/sem',colorClass:'sc-lettres'},{id:'philo',name:'Philosophie',icon:'∴',color:'#E05C5C',hours:'4h/sem',colorClass:'sc-philo'},{id:'histoire',name:'Histoire',icon:'⌂',color:'#5B8DB8',hours:'4h/sem',colorClass:'sc-histoire'},{id:'geo',name:'Géographie',icon:'◎',color:'#4CAF7C',hours:'3h/sem',colorClass:'sc-geo'},{id:'anglais',name:'Anglais',icon:'A',color:'#D88465',hours:'3h/sem',colorClass:'sc-anglais'},{id:'espagnol',name:'Espagnol',icon:'Ñ',color:'#C85A72',hours:'3h/sem',colorClass:'sc-espagnol'}];
 const SES_CHAPTERS = [{id:'inegalites',name:'Inégalités & stratification'},{id:'marche',name:'Marché & prix'},{id:'travail',name:'Travail & emploi'},{id:'mondialisation',name:'Mondialisation'},{id:'solidarites',name:'Solidarités & protection'},{id:'lien_social',name:'Lien social & déviance'},{id:'europe',name:'Construction européenne'},{id:'croissance',name:'Croissance & innovation'}];
-const MODE_LABELS = {qcm:'◈ QCM',vf:'↔ Vrai / Faux',quote:'“” Qui a dit ça ?',complete:'✎ Compléter la phrase'};
-const QUESTION_MODES = ['qcm','vf','quote','complete'];
+const MODE_LABELS = {qcm:'◈ QCM',vf:'↔ Vrai / Faux',quote:'“” Qui a dit ça ?',complete:'✎ Compléter la phrase',flashcard:'▤ Flashcards'};
+const QUESTION_MODES = ['qcm','vf','quote','complete','flashcard'];
 
 // STORAGE
 function ls(key, def) { try { const v = localStorage.getItem(key); return v ? JSON.parse(v) : def; } catch { return def; } }
@@ -1573,8 +1582,8 @@ function updateSR(qid, grade) {
   if (quiz.questions?.length && !quiz.exam && quiz.answered) showQuizRatings();
 }
 function isDue(qid) { const sr = state.sr_data[qid]; if (!sr) return true; if (sr.due === 0) return true; return Date.now() >= sr.due - 5 * 60 * 1000; }
-function getDueQuestions(subject, chapters, modes) { return state.questions.filter(q => { if (!isPlayableQuestion(q)) return false; if (subject && q.subject !== subject) return false; if (state.currentSubject && state.currentSubject === subject && playConfig.noChapters) return false; if (chapters?.length && !chapters.includes(q.chapter)) return false; if (modes?.length && !modes.includes(q.mode)) return false; return isDue(q.id); }); }
-function nextDueTime(subject, chapters, modes) { const upcoming = state.questions.filter(q => { if (!isPlayableQuestion(q)) return false; if (subject && q.subject !== subject) return false; if (state.currentSubject && state.currentSubject === subject && playConfig.noChapters) return false; if (chapters?.length && !chapters.includes(q.chapter)) return false; if (modes?.length && !modes.includes(q.mode)) return false; const sr = state.sr_data[q.id]; return sr && sr.due > Date.now(); }); if (!upcoming.length) return null; upcoming.sort((a, b) => state.sr_data[a.id].due - state.sr_data[b.id].due); const times = upcoming.map(q => state.sr_data[q.id].due).sort((a, b) => a - b); return times[Math.min(4, times.length - 1)]; }
+function getDueQuestions(subject, chapters, modes) { return state.questions.filter(q => { if (!isPlayableQuestion(q)) return false; if (subject && q.subject !== subject) return false; if (state.currentSubject && state.currentSubject === subject && playConfig.noChapters) return false; if (chapters?.length && !chapters.includes(q.chapter)) return false; if (modes?.length && !modes.includes('flashcard') && !modes.includes(q.mode)) return false; return isDue(q.id); }); }
+function nextDueTime(subject, chapters, modes) { const upcoming = state.questions.filter(q => { if (!isPlayableQuestion(q)) return false; if (subject && q.subject !== subject) return false; if (state.currentSubject && state.currentSubject === subject && playConfig.noChapters) return false; if (chapters?.length && !chapters.includes(q.chapter)) return false; if (modes?.length && !modes.includes('flashcard') && !modes.includes(q.mode)) return false; const sr = state.sr_data[q.id]; return sr && sr.due > Date.now(); }); if (!upcoming.length) return null; upcoming.sort((a, b) => state.sr_data[a.id].due - state.sr_data[b.id].due); const times = upcoming.map(q => state.sr_data[q.id].due).sort((a, b) => a - b); return times[Math.min(4, times.length - 1)]; }
 function fmtDuration(ms) { const m = Math.round(ms / 60000); if (m < 60) return m + ' min'; const h = Math.floor(m / 60), rm = m % 60; return h + 'h' + (rm ? rm.toString().padStart(2, '0') : ''); }
 function shuffle(arr) { const a = [...arr]; for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
 function chapterName(subject, chapterId) { const chs = state.chapters[subject] || []; return chs.find(c => c.id === chapterId)?.name || 'Inconnu'; }
@@ -1602,6 +1611,7 @@ function startQuizFromQuestions(questions) {
   quiz.examResults = [];
   quiz.examFinished = false;
   quiz.completed = false;
+  quiz.flashcards = playConfig.modes.includes('flashcard');
   quiz.history = [];
   hideSessionSummary();
   showQuiz();
@@ -2358,7 +2368,12 @@ function loadQuestion(q) {
   document.getElementById('q-text').innerHTML = escapeHtml(q.q);
   const optsEl = document.getElementById('q-options');
   
-  if (q.mode === 'qcm') {
+  if (quiz.flashcards) {
+    const answer = q.mode === 'qcm' ? q.opts[q.correct] : q.mode === 'vf' ? (q.correct ? 'Vrai' : 'Faux') : (q.author || q.correct || q.answer || 'Réponse non renseignée');
+    document.getElementById('q-mode-label').textContent = 'Flashcards';
+    document.getElementById('q-text').innerHTML = `<div class="flashcard"><div class="flashcard-face"><span class="flashcard-label">Question</span><div class="q-text">${escapeHtml(q.q)}</div></div><button class="flashcard-reveal" type="button" onclick="revealFlashcard()">Afficher la réponse</button></div>`;
+    optsEl.innerHTML = `<div id="flashcard-back" class="flashcard-face back" style="display:none"><span class="flashcard-label">Réponse</span><div class="flashcard-answer">${escapeHtml(answer)}</div>${q.expl ? `<div class="flashcard-explanation">${escapeHtml(q.expl)}</div>` : ''}</div>`;
+  } else if (q.mode === 'qcm') {
     const options = Array.isArray(q.opts) ? q.opts : [];
     optsEl.innerHTML = options.length ? `<div class="opts">${options.map((opt, i) => `<button class="opt" onclick="selectOpt(${i})" id="opt-${i}"><span class="opt-letter">${String.fromCharCode(65 + i)}</span><span>${escapeHtml(opt)}</span></button>`).join('')}</div>` : '<div style="color:var(--text2);font-size:0.85rem">Cette question ne contient pas de réponses valides.</div>';
   } else if (q.mode === 'vf') {
@@ -2395,6 +2410,20 @@ function loadQuestion(q) {
   if (playConfig.timed) {
     startQuizTimer();
   }
+}
+function revealFlashcard() {
+  if (quiz.answered) return;
+  clearQuizTimer();
+  const q = quiz.questions[quiz.index];
+  quiz.answered = true;
+  quiz.currentGrade = 1;
+  recordQuizHistory(q, true, '', 1, 0);
+  const back = document.getElementById('flashcard-back');
+  if (back) back.style.display = 'flex';
+  const reveal = document.querySelector('.flashcard-reveal');
+  if (reveal) reveal.style.display = 'none';
+  document.getElementById('q-feedback').style.display = 'none';
+  showQuizRatings();
 }
 function showQuizRatings() {
   const ratings = document.getElementById('quiz-ratings');
