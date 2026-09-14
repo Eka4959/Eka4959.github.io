@@ -1029,7 +1029,7 @@ let notionDatabaseSearch = '';
 let notionDatabaseSubject = 'all';
 let notionDatabaseSelected = new Set();
 
-const FSRS_RATING_MAP = { again: 1, hard: 2, good: 3, easy: 4 };
+const FSRS_RATING_MAP = { 1: 'again', 2: 'hard', 3: 'good', 4: 'easy' };
 const NOTION_SUBJECTS = [
   { id: 'ses', label: 'SES' },
   { id: 'lettres', label: 'Lettres' },
@@ -2432,18 +2432,19 @@ function showQuizRatings() {
   document.getElementById('next-btn').style.display = 'none';
 }
 function rateQuestion(rating) {
-  if (!quiz.answered || quiz.exam || !FSRS_RATING_MAP[rating]) return;
+  const normalizedRating = Number(rating);
+  if (!quiz.answered || quiz.exam || !FSRS_RATING_MAP[normalizedRating]) return;
   const q = quiz.questions[quiz.index];
   if (!q) return;
   const previousGrade = quiz.currentGrade || 1;
-  quiz.xpGained += getXpForGrade(Number(rating)) - getXpForGrade(previousGrade);
+  quiz.xpGained += getXpForGrade(normalizedRating) - getXpForGrade(previousGrade);
   state.sr_data[q.id] = quiz.reviewBase ? JSON.parse(JSON.stringify(quiz.reviewBase)) : getSR(q.id);
-  updateSR(q.id, Number(rating));
+  updateSR(q.id, normalizedRating);
   quiz.rated = true;
   const historyItem = quiz.history?.[quiz.history.length - 1];
   if (historyItem && historyItem.id === q.id) {
-    historyItem.grade = Number(rating);
-    historyItem.xp = getXpForGrade(Number(rating));
+    historyItem.grade = normalizedRating;
+    historyItem.xp = getXpForGrade(normalizedRating);
   }
   document.getElementById('quiz-ratings').classList.remove('show');
   document.getElementById('next-btn').style.display = 'block';
