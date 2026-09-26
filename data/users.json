@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "a43dfd77-2a2a-40e8-8fb7-ecaae35a28af",
+        "matiere": "ses",
+        "notion": "Tyrannie de la majorité",
+        "details": "",
+        "dateCreation": "2026-09-26T13:27:55.288Z",
+        "fsrs": {
+          "due": 1790515675288,
+          "stability": 5.8,
+          "difficulty": 5,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1790429275288
+        }
+      },
+      {
         "id": "389ce990-6663-49ec-99b3-738e26ff0ca3",
         "matiere": "ses",
         "notion": "Paradoxe de Tocqueville",
