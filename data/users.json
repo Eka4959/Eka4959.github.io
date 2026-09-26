@@ -643,22 +643,6 @@
         }
       },
       {
-        "id": "9d7776a2-be07-4ecb-aaeb-1549e39d98ee",
-        "matiere": "maths",
-        "notion": "8.2",
-        "details": "",
-        "dateCreation": "2026-08-27T13:55:41.078Z",
-        "fsrs": {
-          "due": 1789268449064.8,
-          "stability": 5.354,
-          "difficulty": 4.4,
-          "reps": 4,
-          "lapses": 1,
-          "state": "review",
-          "last_review": 1788685569436
-        }
-      },
-      {
         "id": "d3560dbd-8506-46f8-885b-ec41cc5b9bcb",
         "matiere": "ses",
         "notion": "Niveau 1 Acteurs économiques sur un marché",
