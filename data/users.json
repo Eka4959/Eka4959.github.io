@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "b36c7cd3-aa14-4592-adf5-3c80c18b6a13",
+        "matiere": "ses",
+        "notion": "Moteur de l'histoire et fin du capitalisme",
+        "details": "",
+        "dateCreation": "2026-09-26T13:40:17.899Z",
+        "fsrs": {
+          "due": 1790516417899,
+          "stability": 5.8,
+          "difficulty": 5,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1790430017899
+        }
+      },
+      {
         "id": "2a11c600-62c5-4f7e-a241-bdd48e274c8c",
         "matiere": "ses",
         "notion": "Fétichisme de la marchandise",
