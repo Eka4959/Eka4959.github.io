@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "ff3b3d27-d417-4515-a87b-409fe99be512",
+        "matiere": "ses",
+        "notion": "Révolution industrielle",
+        "details": "",
+        "dateCreation": "2026-09-26T13:39:44.116Z",
+        "fsrs": {
+          "due": 1790429984116,
+          "stability": 0.7,
+          "difficulty": 4.4,
+          "reps": 1,
+          "lapses": 1,
+          "state": "relearning",
+          "last_review": 1790429984116
+        }
+      },
+      {
         "id": "2a395f0b-659f-4b88-a0bb-ec22e1c87364",
         "matiere": "ses",
         "notion": "Révolution démocratique",
