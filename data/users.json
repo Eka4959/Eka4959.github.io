@@ -819,22 +819,6 @@
         }
       },
       {
-        "id": "bca2b84d-55ce-4642-abae-11598d7eadaa",
-        "matiere": "maths",
-        "notion": "4.4 fiche de calculs",
-        "details": "",
-        "dateCreation": "2026-08-21T13:51:12.654Z",
-        "fsrs": {
-          "due": 1789018390447,
-          "stability": 5.355,
-          "difficulty": 4.4,
-          "reps": 4,
-          "lapses": 1,
-          "state": "review",
-          "last_review": 1787560973647
-        }
-      },
-      {
         "id": "9942a3db-ecd3-4b0c-b181-7c15cd3cae9d",
         "matiere": "ses",
         "notion": "Niveau 1 facteurs de production et investissement",
