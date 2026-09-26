@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "c755d8f3-a9c8-417c-b477-a9135993007b",
+        "matiere": "ses",
+        "notion": "Infrastructure et superstructure Marx",
+        "details": "",
+        "dateCreation": "2026-09-26T13:21:32.528Z",
+        "fsrs": {
+          "due": 1790429492528,
+          "stability": 2.4,
+          "difficulty": 4.7,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1790428892528
+        }
+      },
+      {
         "id": "89c02458-4772-4173-8b84-51be51eddced",
         "matiere": "ses",
         "notion": "Matérialisme historique",
