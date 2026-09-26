@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "f5e66a96-5bde-4b07-b96e-cea53358c05b",
+        "matiere": "ses",
+        "notion": "Religion Marx",
+        "details": "",
+        "dateCreation": "2026-09-26T13:24:01.424Z",
+        "fsrs": {
+          "due": 1790515441424,
+          "stability": 5.8,
+          "difficulty": 5,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1790429041424
+        }
+      },
+      {
         "id": "c755d8f3-a9c8-417c-b477-a9135993007b",
         "matiere": "ses",
         "notion": "Infrastructure et superstructure Marx",
