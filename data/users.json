@@ -675,22 +675,6 @@
         }
       },
       {
-        "id": "93a1571c-ddea-4c54-8bb0-ca15f2214054",
-        "matiere": "maths",
-        "notion": "7.6",
-        "details": "",
-        "dateCreation": "2026-08-24T17:19:58.596Z",
-        "fsrs": {
-          "due": 1789673891893,
-          "stability": 9.053,
-          "difficulty": 4.1,
-          "reps": 5,
-          "lapses": 1,
-          "state": "review",
-          "last_review": 1788688291669
-        }
-      },
-      {
         "id": "546302b5-5ed9-44e3-b666-662dce1b6eba",
         "matiere": "ses",
         "notion": "Niveau 1 Système financier",
