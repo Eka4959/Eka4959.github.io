@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "b9fe0df2-11b4-4570-80a6-b4e9c4bbaa14",
+        "matiere": "ses",
+        "notion": "Positivisme",
+        "details": "",
+        "dateCreation": "2026-09-26T13:53:02.839Z",
+        "fsrs": {
+          "due": 1790430782839,
+          "stability": 0.7,
+          "difficulty": 4.4,
+          "reps": 1,
+          "lapses": 1,
+          "state": "relearning",
+          "last_review": 1790430782839
+        }
+      },
+      {
         "id": "7875812c-3f83-4f8e-84b2-e678a6656c61",
         "matiere": "ses",
         "notion": "Échelle encyclopédique des sciences Comte",
