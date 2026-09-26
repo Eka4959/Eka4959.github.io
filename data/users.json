@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "c6313c95-7603-4bfa-9f34-d7653b1317a7",
+        "matiere": "ses",
+        "notion": "Loi des trois états Comte",
+        "details": "",
+        "dateCreation": "2026-09-26T13:52:35.706Z",
+        "fsrs": {
+          "due": 1790430755706,
+          "stability": 0.7,
+          "difficulty": 4.4,
+          "reps": 1,
+          "lapses": 1,
+          "state": "relearning",
+          "last_review": 1790430755706
+        }
+      },
+      {
         "id": "b36c7cd3-aa14-4592-adf5-3c80c18b6a13",
         "matiere": "ses",
         "notion": "Moteur de l'histoire et fin du capitalisme",
