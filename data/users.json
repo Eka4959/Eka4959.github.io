@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "58bec7a3-5557-4696-837e-1d4885d9cf27",
+        "matiere": "ses",
+        "notion": "Définition science économique Malinvaud",
+        "details": "",
+        "dateCreation": "2026-09-29T16:06:32.792Z",
+        "fsrs": {
+          "due": 1790697992792,
+          "stability": 0.7,
+          "difficulty": 4.4,
+          "reps": 1,
+          "lapses": 1,
+          "state": "relearning",
+          "last_review": 1790697992792
+        }
+      },
+      {
         "id": "7d25f2ce-4bb4-492b-a03c-d2fe6aae1a00",
         "matiere": "ses",
         "notion": "Organicisme",
