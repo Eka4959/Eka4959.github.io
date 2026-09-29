@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "924069e3-81df-43e3-a1f3-6df68ddda09a",
+        "matiere": "ses",
+        "notion": "Définition économie Marx",
+        "details": "",
+        "dateCreation": "2026-09-29T16:15:13.459Z",
+        "fsrs": {
+          "due": 1790698513459,
+          "stability": 0.7,
+          "difficulty": 4.4,
+          "reps": 1,
+          "lapses": 1,
+          "state": "relearning",
+          "last_review": 1790698513459
+        }
+      },
+      {
         "id": "8e7cf9b9-1210-4ffb-9fe4-74cd606f6eb2",
         "matiere": "ses",
         "notion": "Définition économie Smith",
