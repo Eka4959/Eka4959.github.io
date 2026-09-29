@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "8e7cf9b9-1210-4ffb-9fe4-74cd606f6eb2",
+        "matiere": "ses",
+        "notion": "Définition économie Smith",
+        "details": "",
+        "dateCreation": "2026-09-29T16:14:59.925Z",
+        "fsrs": {
+          "due": 1790698499925,
+          "stability": 0.7,
+          "difficulty": 4.4,
+          "reps": 1,
+          "lapses": 1,
+          "state": "relearning",
+          "last_review": 1790698499925
+        }
+      },
+      {
         "id": "58bec7a3-5557-4696-837e-1d4885d9cf27",
         "matiere": "ses",
         "notion": "Définition science économique Malinvaud",
