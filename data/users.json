@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "38ee8f40-a18d-4374-a64a-b3c7126b2ecb",
+        "matiere": "ses",
+        "notion": "Compréhension",
+        "details": "",
+        "dateCreation": "2026-10-02T17:49:22.941Z",
+        "fsrs": {
+          "due": 1790963362941,
+          "stability": 0.7,
+          "difficulty": 4.4,
+          "reps": 1,
+          "lapses": 1,
+          "state": "relearning",
+          "last_review": 1790963362941
+        }
+      },
+      {
         "id": "3a706081-c825-4282-be3a-76adaea5466b",
         "matiere": "ses",
         "notion": "Prénotions",
