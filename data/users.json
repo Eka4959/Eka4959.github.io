@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "f0ff5eed-90af-43fc-a419-fa7da9b7d37a",
+        "matiere": "ses",
+        "notion": "Fait social",
+        "details": "",
+        "dateCreation": "2026-10-02T17:15:04.740Z",
+        "fsrs": {
+          "due": 1790961904740,
+          "stability": 2.4,
+          "difficulty": 4.7,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1790961304740
+        }
+      },
+      {
         "id": "924069e3-81df-43e3-a1f3-6df68ddda09a",
         "matiere": "ses",
         "notion": "Définition économie Marx",
