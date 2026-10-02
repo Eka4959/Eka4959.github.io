@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "1125b005-521c-4fc0-9522-06d5c6d34fbc",
+        "matiere": "ses",
+        "notion": "Déduction",
+        "details": "",
+        "dateCreation": "2026-10-02T17:48:37.608Z",
+        "fsrs": {
+          "due": 1790963317608,
+          "stability": 0.7,
+          "difficulty": 4.4,
+          "reps": 1,
+          "lapses": 1,
+          "state": "relearning",
+          "last_review": 1790963317608
+        }
+      },
+      {
         "id": "ea357d79-c0bd-439f-965a-74b08312ccf5",
         "matiere": "ses",
         "notion": "Induction",
