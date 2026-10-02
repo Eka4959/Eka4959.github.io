@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "49d34fc9-e63b-4172-99d9-fca036cb0231",
+        "matiere": "ses",
+        "notion": "Épistémologie",
+        "details": "",
+        "dateCreation": "2026-10-02T17:49:42.275Z",
+        "fsrs": {
+          "due": 1790963382275,
+          "stability": 0.7,
+          "difficulty": 4.4,
+          "reps": 1,
+          "lapses": 1,
+          "state": "relearning",
+          "last_review": 1790963382275
+        }
+      },
+      {
         "id": "38ee8f40-a18d-4374-a64a-b3c7126b2ecb",
         "matiere": "ses",
         "notion": "Compréhension",
