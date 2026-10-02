@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "3a706081-c825-4282-be3a-76adaea5466b",
+        "matiere": "ses",
+        "notion": "Prénotions",
+        "details": "",
+        "dateCreation": "2026-10-02T17:49:11.860Z",
+        "fsrs": {
+          "due": 1791049751860,
+          "stability": 5.8,
+          "difficulty": 5,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1790963351860
+        }
+      },
+      {
         "id": "1125b005-521c-4fc0-9522-06d5c6d34fbc",
         "matiere": "ses",
         "notion": "Déduction",
