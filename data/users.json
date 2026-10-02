@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "f2d77230-fd0c-40ec-a327-4c20c57dbf6a",
+        "matiere": "ses",
+        "notion": "Holisme",
+        "details": "",
+        "dateCreation": "2026-10-02T17:15:48.040Z",
+        "fsrs": {
+          "due": 1790961948040,
+          "stability": 2.4,
+          "difficulty": 4.7,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1790961348040
+        }
+      },
+      {
         "id": "45ac42b1-dda9-44fc-ad46-a06fff59f737",
         "matiere": "ses",
         "notion": "Paradigme",
