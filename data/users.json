@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "42eedab3-0ba7-4961-841a-5e2a716c13c8",
+        "matiere": "ses",
+        "notion": "Neutralité axiologique",
+        "details": "",
+        "dateCreation": "2026-10-02T17:15:29.476Z",
+        "fsrs": {
+          "due": 1790961329476,
+          "stability": 0.7,
+          "difficulty": 4.4,
+          "reps": 1,
+          "lapses": 1,
+          "state": "relearning",
+          "last_review": 1790961329476
+        }
+      },
+      {
         "id": "03dee0fa-65a1-4121-bc1d-7d0ec9605cca",
         "matiere": "ses",
         "notion": "Idéal-type",
