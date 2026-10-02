@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "45ac42b1-dda9-44fc-ad46-a06fff59f737",
+        "matiere": "ses",
+        "notion": "Paradigme",
+        "details": "",
+        "dateCreation": "2026-10-02T17:15:39.639Z",
+        "fsrs": {
+          "due": 1790961339639,
+          "stability": 0.7,
+          "difficulty": 4.4,
+          "reps": 1,
+          "lapses": 1,
+          "state": "relearning",
+          "last_review": 1790961339639
+        }
+      },
+      {
         "id": "42eedab3-0ba7-4961-841a-5e2a716c13c8",
         "matiere": "ses",
         "notion": "Neutralité axiologique",
