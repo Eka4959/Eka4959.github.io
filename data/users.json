@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "c4b83350-082c-4b94-a763-60532be8cf54",
+        "matiere": "ses",
+        "notion": "Individualisme méthodologique",
+        "details": "",
+        "dateCreation": "2026-10-02T17:15:59.423Z",
+        "fsrs": {
+          "due": 1790961959423,
+          "stability": 2.4,
+          "difficulty": 4.7,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1790961359423
+        }
+      },
+      {
         "id": "f2d77230-fd0c-40ec-a327-4c20c57dbf6a",
         "matiere": "ses",
         "notion": "Holisme",
