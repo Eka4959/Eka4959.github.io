@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "03dee0fa-65a1-4121-bc1d-7d0ec9605cca",
+        "matiere": "ses",
+        "notion": "Idéal-type",
+        "details": "",
+        "dateCreation": "2026-10-02T17:15:16.656Z",
+        "fsrs": {
+          "due": 1790961916656,
+          "stability": 2.4,
+          "difficulty": 4.7,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1790961316656
+        }
+      },
+      {
         "id": "f0ff5eed-90af-43fc-a419-fa7da9b7d37a",
         "matiere": "ses",
         "notion": "Fait social",
