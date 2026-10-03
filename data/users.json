@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "b4fa6997-4049-4828-a58a-ed123fac4d63",
+        "matiere": "ses",
+        "notion": "Microéconomie",
+        "details": "",
+        "dateCreation": "2026-10-03T10:53:17.588Z",
+        "fsrs": {
+          "due": 1791111197588,
+          "stability": 5.8,
+          "difficulty": 5,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1791024797588
+        }
+      },
+      {
         "id": "49d34fc9-e63b-4172-99d9-fca036cb0231",
         "matiere": "ses",
         "notion": "Épistémologie",
