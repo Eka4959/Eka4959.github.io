@@ -441,13 +441,13 @@
         "details": "",
         "dateCreation": "2026-10-02T17:15:59.423Z",
         "fsrs": {
-          "due": 1790961959423,
-          "stability": 2.4,
+          "due": 1791519698812,
+          "stability": 4.56,
           "difficulty": 4.7,
-          "reps": 1,
+          "reps": 2,
           "lapses": 0,
           "state": "review",
-          "last_review": 1790961359423
+          "last_review": 1791023278972
         }
       },
       {
