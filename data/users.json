@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "a5fbd43e-31a3-4f18-b678-70eba9638770",
+        "matiere": "ses",
+        "notion": "Conjoncturel",
+        "details": "",
+        "dateCreation": "2026-10-03T11:07:14.438Z",
+        "fsrs": {
+          "due": 1791112034438,
+          "stability": 5.8,
+          "difficulty": 5,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1791025634438
+        }
+      },
+      {
         "id": "5f6b29f0-65fa-43c7-b1b2-f209585be822",
         "matiere": "ses",
         "notion": "Macroéconomie",
