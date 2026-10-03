@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "5f6b29f0-65fa-43c7-b1b2-f209585be822",
+        "matiere": "ses",
+        "notion": "Macroéconomie",
+        "details": "",
+        "dateCreation": "2026-10-03T10:53:22.767Z",
+        "fsrs": {
+          "due": 1791111202767,
+          "stability": 5.8,
+          "difficulty": 5,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1791024802767
+        }
+      },
+      {
         "id": "b4fa6997-4049-4828-a58a-ed123fac4d63",
         "matiere": "ses",
         "notion": "Microéconomie",
