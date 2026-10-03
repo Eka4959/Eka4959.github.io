@@ -777,13 +777,13 @@
         "details": "",
         "dateCreation": "2026-09-26T13:21:17.076Z",
         "fsrs": {
-          "due": 1791006531209,
-          "stability": 0.8,
+          "due": 1791188779538,
+          "stability": 1.52,
           "difficulty": 4.05,
-          "reps": 3,
+          "reps": 4,
           "lapses": 2,
-          "state": "relearning",
-          "last_review": 1790963331209
+          "state": "review",
+          "last_review": 1791023306258
         }
       },
       {
