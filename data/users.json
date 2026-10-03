@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "a5cc777d-827c-4a90-b65b-db8b624bd942",
+        "matiere": "ses",
+        "notion": "Structurel",
+        "details": "",
+        "dateCreation": "2026-10-03T11:07:19.886Z",
+        "fsrs": {
+          "due": 1791112039886,
+          "stability": 5.8,
+          "difficulty": 5,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1791025639886
+        }
+      },
+      {
         "id": "a5fbd43e-31a3-4f18-b678-70eba9638770",
         "matiere": "ses",
         "notion": "Conjoncturel",
