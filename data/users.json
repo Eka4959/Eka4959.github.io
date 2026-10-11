@@ -601,13 +601,13 @@
         "details": "",
         "dateCreation": "2026-09-29T16:15:13.459Z",
         "fsrs": {
-          "due": 1790698513459,
-          "stability": 0.7,
-          "difficulty": 4.4,
-          "reps": 1,
-          "lapses": 1,
+          "due": 1791751652298,
+          "stability": 0.8,
+          "difficulty": 4.05,
+          "reps": 2,
+          "lapses": 2,
           "state": "relearning",
-          "last_review": 1790698513459
+          "last_review": 1791708452299
         }
       },
       {
