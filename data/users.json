@@ -617,13 +617,13 @@
         "details": "",
         "dateCreation": "2026-09-29T16:14:59.925Z",
         "fsrs": {
-          "due": 1790698499925,
-          "stability": 0.7,
+          "due": 1791853082503,
+          "stability": 1.33,
           "difficulty": 4.4,
-          "reps": 1,
+          "reps": 2,
           "lapses": 1,
-          "state": "relearning",
-          "last_review": 1790698499925
+          "state": "review",
+          "last_review": 1791708293383
         }
       },
       {
