@@ -1219,22 +1219,6 @@
         }
       },
       {
-        "id": "9942a3db-ecd3-4b0c-b181-7c15cd3cae9d",
-        "matiere": "ses",
-        "notion": "Niveau 1 facteurs de production et investissement",
-        "details": "Fonction de production $Y = f(K, L)$ et substituabilité vs complémentarité.FBCF, investissement net vs amortissement.Les 4 déterminants de la décision d'investir.Modèle de l'accélérateur d'Aftalion ($I_t = \\beta(Y_t - Y_{t-1})$ avec $\\beta = K/Y$).",
-        "dateCreation": "2026-08-20T14:13:11.234Z",
-        "fsrs": {
-          "due": 1789082606794.4,
-          "stability": 9.964,
-          "difficulty": 4.4,
-          "reps": 4,
-          "lapses": 0,
-          "state": "review",
-          "last_review": 1787997929444
-        }
-      },
-      {
         "id": "f6252038-129a-4bb4-9368-0d9642dc3554",
         "matiere": "ses",
         "notion": "Pouvoir de marché des entreprises",
