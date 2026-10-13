@@ -1091,22 +1091,6 @@
         }
       },
       {
-        "id": "a72ce2a2-7110-4939-9f25-fcbf21eddbb9",
-        "matiere": "maths",
-        "notion": "TD G1 Ex 4 à 9",
-        "details": "",
-        "dateCreation": "2026-09-05T17:43:09.794Z",
-        "fsrs": {
-          "due": 1789200973481,
-          "stability": 4.56,
-          "difficulty": 4.7,
-          "reps": 2,
-          "lapses": 0,
-          "state": "review",
-          "last_review": 1788704553641
-        }
-      },
-      {
         "id": "64642948-e9c8-47a2-9c44-6ae2d951cdfd",
         "matiere": "lettres",
         "notion": "Jakobson + Barthes",
