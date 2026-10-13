@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "899ff215-6098-4cf3-88dd-154b6c3399fb",
+        "matiere": "maths",
+        "notion": "DS 1 Ex 2 D",
+        "details": "",
+        "dateCreation": "2026-10-13T14:28:51.073Z",
+        "fsrs": {
+          "due": 1791901731072,
+          "stability": 0.7,
+          "difficulty": 4.4,
+          "reps": 1,
+          "lapses": 1,
+          "state": "relearning",
+          "last_review": 1791901731072
+        }
+      },
+      {
         "id": "a5cc777d-827c-4a90-b65b-db8b624bd942",
         "matiere": "ses",
         "notion": "Structurel",
