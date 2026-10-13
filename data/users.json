@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "f83f51cd-e686-4450-812c-b8f5e92414c2",
+        "matiere": "maths",
+        "notion": "DS 1 Ex 2 E",
+        "details": "",
+        "dateCreation": "2026-10-13T14:33:34.680Z",
+        "fsrs": {
+          "due": 1791902014680,
+          "stability": 0.7,
+          "difficulty": 4.4,
+          "reps": 1,
+          "lapses": 1,
+          "state": "relearning",
+          "last_review": 1791902014680
+        }
+      },
+      {
         "id": "899ff215-6098-4cf3-88dd-154b6c3399fb",
         "matiere": "maths",
         "notion": "DS 1 Ex 2 D",
