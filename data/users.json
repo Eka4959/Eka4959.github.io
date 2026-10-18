@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "db64bf14-ab7e-4f37-a992-961078ccd55e",
+        "matiere": "histoire",
+        "notion": "Principaux partis politiques législatives 8 février 1871",
+        "details": "",
+        "dateCreation": "2026-10-18T14:02:19.428Z",
+        "fsrs": {
+          "due": 1792418539428,
+          "stability": 5.8,
+          "difficulty": 5,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1792332139428
+        }
+      },
+      {
         "id": "5b85d7a0-e78a-493d-9293-cbda829259f6",
         "matiere": "histoire",
         "notion": "Alain de Moneys à Hautefaye",
