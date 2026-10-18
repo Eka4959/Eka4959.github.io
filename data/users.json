@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "3b65b61c-761a-42c2-82c7-9902966a4128",
+        "matiere": "histoire",
+        "notion": "Stratégie politique adopté par Napoléon à partir des années 1860",
+        "details": "",
+        "dateCreation": "2026-10-18T10:14:12.812Z",
+        "fsrs": {
+          "due": 1792404852812,
+          "stability": 5.8,
+          "difficulty": 5,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1792318452812
+        }
+      },
+      {
         "id": "f1758766-a143-40c7-8c55-f1760cbff703",
         "matiere": "histoire",
         "notion": "Nature politique du régime de Napoléon après son coup d'État",
