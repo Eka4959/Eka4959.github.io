@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "a640e9aa-704c-4b80-9e34-49b080cb231f",
+        "matiere": "histoire",
+        "notion": "Semaine sanglante",
+        "details": "",
+        "dateCreation": "2026-10-18T16:11:41.297Z",
+        "fsrs": {
+          "due": 1792340501297,
+          "stability": 2.4,
+          "difficulty": 4.7,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1792339901297
+        }
+      },
+      {
         "id": "85d12dbe-2ead-4ce0-a06e-c129eba1808c",
         "matiere": "histoire",
         "notion": "La position de l'Allemagne avec la Commune",
