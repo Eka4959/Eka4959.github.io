@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "395fe33a-b85d-4e7b-8a62-4306df3249fe",
+        "matiere": "histoire",
+        "notion": "Réaction de Napoléon III face à une opposition républicaine grandissante",
+        "details": "",
+        "dateCreation": "2026-10-18T13:12:16.701Z",
+        "fsrs": {
+          "due": 1792415536700,
+          "stability": 5.8,
+          "difficulty": 5,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1792329136700
+        }
+      },
+      {
         "id": "74a9e532-a109-449d-8db2-89bfeda920da",
         "matiere": "histoire",
         "notion": "Loi Niel",
