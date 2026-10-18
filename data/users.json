@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "f1758766-a143-40c7-8c55-f1760cbff703",
+        "matiere": "histoire",
+        "notion": "Nature politique du régime de Napoléon après son coup d'État",
+        "details": "",
+        "dateCreation": "2026-10-18T10:13:35.896Z",
+        "fsrs": {
+          "due": 1792404815896,
+          "stability": 5.8,
+          "difficulty": 5,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1792318415896
+        }
+      },
+      {
         "id": "f83f51cd-e686-4450-812c-b8f5e92414c2",
         "matiere": "maths",
         "notion": "DS 1 Ex 2 E",
