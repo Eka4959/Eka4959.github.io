@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "88dcc5d8-4f2b-49ec-b215-bac45225c9fc",
+        "matiere": "histoire",
+        "notion": "Conséquences de la guerre franco-prussienne",
+        "details": "",
+        "dateCreation": "2026-10-18T13:43:37.254Z",
+        "fsrs": {
+          "due": 1792331617254,
+          "stability": 2.4,
+          "difficulty": 4.7,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1792331017254
+        }
+      },
+      {
         "id": "97322cf0-4585-479c-aac6-5db6eb7ae444",
         "matiere": "histoire",
         "notion": "La guerre franco-prussienne sous la République",
