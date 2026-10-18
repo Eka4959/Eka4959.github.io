@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "58ea8f16-6daf-45a0-a085-f0a516dae71c",
+        "matiere": "histoire",
+        "notion": "La Commune de Paris",
+        "details": "",
+        "dateCreation": "2026-10-18T16:30:05.624Z",
+        "fsrs": {
+          "due": 1792341005624,
+          "stability": 0.7,
+          "difficulty": 4.4,
+          "reps": 1,
+          "lapses": 1,
+          "state": "relearning",
+          "last_review": 1792341005624
+        }
+      },
+      {
         "id": "a640e9aa-704c-4b80-9e34-49b080cb231f",
         "matiere": "histoire",
         "notion": "Semaine sanglante",
