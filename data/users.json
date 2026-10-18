@@ -1233,22 +1233,6 @@
           "state": "review",
           "last_review": 1787174224746
         }
-      },
-      {
-        "id": "e96364eb-937e-46a9-8b64-c89945bfc962",
-        "matiere": "maths",
-        "notion": "3.6 fiche de calculs",
-        "details": "",
-        "dateCreation": "2026-08-18T10:07:52.931Z",
-        "fsrs": {
-          "due": 1791168852232,
-          "stability": 11.27,
-          "difficulty": 4.35,
-          "reps": 5,
-          "lapses": 2,
-          "state": "review",
-          "last_review": 1788101609032
-        }
       }
     ],
     "notionsAgendaExpanded": {
