@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "ea91de53-f63b-4ab6-b707-276ac79cffe3",
+        "matiere": "histoire",
+        "notion": "4 mesures de la libéralisation du Second Empire",
+        "details": "",
+        "dateCreation": "2026-10-18T10:24:52.548Z",
+        "fsrs": {
+          "due": 1792319092548,
+          "stability": 0.7,
+          "difficulty": 4.4,
+          "reps": 1,
+          "lapses": 1,
+          "state": "relearning",
+          "last_review": 1792319092548
+        }
+      },
+      {
         "id": "3b65b61c-761a-42c2-82c7-9902966a4128",
         "matiere": "histoire",
         "notion": "Stratégie politique adopté par Napoléon à partir des années 1860",
