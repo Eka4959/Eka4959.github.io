@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "f073f843-1845-4533-94c1-78ac5278cc56",
+        "matiere": "histoire",
+        "notion": "Thiers, des législatives de 1871 à la République nouvelle",
+        "details": "",
+        "dateCreation": "2026-10-18T14:08:39.829Z",
+        "fsrs": {
+          "due": 1792418919829,
+          "stability": 5.8,
+          "difficulty": 5,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1792332519829
+        }
+      },
+      {
         "id": "db64bf14-ab7e-4f37-a992-961078ccd55e",
         "matiere": "histoire",
         "notion": "Principaux partis politiques législatives 8 février 1871",
