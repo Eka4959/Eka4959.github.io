@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "74a9e532-a109-449d-8db2-89bfeda920da",
+        "matiere": "histoire",
+        "notion": "Loi Niel",
+        "details": "",
+        "dateCreation": "2026-10-18T10:25:03.818Z",
+        "fsrs": {
+          "due": 1792405503818,
+          "stability": 5.8,
+          "difficulty": 5,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1792319103818
+        }
+      },
+      {
         "id": "ea91de53-f63b-4ab6-b707-276ac79cffe3",
         "matiere": "histoire",
         "notion": "4 mesures de la libéralisation du Second Empire",
