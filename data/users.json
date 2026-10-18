@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "97322cf0-4585-479c-aac6-5db6eb7ae444",
+        "matiere": "histoire",
+        "notion": "La guerre franco-prussienne sous la République",
+        "details": "",
+        "dateCreation": "2026-10-18T13:38:56.685Z",
+        "fsrs": {
+          "due": 1792331336685,
+          "stability": 2.4,
+          "difficulty": 4.7,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1792330736685
+        }
+      },
+      {
         "id": "15bc5f7c-e3cd-4143-815a-03bba8276f46",
         "matiere": "histoire",
         "notion": "Qu'est ce qui pousse la France à déclarer la guerre à la Prusse le 19 juillet 1870 ?",
