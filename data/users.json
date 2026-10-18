@@ -1203,22 +1203,6 @@
         }
       },
       {
-        "id": "ee48f9c5-bb7f-43bf-a088-0125be5a1aaa",
-        "matiere": "ses",
-        "notion": "Niveau 1 Politique économique de l'État",
-        "details": "Le carré magique de Kaldor : les 4 objectifs (croissance, emploi, stabilité des prix, équilibre extérieur) et la nature structurellement conflictuelle de leur poursuite simultanée.\n\nLes 3 fonctions de Musgrave : Affectation (biens collectifs, dépenses), Redistribution (réduction des inégalités), Régulation/Stabilisation (conjoncturelle et des marchés).\n\nL'arbitrage néoclassique vs. keynésien : priorité absolue au contrôle de l'inflation (néoclassique) contre régulation de la conjoncture et relance (keynésien).\n\nInstruments budgétaires et monétaires centraux : dépenses publiques, fiscalité, taux directeurs, intervention sur le marché interbancaire, réserves obligatoires.",
-        "dateCreation": "2026-08-24T15:16:58.163Z",
-        "fsrs": {
-          "due": 1791268225372,
-          "stability": 20.938,
-          "difficulty": 5,
-          "reps": 3,
-          "lapses": 0,
-          "state": "review",
-          "last_review": 1788988830940
-        }
-      },
-      {
         "id": "f52f6423-a4e5-4ae4-a783-fd53e0b12dde",
         "matiere": "maths",
         "notion": "7.3 fiche de calculs",
