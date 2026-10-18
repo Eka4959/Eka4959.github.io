@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "15bc5f7c-e3cd-4143-815a-03bba8276f46",
+        "matiere": "histoire",
+        "notion": "Qu'est ce qui pousse la France à déclarer la guerre à la Prusse le 19 juillet 1870 ?",
+        "details": "",
+        "dateCreation": "2026-10-18T13:32:50.219Z",
+        "fsrs": {
+          "due": 1792416770219,
+          "stability": 5.8,
+          "difficulty": 5,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1792330370219
+        }
+      },
+      {
         "id": "395fe33a-b85d-4e7b-8a62-4306df3249fe",
         "matiere": "histoire",
         "notion": "Réaction de Napoléon III face à une opposition républicaine grandissante",
