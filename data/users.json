@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "c4270d30-b9db-4815-a54f-fbd60f729bc9",
+        "matiere": "histoire",
+        "notion": "Élections partielles 1872 et conclusion de Thiers",
+        "details": "",
+        "dateCreation": "2026-10-21T08:14:07.353Z",
+        "fsrs": {
+          "due": 1792570447353,
+          "stability": 0.7,
+          "difficulty": 4.4,
+          "reps": 1,
+          "lapses": 1,
+          "state": "relearning",
+          "last_review": 1792570447353
+        }
+      },
+      {
         "id": "fcf2f03c-5d6f-4cb1-86e7-594ad1316626",
         "matiere": "histoire",
         "notion": "Thiers, l'armée et la république",
