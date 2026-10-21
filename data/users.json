@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "a2a4fb1d-67f5-4749-b2d2-9f10509bbfc8",
+        "matiere": "histoire",
+        "notion": "Pourquoi les monarchistes choisissent Thiers pour le pouvoir",
+        "details": "",
+        "dateCreation": "2026-10-21T08:07:23.560Z",
+        "fsrs": {
+          "due": 1792570043560,
+          "stability": 0.7,
+          "difficulty": 4.4,
+          "reps": 1,
+          "lapses": 1,
+          "state": "relearning",
+          "last_review": 1792570043560
+        }
+      },
+      {
         "id": "58ea8f16-6daf-45a0-a085-f0a516dae71c",
         "matiere": "histoire",
         "notion": "La Commune de Paris",
