@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "2a75ba1f-52d1-4eb3-91d7-532d6b641fd6",
+        "matiere": "histoire",
+        "notion": "Perception de l'opinion publique par Thiers et ce qui le confirme",
+        "details": "",
+        "dateCreation": "2026-10-21T08:08:23.309Z",
+        "fsrs": {
+          "due": 1792570703309,
+          "stability": 2.4,
+          "difficulty": 4.7,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1792570103309
+        }
+      },
+      {
         "id": "a2a4fb1d-67f5-4749-b2d2-9f10509bbfc8",
         "matiere": "histoire",
         "notion": "Pourquoi les monarchistes choisissent Thiers pour le pouvoir",
