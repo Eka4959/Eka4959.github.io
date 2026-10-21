@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "fcf2f03c-5d6f-4cb1-86e7-594ad1316626",
+        "matiere": "histoire",
+        "notion": "Thiers, l'armée et la république",
+        "details": "",
+        "dateCreation": "2026-10-21T08:11:57.523Z",
+        "fsrs": {
+          "due": 1792656717523,
+          "stability": 5.8,
+          "difficulty": 5,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1792570317523
+        }
+      },
+      {
         "id": "871e6adb-96fb-46b8-86d7-f2d3ed6d501e",
         "matiere": "histoire",
         "notion": "Projet de république de Thiers et top 1 chose à faire",
