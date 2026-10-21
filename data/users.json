@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "5a7da5c7-8178-40c7-8cf3-b99d40313369",
+        "matiere": "histoire",
+        "notion": "Loi chinoise et chute de Thiers",
+        "details": "",
+        "dateCreation": "2026-10-21T08:14:42.337Z",
+        "fsrs": {
+          "due": 1792656882337,
+          "stability": 5.8,
+          "difficulty": 5,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1792570482337
+        }
+      },
+      {
         "id": "c4270d30-b9db-4815-a54f-fbd60f729bc9",
         "matiere": "histoire",
         "notion": "Élections partielles 1872 et conclusion de Thiers",
