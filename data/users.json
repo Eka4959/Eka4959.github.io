@@ -409,13 +409,13 @@
         "details": "",
         "dateCreation": "2026-10-21T08:10:14.957Z",
         "fsrs": {
-          "due": 1792656614957,
-          "stability": 5.8,
+          "due": 1793855551926,
+          "stability": 11.02,
           "difficulty": 5,
-          "reps": 1,
+          "reps": 2,
           "lapses": 0,
           "state": "review",
-          "last_review": 1792570214957
+          "last_review": 1792655870646
         }
       },
       {
