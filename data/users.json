@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "51a63765-1d1d-450e-9518-e6a5653d5f12",
+        "matiere": "histoire",
+        "notion": "Mac Mahon accède au pouvoir",
+        "details": "",
+        "dateCreation": "2026-10-22T10:47:28.373Z",
+        "fsrs": {
+          "due": 1792752448372,
+          "stability": 5.8,
+          "difficulty": 5,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1792666048372
+        }
+      },
+      {
         "id": "5a7da5c7-8178-40c7-8cf3-b99d40313369",
         "matiere": "histoire",
         "notion": "Loi chinoise et chute de Thiers",
