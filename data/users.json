@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "9a94ba69-70e4-4e84-acb3-f56484fd5408",
+        "matiere": "histoire",
+        "notion": "Comte de Chambord",
+        "details": "",
+        "dateCreation": "2026-10-22T10:48:33.719Z",
+        "fsrs": {
+          "due": 1792666713719,
+          "stability": 2.4,
+          "difficulty": 4.7,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1792666113719
+        }
+      },
+      {
         "id": "51a63765-1d1d-450e-9518-e6a5653d5f12",
         "matiere": "histoire",
         "notion": "Mac Mahon accède au pouvoir",
