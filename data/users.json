@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "2059cabd-9e5f-4e32-ab9c-9f3193de90a4",
+        "matiere": "maths",
+        "notion": "Cours G2 Exemple 5 Sn",
+        "details": "",
+        "dateCreation": "2026-10-23T09:45:24.713Z",
+        "fsrs": {
+          "due": 1792748724713,
+          "stability": 0.7,
+          "difficulty": 4.4,
+          "reps": 1,
+          "lapses": 1,
+          "state": "relearning",
+          "last_review": 1792748724713
+        }
+      },
+      {
         "id": "11847ceb-fc6f-4a34-919c-b08be51e3f0c",
         "matiere": "histoire",
         "notion": "Compromis sur le Sénat 1875",
