@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "85895c3e-fb39-40d5-b0cd-09efef9d646a",
+        "matiere": "histoire",
+        "notion": "Amendement Wallon",
+        "details": "",
+        "dateCreation": "2026-10-23T08:43:36.122Z",
+        "fsrs": {
+          "due": 1792831416122,
+          "stability": 5.8,
+          "difficulty": 5,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1792745016122
+        }
+      },
+      {
         "id": "4299a517-9e96-4347-9d0c-839ebd7e2e84",
         "matiere": "histoire",
         "notion": "Politique de l'ordre moral",
