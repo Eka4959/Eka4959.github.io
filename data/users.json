@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "97845867-1817-4523-92f0-d6adfc3f6b7f",
+        "matiere": "maths",
+        "notion": "Cours G2 Exemple 6",
+        "details": "",
+        "dateCreation": "2026-10-23T10:52:47.866Z",
+        "fsrs": {
+          "due": 1792752767866,
+          "stability": 0.7,
+          "difficulty": 4.4,
+          "reps": 1,
+          "lapses": 1,
+          "state": "relearning",
+          "last_review": 1792752767866
+        }
+      },
+      {
         "id": "8eab70b6-bbbd-4a0d-be70-3a786967e487",
         "matiere": "maths",
         "notion": "Cours G2 Exemple 3 Sn",
