@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "5bde1fc0-b1b8-493c-829a-6ec52efe5326",
+        "matiere": "maths",
+        "notion": "Démonstration formule du pion",
+        "details": "",
+        "dateCreation": "2026-10-23T14:33:51.350Z",
+        "fsrs": {
+          "due": 1792766031350,
+          "stability": 0.7,
+          "difficulty": 4.4,
+          "reps": 1,
+          "lapses": 1,
+          "state": "relearning",
+          "last_review": 1792766031350
+        }
+      },
+      {
         "id": "97845867-1817-4523-92f0-d6adfc3f6b7f",
         "matiere": "maths",
         "notion": "Cours G2 Exemple 6",
