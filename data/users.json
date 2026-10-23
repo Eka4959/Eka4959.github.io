@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "11847ceb-fc6f-4a34-919c-b08be51e3f0c",
+        "matiere": "histoire",
+        "notion": "Compromis sur le Sénat 1875",
+        "details": "",
+        "dateCreation": "2026-10-23T09:04:32.154Z",
+        "fsrs": {
+          "due": 1792746272154,
+          "stability": 0.7,
+          "difficulty": 4.4,
+          "reps": 1,
+          "lapses": 1,
+          "state": "relearning",
+          "last_review": 1792746272154
+        }
+      },
+      {
         "id": "4a9bac0a-3565-4250-85e0-debe64046ffd",
         "matiere": "histoire",
         "notion": "Pouvoirs présidentiels à tonalité monarchique 1875",
