@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "62f68b90-58ca-4fb9-b2fe-7cda5b4d7589",
+        "matiere": "maths",
+        "notion": "Application de la formule du pion",
+        "details": "$$S_n = \\sum_{k=1}^{n} k \\binom{n}{k}$$",
+        "dateCreation": "2026-10-23T14:48:24.544Z",
+        "fsrs": {
+          "due": 1792766904544,
+          "stability": 0.7,
+          "difficulty": 4.4,
+          "reps": 1,
+          "lapses": 1,
+          "state": "relearning",
+          "last_review": 1792766904544
+        }
+      },
+      {
         "id": "5bde1fc0-b1b8-493c-829a-6ec52efe5326",
         "matiere": "maths",
         "notion": "Démonstration formule du pion",
