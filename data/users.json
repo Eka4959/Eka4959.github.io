@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "8eab70b6-bbbd-4a0d-be70-3a786967e487",
+        "matiere": "maths",
+        "notion": "Cours G2 Exemple 3 Sn",
+        "details": "",
+        "dateCreation": "2026-10-23T10:38:34.539Z",
+        "fsrs": {
+          "due": 1792751914539,
+          "stability": 0.7,
+          "difficulty": 4.4,
+          "reps": 1,
+          "lapses": 1,
+          "state": "relearning",
+          "last_review": 1792751914539
+        }
+      },
+      {
         "id": "df8cf610-cd92-4b16-9377-e95197357d83",
         "matiere": "maths",
         "notion": "Cours G2 Exemple 4 1ère somme",
