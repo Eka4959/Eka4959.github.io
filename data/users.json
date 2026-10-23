@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "4a9bac0a-3565-4250-85e0-debe64046ffd",
+        "matiere": "histoire",
+        "notion": "Pouvoirs présidentiels à tonalité monarchique 1875",
+        "details": "",
+        "dateCreation": "2026-10-23T08:46:57.867Z",
+        "fsrs": {
+          "due": 1792745817867,
+          "stability": 2.4,
+          "difficulty": 4.7,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1792745217867
+        }
+      },
+      {
         "id": "85895c3e-fb39-40d5-b0cd-09efef9d646a",
         "matiere": "histoire",
         "notion": "Amendement Wallon",
