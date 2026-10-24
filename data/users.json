@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "c79db9c5-592b-4ad5-bbd3-291d220f4434",
+        "matiere": "maths",
+        "notion": "Cours G2 Application 2",
+        "details": "",
+        "dateCreation": "2026-10-24T09:45:57.460Z",
+        "fsrs": {
+          "due": 1792835157460,
+          "stability": 0.7,
+          "difficulty": 4.4,
+          "reps": 1,
+          "lapses": 1,
+          "state": "relearning",
+          "last_review": 1792835157460
+        }
+      },
+      {
         "id": "62f68b90-58ca-4fb9-b2fe-7cda5b4d7589",
         "matiere": "maths",
         "notion": "Application de la formule du pion",
