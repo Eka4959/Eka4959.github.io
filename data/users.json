@@ -1417,13 +1417,13 @@
         "details": "",
         "dateCreation": "2026-09-13T14:41:08.041Z",
         "fsrs": {
-          "due": 1789396868041,
-          "stability": 5.8,
-          "difficulty": 5,
-          "reps": 1,
-          "lapses": 0,
-          "state": "review",
-          "last_review": 1789310468041
+          "due": 1792985404257,
+          "stability": 3.19,
+          "difficulty": 4.4,
+          "reps": 2,
+          "lapses": 1,
+          "state": "relearning",
+          "last_review": 1792942204257
         }
       },
       {
