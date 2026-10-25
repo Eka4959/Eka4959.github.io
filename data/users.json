@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "2f8835fa-d17a-4bb3-8091-d4079e782252",
+        "matiere": "ses",
+        "notion": "Bridge / No bridge",
+        "details": "",
+        "dateCreation": "2026-10-25T16:32:51.687Z",
+        "fsrs": {
+          "due": 1793032371687,
+          "stability": 5.8,
+          "difficulty": 5,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1792945971687
+        }
+      },
+      {
         "id": "c79db9c5-592b-4ad5-bbd3-291d220f4434",
         "matiere": "maths",
         "notion": "Cours G2 Application 2",
@@ -1727,7 +1743,7 @@
       "2026-10-19": true,
       "2026-10-23": false,
       "2026-10-28": false,
-      "2026-10-26": true,
+      "2026-10-26": false,
       "2026-10-29": false,
       "2026-10-30": false,
       "2026-10-31": false,
