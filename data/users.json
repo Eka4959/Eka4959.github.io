@@ -1681,22 +1681,6 @@
           "state": "review",
           "last_review": 1787478073034
         }
-      },
-      {
-        "id": "f6252038-129a-4bb4-9368-0d9642dc3554",
-        "matiere": "ses",
-        "notion": "Pouvoir de marché des entreprises",
-        "details": "Indice de Lerner : cas général + monopole\nHHI : formule, bornes, évolution (plus la concentration est grande, plus HHI est grand)\nIndice de Lerner en cas d'oligopole",
-        "dateCreation": "2026-08-18T17:16:20.374Z",
-        "fsrs": {
-          "due": 1792699072746,
-          "stability": 20.3,
-          "difficulty": 5.3,
-          "reps": 2,
-          "lapses": 0,
-          "state": "review",
-          "last_review": 1787174224746
-        }
       }
     ],
     "notionsAgendaExpanded": {
