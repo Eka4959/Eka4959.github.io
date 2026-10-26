@@ -1681,22 +1681,6 @@
           "state": "review",
           "last_review": 1787739772703
         }
-      },
-      {
-        "id": "1b0972bd-3ef8-4f71-b2ba-54cbf1647723",
-        "matiere": "ses",
-        "notion": "Budget de l'État niveau 1",
-        "details": "Loi de Wagner : Formule de l'élasticité ($\\frac{dG/G}{dPIB/PIB} > 1$), signification (croissance des dépenses publiques supérieure à celle du PIB) et ses deux mécanismes (infrastructures collectives + demande de services non marchands/lois d'Engel).Ressources : Distinction impôts (directs/indirects) vs cotisations sociales ; définition exacte du taux de pression fiscale ($\\frac{\\text{prélèvements fiscaux}}{PIB}$).Solde budgétaire : Déficit conjoncturel (lié aux variations de la croissance par rapport aux prévisions) vs déficit structurel (déficit total moins déficit conjoncturel).Financement : Création monétaire vs émission d'obligations (qui forme la dette publique).",
-        "dateCreation": "2026-08-22T09:56:08.843Z",
-        "fsrs": {
-          "due": 1793002921034,
-          "stability": 20.3,
-          "difficulty": 5.3,
-          "reps": 2,
-          "lapses": 0,
-          "state": "review",
-          "last_review": 1787478073034
-        }
       }
     ],
     "notionsAgendaExpanded": {
