@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "57ef032c-3179-4d8f-9e86-ade12ee77f57",
+        "matiere": "ses",
+        "notion": "Louis Chevalier : Bourgeoisie et ouvriers",
+        "details": "",
+        "dateCreation": "2026-10-26T17:35:12.837Z",
+        "fsrs": {
+          "due": 1793122512837,
+          "stability": 5.8,
+          "difficulty": 5,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1793036112837
+        }
+      },
+      {
         "id": "ffa02a62-bc0c-42f4-878c-10e172662e37",
         "matiere": "ses",
         "notion": "Conséquences du désencastrement de l'économie",
