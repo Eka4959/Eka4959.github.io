@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "6a9376f7-e321-4000-9203-7f9b0c1f9e05",
+        "matiere": "ses",
+        "notion": "Saint-Simon, abeilles et frelons",
+        "details": "",
+        "dateCreation": "2026-10-26T17:55:55.157Z",
+        "fsrs": {
+          "due": 1793123755157,
+          "stability": 5.8,
+          "difficulty": 5,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1793037355157
+        }
+      },
+      {
         "id": "57ef032c-3179-4d8f-9e86-ade12ee77f57",
         "matiere": "ses",
         "notion": "Louis Chevalier : Bourgeoisie et ouvriers",
