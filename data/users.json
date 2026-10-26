@@ -1209,13 +1209,13 @@
         "details": "",
         "dateCreation": "2026-09-29T16:06:32.792Z",
         "fsrs": {
-          "due": 1792987075798,
-          "stability": 0.8,
+          "due": 1793198955715,
+          "stability": 1.52,
           "difficulty": 3.7,
-          "reps": 3,
+          "reps": 4,
           "lapses": 3,
-          "state": "relearning",
-          "last_review": 1792943875798
+          "state": "review",
+          "last_review": 1793033482435
         }
       },
       {
