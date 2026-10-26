@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "9281c4fe-cde4-4028-ba01-5c65548d49f0",
+        "matiere": "ses",
+        "notion": "Robert Owen",
+        "details": "",
+        "dateCreation": "2026-10-26T18:07:53.002Z",
+        "fsrs": {
+          "due": 1793124473002,
+          "stability": 5.8,
+          "difficulty": 5,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1793038073002
+        }
+      },
+      {
         "id": "7bd01c4a-1da4-4706-bac4-c5e994213a13",
         "matiere": "ses",
         "notion": "Charles Fourier et phalanstères",
