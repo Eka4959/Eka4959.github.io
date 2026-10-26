@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "ffa02a62-bc0c-42f4-878c-10e172662e37",
+        "matiere": "ses",
+        "notion": "Conséquences du désencastrement de l'économie",
+        "details": "",
+        "dateCreation": "2026-10-26T17:30:34.005Z",
+        "fsrs": {
+          "due": 1793035834005,
+          "stability": 0.7,
+          "difficulty": 4.4,
+          "reps": 1,
+          "lapses": 1,
+          "state": "relearning",
+          "last_review": 1793035834005
+        }
+      },
+      {
         "id": "3a9af06e-cb89-4c7c-9aba-ff3d35362e74",
         "matiere": "ses",
         "notion": "Désencastrement de l'économie",
