@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "3a9af06e-cb89-4c7c-9aba-ff3d35362e74",
+        "matiere": "ses",
+        "notion": "Désencastrement de l'économie",
+        "details": "",
+        "dateCreation": "2026-10-26T17:19:07.633Z",
+        "fsrs": {
+          "due": 1793121547633,
+          "stability": 5.8,
+          "difficulty": 5,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1793035147633
+        }
+      },
+      {
         "id": "2f8835fa-d17a-4bb3-8091-d4079e782252",
         "matiere": "ses",
         "notion": "Bridge / No bridge",
