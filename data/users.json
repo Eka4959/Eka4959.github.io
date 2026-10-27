@@ -1811,22 +1811,6 @@
         }
       },
       {
-        "id": "4409a1fc-88f0-4275-922a-8d64799e99d7",
-        "matiere": "ses",
-        "notion": "Séance 3 Niveau 1",
-        "details": "Marx & le matérialisme historique : Infrastructure vs superstructure (déterminisme économique), idéologie dominante et mécanismes d'aveuglement (opium du peuple, aliénation, fétichisme de la marchandise), la lutte des classes comme moteur de l'histoire et les contradictions inhérentes au capitalisme.\n\nProudhon : Distinguo fondateur entre possession (usage) et propriété (droit/vol), critique du revenu sans travail, rejet de l'État pour l'autogestion/fédéralisme.",
-        "dateCreation": "2026-09-11T13:50:02.674Z",
-        "fsrs": {
-          "due": 1794806542063,
-          "stability": 20.3,
-          "difficulty": 5.3,
-          "reps": 2,
-          "lapses": 0,
-          "state": "review",
-          "last_review": 1789281694063
-        }
-      },
-      {
         "id": "a72ce2a2-7110-4939-9f25-fcbf21eddbb9",
         "matiere": "maths",
         "notion": "TD G1 Ex 4 à 9",
