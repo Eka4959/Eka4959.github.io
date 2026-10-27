@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "cb00d638-34d2-4058-a146-9a8730bcd31d",
+        "matiere": "ses",
+        "notion": "Anarchisme",
+        "details": "",
+        "dateCreation": "2026-10-27T08:47:30.548Z",
+        "fsrs": {
+          "due": 1793177250548,
+          "stability": 5.8,
+          "difficulty": 5,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1793090850548
+        }
+      },
+      {
         "id": "15a949c6-783a-4cf9-8bcb-5798e1b3947f",
         "matiere": "ses",
         "notion": "Proudhon",
