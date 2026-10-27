@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "96a2679d-7213-41dc-ba30-48b3a40d0a30",
+        "matiere": "ses",
+        "notion": "Homme moyen Quetelet",
+        "details": "",
+        "dateCreation": "2026-10-27T09:08:31.797Z",
+        "fsrs": {
+          "due": 1793178511797,
+          "stability": 5.8,
+          "difficulty": 5,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1793092111797
+        }
+      },
+      {
         "id": "7c8bf103-324b-4628-ad6d-613b1cc4f776",
         "matiere": "ses",
         "notion": "Le Play",
