@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "0d2ec5f4-0ece-4787-8095-685f7d77d706",
+        "matiere": "ses",
+        "notion": "Courant néoclassique",
+        "details": "",
+        "dateCreation": "2026-10-27T09:53:34.152Z",
+        "fsrs": {
+          "due": 1793181214152,
+          "stability": 5.8,
+          "difficulty": 5,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1793094814152
+        }
+      },
+      {
         "id": "6b93f075-47c8-4425-9729-85517361dda6",
         "matiere": "ses",
         "notion": "Naissance de la sociologie Heilbron",
