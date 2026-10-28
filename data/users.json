@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "15287d25-c37f-4e94-9ef0-89548b8313c8",
+        "matiere": "ses",
+        "notion": "Chrématistique Aristote",
+        "details": "",
+        "dateCreation": "2026-10-28T10:11:24.926Z",
+        "fsrs": {
+          "due": 1793268684926,
+          "stability": 5.8,
+          "difficulty": 5,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1793182284926
+        }
+      },
+      {
         "id": "7c1c1482-e2d4-4dee-a6f2-2bae8790b20e",
         "matiere": "ses",
         "notion": "Trois fonctions de la monnaie Aristote",
@@ -2030,11 +2046,11 @@
       "2026-10-18": false,
       "2026-10-19": true,
       "2026-10-23": false,
-      "2026-10-28": false,
+      "2026-10-28": true,
       "2026-10-26": false,
       "2026-10-29": true,
       "2026-10-30": true,
-      "2026-10-31": false,
+      "2026-10-31": true,
       "2026-10-25": false,
       "2026-10-27": false,
       "2026-11-01": false,
