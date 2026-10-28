@@ -377,13 +377,13 @@
         "details": "",
         "dateCreation": "2026-10-27T11:06:29.877Z",
         "fsrs": {
-          "due": 1793185589877,
-          "stability": 5.8,
-          "difficulty": 5,
-          "reps": 1,
+          "due": 1798707832619,
+          "stability": 20.3,
+          "difficulty": 5.3,
+          "reps": 2,
           "lapses": 0,
           "state": "review",
-          "last_review": 1793099189877
+          "last_review": 1793182984619
         }
       },
       {
