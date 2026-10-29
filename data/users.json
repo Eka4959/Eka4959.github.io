@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "bac01964-e41f-4f4a-a834-eaf4dbbd253d",
+        "matiere": "ses",
+        "notion": "William Petty accroissement de la masse monétaire",
+        "details": "",
+        "dateCreation": "2026-10-29T11:11:53.194Z",
+        "fsrs": {
+          "due": 1793358713194,
+          "stability": 5.8,
+          "difficulty": 5,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1793272313194
+        }
+      },
+      {
         "id": "e5bd7941-fd09-486f-ba3d-c2ac3d91ac67",
         "matiere": "ses",
         "notion": "Jean Bodin inflation",
