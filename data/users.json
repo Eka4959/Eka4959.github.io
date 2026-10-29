@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "f2820ccd-5858-4ceb-83b9-75f25a829de2",
+        "matiere": "ses",
+        "notion": "Limite du tableau de Quesnay",
+        "details": "",
+        "dateCreation": "2026-10-29T16:24:12.688Z",
+        "fsrs": {
+          "due": 1793377452688,
+          "stability": 5.8,
+          "difficulty": 5,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1793291052688
+        }
+      },
+      {
         "id": "c0d95339-594e-4197-99c6-80ecc0bd8ffd",
         "matiere": "ses",
         "notion": "Limite du tableau de Quesnay",
