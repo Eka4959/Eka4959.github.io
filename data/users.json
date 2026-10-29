@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "84514bde-be91-45c6-b29a-60a15fc9faee",
+        "matiere": "ses",
+        "notion": "Théorie de Quesnay",
+        "details": "",
+        "dateCreation": "2026-10-29T15:39:41.412Z",
+        "fsrs": {
+          "due": 1793374781412,
+          "stability": 5.8,
+          "difficulty": 5,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1793288381412
+        }
+      },
+      {
         "id": "7dad8f09-eac9-48d5-86b7-4a7207a416c9",
         "matiere": "ses",
         "notion": "Contexte historique physiocrates",
