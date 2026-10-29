@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "65d54b88-3f93-4e77-9a54-050ebc5f513a",
+        "matiere": "ses",
+        "notion": "Différentes versions du mercantilisme à l'échelle nationale",
+        "details": "",
+        "dateCreation": "2026-10-29T10:13:38.059Z",
+        "fsrs": {
+          "due": 1793355218059,
+          "stability": 5.8,
+          "difficulty": 5,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1793268818059
+        }
+      },
+      {
         "id": "0b5711ea-62fd-4ce9-802b-42a60c69c67f",
         "matiere": "ses",
         "notion": "Contexte historique mercantilistes",
