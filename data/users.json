@@ -1721,13 +1721,13 @@
         "details": "",
         "dateCreation": "2026-10-02T17:15:39.639Z",
         "fsrs": {
-          "due": 1793308728143,
-          "stability": 0.8,
-          "difficulty": 3.7,
-          "reps": 5,
+          "due": 1794055791043,
+          "stability": 2.8,
+          "difficulty": 4,
+          "reps": 6,
           "lapses": 3,
-          "state": "relearning",
-          "last_review": 1793265528143
+          "state": "review",
+          "last_review": 1793293743043
         }
       },
       {
