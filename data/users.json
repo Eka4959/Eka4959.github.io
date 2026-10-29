@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "d328ddf2-7d5c-4508-9062-92fb5ee25005",
+        "matiere": "ses",
+        "notion": "Physiocratie",
+        "details": "",
+        "dateCreation": "2026-10-29T15:13:28.304Z",
+        "fsrs": {
+          "due": 1793373208304,
+          "stability": 5.8,
+          "difficulty": 5,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1793286808304
+        }
+      },
+      {
         "id": "bac01964-e41f-4f4a-a834-eaf4dbbd253d",
         "matiere": "ses",
         "notion": "William Petty accroissement de la masse monétaire",
