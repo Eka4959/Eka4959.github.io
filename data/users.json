@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "0b5711ea-62fd-4ce9-802b-42a60c69c67f",
+        "matiere": "ses",
+        "notion": "Contexte historique mercantilistes",
+        "details": "",
+        "dateCreation": "2026-10-29T10:01:12.066Z",
+        "fsrs": {
+          "due": 1793354472065,
+          "stability": 5.8,
+          "difficulty": 5,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1793268072065
+        }
+      },
+      {
         "id": "fb0ce9b6-3f1e-4157-8936-6bd92edd00a4",
         "matiere": "ses",
         "notion": "Mercantilistes",
