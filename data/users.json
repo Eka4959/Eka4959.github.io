@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "a89f7814-a4e1-425f-9311-f16841bedc36",
+        "matiere": "ses",
+        "notion": "Monnaie et taux d'intérêt Turgot",
+        "details": "",
+        "dateCreation": "2026-10-29T17:08:13.967Z",
+        "fsrs": {
+          "due": 1793380093967,
+          "stability": 5.8,
+          "difficulty": 5,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1793293693967
+        }
+      },
+      {
         "id": "69b6465c-bb33-4059-9cd6-827f9480d442",
         "matiere": "ses",
         "notion": "Loi des rendements décroissants Turgot",
