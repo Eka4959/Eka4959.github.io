@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "fb0ce9b6-3f1e-4157-8936-6bd92edd00a4",
+        "matiere": "ses",
+        "notion": "Mercantilistes",
+        "details": "",
+        "dateCreation": "2026-10-29T09:53:28.746Z",
+        "fsrs": {
+          "due": 1793354008746,
+          "stability": 5.8,
+          "difficulty": 5,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1793267608746
+        }
+      },
+      {
         "id": "8131edd2-ff10-4263-9a86-6f3216733085",
         "matiere": "ses",
         "notion": "Saint Thomas D'Aquin",
