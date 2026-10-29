@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "8131edd2-ff10-4263-9a86-6f3216733085",
+        "matiere": "ses",
+        "notion": "Saint Thomas D'Aquin",
+        "details": "",
+        "dateCreation": "2026-10-29T09:49:54.222Z",
+        "fsrs": {
+          "due": 1793353794222,
+          "stability": 5.8,
+          "difficulty": 5,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1793267394222
+        }
+      },
+      {
         "id": "15287d25-c37f-4e94-9ef0-89548b8313c8",
         "matiere": "ses",
         "notion": "Chrématistique Aristote",
