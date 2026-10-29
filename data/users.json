@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "68f2a8b0-f56f-45d2-9bb5-a93c1af354dc",
+        "matiere": "ses",
+        "notion": "Anne Robert Turgot",
+        "details": "",
+        "dateCreation": "2026-10-29T16:34:46.388Z",
+        "fsrs": {
+          "due": 1793378086388,
+          "stability": 5.8,
+          "difficulty": 5,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1793291686388
+        }
+      },
+      {
         "id": "f2820ccd-5858-4ceb-83b9-75f25a829de2",
         "matiere": "ses",
         "notion": "Limite du tableau de Quesnay",
