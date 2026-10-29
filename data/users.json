@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "5e26bc5a-405b-4006-b107-f8911743f6c2",
+        "matiere": "ses",
+        "notion": "Apports des mercantilistes autre que le truc sur le bullionisme",
+        "details": "",
+        "dateCreation": "2026-10-29T10:26:08.597Z",
+        "fsrs": {
+          "due": 1793355968597,
+          "stability": 5.8,
+          "difficulty": 5,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1793269568597
+        }
+      },
+      {
         "id": "65d54b88-3f93-4e77-9a54-050ebc5f513a",
         "matiere": "ses",
         "notion": "Différentes versions du mercantilisme à l'échelle nationale",
