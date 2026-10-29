@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "e5bd7941-fd09-486f-ba3d-c2ac3d91ac67",
+        "matiere": "ses",
+        "notion": "Jean Bodin inflation",
+        "details": "",
+        "dateCreation": "2026-10-29T10:45:19.802Z",
+        "fsrs": {
+          "due": 1793357119802,
+          "stability": 5.8,
+          "difficulty": 5,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1793270719802
+        }
+      },
+      {
         "id": "60a65f2f-889d-46d8-9924-188ca3229d45",
         "matiere": "ses",
         "notion": "M. de Malestroit inflation",
