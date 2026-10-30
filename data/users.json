@@ -1801,13 +1801,13 @@
         "details": "",
         "dateCreation": "2026-09-29T16:14:59.925Z",
         "fsrs": {
-          "due": 1793323618725.2,
-          "stability": 2.906,
-          "difficulty": 4.1,
-          "reps": 4,
+          "due": 1793517945706.6,
+          "stability": 3.342,
+          "difficulty": 3.8,
+          "reps": 5,
           "lapses": 1,
           "state": "review",
-          "last_review": 1793183012402
+          "last_review": 1793356251217
         }
       },
       {
