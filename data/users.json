@@ -873,13 +873,13 @@
         "details": "",
         "dateCreation": "2026-10-26T18:07:53.002Z",
         "fsrs": {
-          "due": 1793412028807,
-          "stability": 6.67,
-          "difficulty": 4.7,
-          "reps": 2,
-          "lapses": 0,
-          "state": "review",
-          "last_review": 1793089307527
+          "due": 1793507755362,
+          "stability": 3.669,
+          "difficulty": 4.1,
+          "reps": 3,
+          "lapses": 1,
+          "state": "relearning",
+          "last_review": 1793464555362
         }
       },
       {
