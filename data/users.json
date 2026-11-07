@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "32e9f7d7-39aa-41f2-a3a3-fb8b58943353",
+        "matiere": "histoire",
+        "notion": "Comment Édouard Drumont articule-t-il l'antisémitisme dans son livre La France Juive (1886) ?",
+        "details": "",
+        "dateCreation": "2026-11-07T15:54:08.134Z",
+        "fsrs": {
+          "due": 1794153248134,
+          "stability": 5.8,
+          "difficulty": 5,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1794066848134
+        }
+      },
+      {
         "id": "30935a68-5502-472f-a34d-dc00ab6508d8",
         "matiere": "histoire",
         "notion": "Quels sont les trois volets juridiques des lois dites « scélérates » adoptées entre 1892 et 1893 ?",
