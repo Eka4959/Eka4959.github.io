@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "30935a68-5502-472f-a34d-dc00ab6508d8",
+        "matiere": "histoire",
+        "notion": "Quels sont les trois volets juridiques des lois dites « scélérates » adoptées entre 1892 et 1893 ?",
+        "details": "",
+        "dateCreation": "2026-11-07T15:53:50.654Z",
+        "fsrs": {
+          "due": 1794067430654,
+          "stability": 2.4,
+          "difficulty": 4.7,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1794066830654
+        }
+      },
+      {
         "id": "9fd6b428-cc15-45fe-9c9c-8b0f6f3ecfcd",
         "matiere": "histoire",
         "notion": "Quelles ont été les répercussions directes de l'assassinat du président Sadi Carnot par l'anarchiste Santo Caserio en 1894 ?",
