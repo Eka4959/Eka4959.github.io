@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "9fd6b428-cc15-45fe-9c9c-8b0f6f3ecfcd",
+        "matiere": "histoire",
+        "notion": "Quelles ont été les répercussions directes de l'assassinat du président Sadi Carnot par l'anarchiste Santo Caserio en 1894 ?",
+        "details": "",
+        "dateCreation": "2026-11-07T15:53:39.002Z",
+        "fsrs": {
+          "due": 1794153219002,
+          "stability": 5.8,
+          "difficulty": 5,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1794066819002
+        }
+      },
+      {
         "id": "5000a8cd-a9af-4a05-b442-8af7cfc4f8b6",
         "matiere": "histoire",
         "notion": "Quelles actions terroristes Émile Henry et Auguste Vaillant ont-ils respectivement menées ?",
