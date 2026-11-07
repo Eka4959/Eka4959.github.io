@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "ca77eb91-1324-46d3-9187-4554bbe0734e",
+        "matiere": "histoire",
+        "notion": "Qu'est-ce qui a provoqué la chute du gouvernement Jules Ferry ?",
+        "details": "",
+        "dateCreation": "2026-11-07T09:46:11.204Z",
+        "fsrs": {
+          "due": 1794045371204,
+          "stability": 2.4,
+          "difficulty": 4.7,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1794044771204
+        }
+      },
+      {
         "id": "a89f7814-a4e1-425f-9311-f16841bedc36",
         "matiere": "ses",
         "notion": "Monnaie et taux d'intérêt Turgot",
