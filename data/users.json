@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "965cc15e-b084-4592-9a31-b772bb21d811",
+        "matiere": "histoire",
+        "notion": "Que s'est-il passé lors des « Vêpres marseillaises » en 1881 ?",
+        "details": "",
+        "dateCreation": "2026-11-07T15:58:43.839Z",
+        "fsrs": {
+          "due": 1794153523839,
+          "stability": 5.8,
+          "difficulty": 5,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1794067123839
+        }
+      },
+      {
         "id": "32e9f7d7-39aa-41f2-a3a3-fb8b58943353",
         "matiere": "histoire",
         "notion": "Comment Édouard Drumont articule-t-il l'antisémitisme dans son livre La France Juive (1886) ?",
