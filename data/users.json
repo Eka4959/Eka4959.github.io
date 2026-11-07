@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "a84c03fe-2578-4a46-9d26-ed4580953b80",
+        "matiere": "histoire",
+        "notion": "De quelle manière la crise du phylloxéra a-t-elle affecté le monde agricole français à partir de 1876 ?",
+        "details": "",
+        "dateCreation": "2026-11-07T10:38:40.458Z",
+        "fsrs": {
+          "due": 1794048520458,
+          "stability": 2.4,
+          "difficulty": 4.7,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1794047920458
+        }
+      },
+      {
         "id": "622a273b-ec2e-438b-a166-80b253f3865f",
         "matiere": "histoire",
         "notion": "Quelles sont les causes économiques de la faillite de l'Union Générale en 1882 et ses répercussions industrielles ?",
