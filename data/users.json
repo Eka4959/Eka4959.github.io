@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "9f58cf45-ef68-4265-bb18-5712260dc8d7",
+        "matiere": "histoire",
+        "notion": "Qu'est-ce que le drame de Fourmies du 1er mai 1891 et quelle réaction a-t-il suscitée à la Chambre des députés ?",
+        "details": "",
+        "dateCreation": "2026-11-07T10:43:14.391Z",
+        "fsrs": {
+          "due": 1794134594391,
+          "stability": 5.8,
+          "difficulty": 5,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1794048194391
+        }
+      },
+      {
         "id": "87f5af5f-3578-4e01-bc45-ad23509693d4",
         "matiere": "histoire",
         "notion": "Quel événement violent s'est déroulé lors de la grève de Decazeville en janvier 1886 ?",
