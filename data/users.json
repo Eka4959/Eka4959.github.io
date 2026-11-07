@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "5000a8cd-a9af-4a05-b442-8af7cfc4f8b6",
+        "matiere": "histoire",
+        "notion": "Quelles actions terroristes Émile Henry et Auguste Vaillant ont-ils respectivement menées ?",
+        "details": "",
+        "dateCreation": "2026-11-07T15:17:39.121Z",
+        "fsrs": {
+          "due": 1794064659121,
+          "stability": 0.7,
+          "difficulty": 4.4,
+          "reps": 1,
+          "lapses": 1,
+          "state": "relearning",
+          "last_review": 1794064659121
+        }
+      },
+      {
         "id": "4c70abd5-971e-4c32-83e9-5a0a7f9ea194",
         "matiere": "histoire",
         "notion": "En quoi consiste le concept de « propagande par le fait » prôné par le mouvement anarchiste au début des années 1890 ?",
