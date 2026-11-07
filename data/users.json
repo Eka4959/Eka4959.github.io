@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "622a273b-ec2e-438b-a166-80b253f3865f",
+        "matiere": "histoire",
+        "notion": "Quelles sont les causes économiques de la faillite de l'Union Générale en 1882 et ses répercussions industrielles ?",
+        "details": "",
+        "dateCreation": "2026-11-07T10:14:29.635Z",
+        "fsrs": {
+          "due": 1794047069635,
+          "stability": 2.4,
+          "difficulty": 4.7,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1794046469635
+        }
+      },
+      {
         "id": "ca77eb91-1324-46d3-9187-4554bbe0734e",
         "matiere": "histoire",
         "notion": "Qu'est-ce qui a provoqué la chute du gouvernement Jules Ferry ?",
