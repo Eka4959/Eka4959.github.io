@@ -355,6 +355,22 @@
     },
     "notions": [
       {
+        "id": "fd8ddfe1-c000-4189-a10a-9b44124e8dd2",
+        "matiere": "histoire",
+        "notion": "En quoi consiste le massacre d'Aigues-Mortes du 17 août 1893 et comment l'historien Gérard Noiriel l'analyse-t-il ?",
+        "details": "",
+        "dateCreation": "2026-11-07T16:04:04.307Z",
+        "fsrs": {
+          "due": 1794068044307,
+          "stability": 2.4,
+          "difficulty": 4.7,
+          "reps": 1,
+          "lapses": 0,
+          "state": "review",
+          "last_review": 1794067444307
+        }
+      },
+      {
         "id": "965cc15e-b084-4592-9a31-b772bb21d811",
         "matiere": "histoire",
         "notion": "Que s'est-il passé lors des « Vêpres marseillaises » en 1881 ?",
