@@ -2153,13 +2153,13 @@
         "details": "",
         "dateCreation": "2026-09-26T13:39:32.149Z",
         "fsrs": {
-          "due": 1793795540837,
-          "stability": 2.8,
-          "difficulty": 4.3,
-          "reps": 5,
+          "due": 1794811349736,
+          "stability": 3.22,
+          "difficulty": 4,
+          "reps": 6,
           "lapses": 3,
           "state": "review",
-          "last_review": 1793033492837
+          "last_review": 1794655553256
         }
       },
       {
