@@ -809,13 +809,13 @@
         "details": "",
         "dateCreation": "2026-10-29T09:53:28.746Z",
         "fsrs": {
-          "due": 1793508295938,
-          "stability": 0.965,
-          "difficulty": 3.7,
-          "reps": 4,
-          "lapses": 3,
+          "due": 1794701006737,
+          "stability": 0.8,
+          "difficulty": 3.35,
+          "reps": 5,
+          "lapses": 4,
           "state": "relearning",
-          "last_review": 1793465095938
+          "last_review": 1794657806737
         }
       },
       {
