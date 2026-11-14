@@ -1961,13 +1961,13 @@
         "details": "",
         "dateCreation": "2026-10-02T17:15:16.656Z",
         "fsrs": {
-          "due": 1793885435586,
-          "stability": 8.664,
+          "due": 1796449306375.4,
+          "stability": 16.462,
           "difficulty": 4.7,
-          "reps": 3,
+          "reps": 4,
           "lapses": 0,
           "state": "review",
-          "last_review": 1792942237891
+          "last_review": 1794657230753
         }
       },
       {
