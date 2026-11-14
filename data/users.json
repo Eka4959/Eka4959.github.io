@@ -1817,13 +1817,13 @@
         "details": "",
         "dateCreation": "2026-10-02T17:49:42.275Z",
         "fsrs": {
-          "due": 1793705689592.2,
-          "stability": 4.801,
+          "due": 1795648873807.6,
+          "stability": 9.122,
           "difficulty": 4.4,
-          "reps": 4,
+          "reps": 5,
           "lapses": 1,
           "state": "review",
-          "last_review": 1793183000869
+          "last_review": 1794655827286
         }
       },
       {
